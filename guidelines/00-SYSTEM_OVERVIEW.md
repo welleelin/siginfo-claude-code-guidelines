@@ -58,7 +58,7 @@
 | 阶段 | 使用插件 | 具体能力 |
 |------|---------|---------|
 | **需求分析** | bmad-method | `bmm-create-product-brief`, `bmm-market-research` |
-| **架构设计** | bmad-method + workflow-studio | `bmm-create-architecture` + 绘制架构图 |
+| **架构设计** | bmad-method + pencil | `bmm-create-architecture` + 绘制架构图 |
 | **任务规划** | everything-claude-code | `/plan` 命令 + workflow-studio 流程图 |
 | **TDD 开发** | everything-claude-code | `/tdd` 命令 |
 | **UI 设计** | pencil | 创建页面原型 |
@@ -166,6 +166,113 @@ const criticalInfo = {
 
 // 保存到 MEMORY.md
 await saveToMemory(criticalInfo)
+```
+
+### 防止 Compact 后遗忘关键上下文的机制
+
+**问题**：多次 compact 后，Agent 可能遗忘之前的测试规范（如 Mock 模式使用规则），导致：
+- 重复使用 Mock 模式进行测试
+- 将 Mock 测试结果误报为正式测试结果
+
+**解决方案**：在 `MEMORY.md` 中持久化保存关键约束和测试状态
+
+#### 1. 测试状态持久化
+
+```markdown
+## 🧪 测试状态 (持久化保存，compact 后必须保留)
+
+### Mock 模式使用状态
+- [ ] 前端 Mock 测试 - 状态：____ (pending/running/completed/skipped)
+- [ ] 后端 API 测试 - 状态：____ (必须使用真实 API)
+- [ ] 前后端联调测试 - 状态：____ (必须使用真实 API)
+- [ ] E2E 端到端测试 - 状态：____ (必须使用真实 API)
+
+### 已识别的 Mock 接口
+| 接口名称 | Mock 原因 | 预计替换时间 | 关联任务 |
+|---------|----------|-------------|---------|
+| /api/xxx | 接口未开发 | 2026-03-10 | TASK-15 |
+
+### 测试结果记录 (仅记录真实 API 测试)
+| 测试类型 | 开始时间 | 完成时间 | 通过率 | 是否使用 Mock |
+|---------|---------|---------|-------|--------------|
+| 前端 Mock | 10:00 | 10:15 | 100% | ✅ 是 (仅 UI 验证) |
+| 后端 API | 10:20 | 10:35 | 100% | ❌ 否 |
+| 联调测试 | 10:40 | 11:00 | 100% | ❌ 否 |
+```
+
+#### 2. Compact 前必须保存的约束
+
+```javascript
+// compact 前强制保存的约束信息
+const constraints = {
+  testingRules: {
+    mockAllowed: ['前端开发阶段', '前端 Mock 测试'],
+    mockForbidden: ['后端 API 测试', '前后端联调', 'E2E 测试'],
+    mockMarkers: ['// ⚠️ MOCK:', '// TODO: Mock 替换']
+  },
+  portCheckRequired: true,  // 测试前必须检查端口
+  dataValidation: {
+    requireRealData: true,   // 必须使用真实数据
+    mockDataNotAllowed: true // Mock 数据不允许用于正式测试
+  }
+}
+
+// 保存到 MEMORY.md 的固定位置（不会被 compact 清除）
+await saveToMemory({ constraints }, { persistent: true })
+```
+
+#### 3. 测试报告验证机制
+
+生成测试报告前，必须执行验证：
+
+```javascript
+// 测试报告生成前的验证
+function validateTestReport(testResults) {
+  const errors = []
+
+  // 检查 1: 联调测试是否使用了 Mock
+  if (testResults.integrationTest?.usedMock) {
+    errors.push('❌ 前后端联调测试禁止使用 Mock 模式')
+  }
+
+  // 检查 2: E2E 测试是否使用了 Mock
+  if (testResults.e2eTest?.usedMock) {
+    errors.push('❌ E2E 测试禁止使用 Mock 模式')
+  }
+
+  // 检查 3: 是否所有 Mock 接口都有标记
+  const unmarkedMocks = scanForUnmarkedMocks()
+  if (unmarkedMocks.length > 0) {
+    errors.push(`⚠️ 发现 ${unmarkedMocks.length} 个未标记的 Mock 接口`)
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+```
+
+#### 4. Compact 后恢复检查清单
+
+每次 compact 完成后，Agent 必须执行：
+
+```
+□ 1. 读取 MEMORY.md 中的测试状态
+   - 确认各阶段测试是否完成
+   - 确认 Mock 模式使用状态
+
+□ 2. 验证约束条件
+   - Mock 模式是否仅在允许阶段使用
+   - 联调测试是否已切换到真实 API
+
+□ 3. 检查测试报告
+   - 确认报告的测试结果未包含 Mock 测试（前端 Mock 测试除外）
+   - 确认所有 Mock 接口都有标记
+
+□ 4. 继续任务前确认
+   - 如有未完成的真实 API 测试，优先执行
+   - 如有未标记的 Mock 接口，补充标记
 ```
 
 ### 自动 Compact 流程
