@@ -338,6 +338,154 @@ Content-Type: application/json
 
 ---
 
+### 9. 获取上下文使用量
+
+**场景**：获取指定窗口的上下文使用量
+
+**端点**：`GET /context/usage?windowId=win-001`
+
+**响应体**：
+```json
+{
+  "success": true,
+  "windowId": "win-001",
+  "model": "qwen3.5-plus",
+  "contextLimit": 91000,
+  "contextUsed": 65000,
+  "contextRemaining": 26000,
+  "usagePercent": 71.4,
+  "status": "warning",
+  "lastUpdated": "2026-03-03T10:30:00Z"
+}
+```
+
+---
+
+### 10. 执行 Compact
+
+**场景**：手动或自动触发上下文压缩
+
+**端点**：`POST /context/compact`
+
+**请求体**：
+```json
+{
+  "windowId": "win-001",
+  "taskId": "task-52",
+  "reason": "auto_90_percent",
+  "saveState": true
+}
+```
+
+**响应体**：
+```json
+{
+  "success": true,
+  "message": "Compact 执行成功",
+  "beforeCompact": {
+    "contextUsed": 82000,
+    "usagePercent": 90.1
+  },
+  "afterCompact": {
+    "contextUsed": 25000,
+    "usagePercent": 27.5
+  },
+  "savedToMemory": true,
+  "stateRestored": true
+}
+```
+
+---
+
+### 11. 获取上下文历史
+
+**场景**：查看窗口的上下文使用历史
+
+**端点**：`GET /context/history?windowId=win-001&hours=24`
+
+**响应体**：
+```json
+{
+  "success": true,
+  "windowId": "win-001",
+  "history": [
+    {
+      "timestamp": "2026-03-03T10:00:00Z",
+      "contextUsed": 45000,
+      "usagePercent": 49.5,
+      "action": "none"
+    },
+    {
+      "timestamp": "2026-03-03T10:15:00Z",
+      "contextUsed": 65000,
+      "usagePercent": 71.4,
+      "action": "warning_sent"
+    },
+    {
+      "timestamp": "2026-03-03T10:30:00Z",
+      "contextUsed": 75000,
+      "usagePercent": 82.4,
+      "action": "saved_to_memory"
+    },
+    {
+      "timestamp": "2026-03-03T10:45:00Z",
+      "contextUsed": 83000,
+      "usagePercent": 91.2,
+      "action": "auto_compact"
+    },
+    {
+      "timestamp": "2026-03-03T10:46:00Z",
+      "contextUsed": 25000,
+      "usagePercent": 27.5,
+      "action": "compact_complete"
+    }
+  ]
+}
+```
+
+---
+
+### 12. 获取/更新上下文配置
+
+**场景**：获取或更新上下文监控配置
+
+**端点**：
+- `GET /context/config`
+- `POST /context/config`
+
+**请求体 (POST)**：
+```json
+{
+  "thresholds": {
+    "warning": 70,
+    "prepareCompact": 80,
+    "forceCompact": 90
+  },
+  "autoActions": {
+    "atWarning": "notify",
+    "atPrepareCompact": "save_memory",
+    "atForceCompact": "auto_compact"
+  },
+  "checkInterval": 30000,
+  "enabled": true
+}
+```
+
+**响应体**：
+```json
+{
+  "success": true,
+  "config": {
+    "thresholds": { ... },
+    "autoActions": { ... },
+    "checkInterval": 30000,
+    "enabled": true
+  }
+}
+```
+
+---
+
 ## 📋 行动准则中的集成点
 
 ### 在 `/plan` 命令执行后
