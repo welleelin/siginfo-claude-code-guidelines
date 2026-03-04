@@ -781,18 +781,32 @@ sig-claude-code-guidelines/
 │   ├── 04-E2E_TESTING_FLOW.md   # E2E 测试流程
 │   ├── 05-QUALITY_GATE.md       # 质量门禁
 │   ├── 06-TRACEABILITY.md       # 可追溯性规范
-│   └── 07-PLUGIN_MANAGEMENT.md  # 插件管理
+│   ├── 07-PLUGIN_MANAGEMENT.md  # 插件管理
+│   ├── 08-LONG_RUNNING_AGENTS.md       # 长期运行 Agent 最佳实践
+│   ├── 09-AUTOMATION_MODES.md          # 自动化模式配置
+│   ├── 10-ANTHROPIC_LONG_RUNNING_AGENTS.md # Anthropic 官方指南
+│   └── 11-LONG_TERM_MEMORY.md          # 长期记忆管理规范 ⭐ NEW
 │
 ├── templates/                # 📝 项目模板
 │   ├── CLAUDE.md.template    # 项目配置模板
-│   ├── MEMORY.md.template    # 项目记忆模板
-│   ├── task.json.template    # 任务列表模板
-│   └── checkpoint.sh         # 检查点脚本
+│   ├── MEMORY.md.template    # 项目记忆模板（长期记忆）
+│   ├── memory-template.md   # 每日日志模板（短期记忆）
+│   ├── AGENTS.md.template   # Agent 行为规范模板
+│   ├── HEARTBEAT.md.template # 心跳检查模板
+│   └── task.json.template    # 任务列表模板
 │
 ├── scripts/                  # 🛠️ 工具脚本
 │   ├── init-plugins.sh       # 插件初始化
+│   ├── init-memory.sh        # 记忆系统初始化 ⭐ NEW
 │   ├── install.sh            # 规则安装
-│   └── sync-rules.sh         # 规则同步
+│   ├── sync-rules.sh         # 规则同步
+│   │
+│   ├── checkpoint.sh         # 检查点管理（保存/恢复/列出）
+│   ├── save-state.sh         # 状态保存 ⭐ NEW
+│   ├── restore-state.sh      # 状态恢复 ⭐ NEW
+│   ├── sync-hourly.sh        # 小时同步 ⭐ NEW
+│   ├── archive-daily.sh      # 日终归档 ⭐ NEW
+│   └── summarize-weekly.sh   # 周度总结 ⭐ NEW
 │
 ├── rules/                    # Claude Code 规则
 │   ├── common/               # 通用规则
@@ -803,12 +817,15 @@ sig-claude-code-guidelines/
 │   ├── plan.md
 │   ├── tdd.md
 │   ├── code-review.md
-│   └── ...
+│   ├── memory-search.md     # 记忆搜索 ⭐ NEW
+│   ├── save-state.md        # 保存状态 ⭐ NEW
+│   └── restore-state.md     # 恢复状态 ⭐ NEW
 │
 ├── agents/                   # Agent 定义
 │   ├── planner.md
 │   ├── architect.md
 │   ├── tdd-guide.md
+│   ├── memory-keeper.md     # 记忆管理 Agent ⭐ NEW
 │   └── ...
 │
 ├── skills/                   # 技能库
@@ -827,6 +844,96 @@ sig-claude-code-guidelines/
     ├── notification-guide.md # 通知系统指南
     └── best-practices.md     # 最佳实践集
 ```
+
+---
+
+## 🧠 长期记忆系统
+
+> 基于 Anthropic 官方最佳实践 + OpenClaw Memory 三层架构
+
+### 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| **三层记忆** | Hourly（短期）+ Daily（中期）+ Weekly（长期） |
+| **自动同步** | 小时/日/周自动同步和归档 |
+| **状态检查点** | 随时保存和恢复任务状态 |
+| **语义检索** | 支持向量搜索 + 关键词匹配 |
+| **隐私保护** | MEMORY.md 仅主会话加载，群组不注入 |
+
+### 记忆架构
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    三层记忆架构                              │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Hourly 层（短期记忆） - 每小时同步                         │
+│  - 当前会话的技术决策                                        │
+│  - 实时问题解决过程                                          │
+│  存储：memory/YYYY-MM-DD.md                                 │
+│                                                             │
+│  Daily 层（中期记忆） - 每日 23:00 归档                       │
+│  - 项目进展、已完成任务                                      │
+│  - 重要决策记录                                              │
+│  存储：memory/YYYY-MM-DD.md + 标签索引                       │
+│                                                             │
+│  Weekly 层（长期记忆） - 每周日 22:00 总结                    │
+│  - 核心知识、最佳实践                                        │
+│  - 技术架构决策                                              │
+│  存储：MEMORY.md                                            │
+│                                                             │
+│  Context 层（工作记忆） - 实时                              │
+│  - 系统提示词注入                                            │
+│  - 对话历史、工具调用                                        │
+│  阈值：70% 预警 / 80% 保存 / 90% compact                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 快速开始
+
+```bash
+# 1. 在新项目中初始化记忆系统
+./scripts/init-memory.sh
+
+# 2. 开始任务
+./scripts/checkpoint.sh start 52
+
+# 3. 保存状态（关键节点）
+./scripts/save-state.sh "完成需求分析"
+
+# 4. 恢复状态（需要时）
+./scripts/restore-state.sh latest
+
+# 5. 搜索记忆
+/memory-search "部署问题"
+```
+
+### 常用命令
+
+| 命令 | 说明 | 频率 |
+|------|------|------|
+| `./scripts/checkpoint.sh start <id>` | 开始任务 | 任务开始 |
+| `./scripts/save-state.sh <原因>` | 保存状态 | 关键节点 |
+| `./scripts/restore-state.sh <id>` | 恢复状态 | 需要时 |
+| `./scripts/sync-hourly.sh` | 小时同步 | 每小时 |
+| `./scripts/archive-daily.sh` | 日终归档 | 每日 23:00 |
+| `./scripts/summarize-weekly.sh` | 周度总结 | 每周日 22:00 |
+| `/memory-search <关键词>` | 搜索记忆 | 按需 |
+
+### 配置文件
+
+| 文件 | 用途 | 说明 |
+|------|------|------|
+| `MEMORY.md` | 长期记忆 | 关键决策、用户偏好、经验教训 |
+| `AGENTS.md` | 行为规范 | Agent 工作规则 |
+| `HEARTBEAT.md` | 检查任务 | 定期执行的任务列表 |
+| `memory/YYYY-MM-DD.md` | 每日日志 | 当日任务和 Hourly 记录 |
+
+### 详细文档
+
+- [长期记忆管理规范](guidelines/11-LONG_TERM_MEMORY.md)
+- [记忆管理 Agent](agents/memory-keeper.md)
 
 ---
 
