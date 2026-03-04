@@ -1,6 +1,35 @@
 # Agent 行为规范
 
 > 定义 Agent 的工作方式、行为边界和协作规则
+> **版本**：2.0.0 (整合 Agent-Reach 互联网访问能力)
+
+---
+
+## 🌐 Agent-Reach 互联网访问能力 ⭐ NEW
+
+### 核心原则
+
+Agent-Reach 为 AI Agent 提供互联网访问能力，支持 13+ 平台的无缝集成：
+
+| 平台 | 用途 | 配置状态 |
+|------|------|---------|
+| 🌐 **网页** | 阅读任意网页 | ✅ 无需配置 |
+| 📺 **YouTube** | 字幕提取 + 视频搜索 | ✅ 无需配置 |
+| 📡 **RSS** | 阅读任意 RSS/Atom 源 | ✅ 无需配置 |
+| 📦 **GitHub** | 读公开仓库 + 搜索 | ⚠️ 登录解锁完整功能 |
+| 🐦 **Twitter/X** | 搜索推文、浏览时间线 | ⚠️ 需 Cookie |
+| 📺 **B 站** | 字幕提取 + 视频搜索 | ⚠️ 服务器需代理 |
+| 📖 **Reddit** | 搜索（Exa 免费） | ⚠️ 需代理 |
+| 📕 **小红书** | 阅读、搜索、互动 | ⚠️ 需 Docker 服务 |
+| 🎵 **抖音** | 视频解析、无水印下载 | ⚠️ 需 MCP 服务 |
+| 🔍 **全网搜索** | AI 语义搜索 | ✅ 自动配置（MCP） |
+
+### 使用原则
+
+1. **先搜索再实现** - 避免重复造轮子
+2. **多渠道验证** - GitHub + Twitter + YouTube 交叉验证
+3. **及时记录** - 调研结果立即写入记忆
+4. **凭据安全** - Cookie 使用专用小号，本地存储不上传
 
 ---
 
@@ -37,12 +66,17 @@ git status
 
 # 查看最近提交
 git log --oneline -10
+
+# 检查 Agent-Reach 状态 ⭐ NEW
+agent-reach doctor
 ```
 
 ### 3. 状态恢复
 - 检查是否有未完成的工作流
 - 读取最近的检查点
 - 确认可以继续执行的任务
+- 检查 Agent-Reach 渠道状态 ⭐ NEW
+```
 
 ---
 
@@ -55,15 +89,18 @@ git log --oneline -10
 - ✅ 策略性决策（"以后部署都要了确认"）
 - ✅ 经验教训（"2026-02-13 配置错误导致服务中断"）
 - ✅ 长期项目状态（"博客系列文章进度 3/16"）
+- ✅ 互联网调研最佳实践（Agent-Reach 提炼） ⭐ NEW
 
 #### 写入 memory/YYYY-MM-DD.md 的内容：
 - ✅ 当日任务与进展
 - ✅ 临时决策（"今天先通过测试，明天补"）
-- ✅ 技术调研笔记
+- ✅ 技术调研笔记（Agent-Reach 搜索结果） ⭐ NEW
 - ✅ 待办事项
+- ✅ 互联网调研中间结果 ⭐ NEW
 
 #### 不要写入记忆文件的内容：
 - ❌ 敏感凭据（API key、密码）→ 使用 `~/.openclaw/credentials/`
+- ❌ Agent-Reach Cookie → 使用 `~/.agent-reach/config.yaml` ⭐ NEW
 - ❌ 临时计算结果（"3 + 5 = 8"）→ 下次重新计算即可
 - ❌ 工具返回的原始日志 → 太长，写总结即可
 
@@ -93,6 +130,7 @@ git log --oneline -10
 - 服务器 IP 地址（使用占位符）
 - 个人 Telegram ID
 - 数据库连接字符串
+- Agent-Reach Cookie（存入 ~/.agent-reach/config.yaml） ⭐ NEW
 ```
 
 ### 日志脱敏
@@ -112,13 +150,25 @@ git log --oneline -10
 ```typescript
 interface WorkflowState {
   id: string;
-  type: "deploy" | "content-creation" | "monitoring";
+  type: "deploy" | "content-creation" | "monitoring" | "research"; ⭐ NEW
   status: "pending" | "running" | "waiting" | "completed" | "failed";
   currentStep: number;
   totalSteps: number;
   context: Record<string, any>;
 }
 ```
+
+### 互联网调研工作流 ⭐ NEW
+
+| 阶段 | 步骤 | Agent-Reach 命令 |
+|------|------|-----------------|
+| 准备 | 检查渠道状态 | `agent-reach doctor` |
+| 执行 | GitHub 搜索 | `gh search repos "..."` |
+| 执行 | Twitter 舆论 | `xreach search "..."` |
+| 执行 | YouTube 教程 | `yt-dlp --dump-json "URL"` |
+| 执行 | 全网搜索 | `exa search "..."` |
+| 记录 | 写入 Hourly 层 | `echo "..." >> memory/今日.md` |
+| 归档 | 提炼最佳实践 | 更新 MEMORY.md |
 
 ### 人工介入点
 
@@ -202,6 +252,7 @@ interface WorkflowState {
 |------|------|---------|
 | L1 | 网络超时、临时失败 | 自动重试，最多 3 次 |
 | L2 | API 不可用、资源缺失 | 尝试备选方案，通知人类 |
+| L2.5 | Agent-Reach Cookie 过期 ⭐ NEW | 引导重新配置 Cookie |
 | L3 | 权限错误、数据损坏 | 立即停止，通知人类 |
 
 ### 重试策略
@@ -225,6 +276,7 @@ interface WorkflowState {
 | 每小时 | sync-hourly | 同步小时级记忆 |
 | 每日 23:00 | archive-daily | 归档日志 |
 | 每周日 22:00 | summarize-weekly | 周度总结 |
+| 每日 9:00 | check-agent-reach ⭐ NEW | 检查 Agent-Reach 渠道状态 |
 
 ### 周度回顾
 
@@ -244,6 +296,9 @@ interface WorkflowState {
 - ❌ 记录敏感信息到日志
 - ❌ 跳过测试直接部署
 - ❌ 忘记写入记忆文件
+- ❌ Agent-Reach Cookie 写入记忆文件（应存入 ~/.agent-reach/config.yaml） ⭐ NEW
+- ❌ 互联网调研结果不记录来源 ⭐ NEW
+- ❌ 使用过期 Cookie 或凭据 ⭐ NEW
 
 ---
 
@@ -253,3 +308,4 @@ interface WorkflowState {
 > 3. 敏感操作必须确认
 > 4. 错误必须学习和改进
 > 5. 持续优化记忆管理
+> 6. 先搜索互联网再实现（Agent-Reach） ⭐ NEW

@@ -1015,6 +1015,57 @@ GET http://localhost:8083/api/tasks?status=pending
 
 ---
 
+## 🌐 Agent-Reach 互联网访问能力 ⭐ NEW
+
+> 给 AI Agent 一键装上互联网能力 —— 读推特、搜 Reddit、看 YouTube、刷小红书
+
+### 快速安装
+
+```bash
+# 复制给你的 AI Agent
+帮我安装 Agent Reach：https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+```
+
+### 支持的平台
+
+| 平台 | 装好即用 | 配置后解锁 |
+|------|---------|-----------|
+| 🌐 **网页** | ✅ 阅读任意网页 | — |
+| 📺 **YouTube** | ✅ 字幕提取 + 搜索 | — |
+| 📡 **RSS** | ✅ 阅读 RSS/Atom | — |
+| 📦 **GitHub** | ✅ 读公开仓库 | ✅ 私有仓库/提 Issue |
+| 🐦 **Twitter/X** | ✅ 读单条推文 | ✅ 搜索/时间线/发推 |
+| 📺 **B 站** | ✅ 本地字幕提取 | ✅ 服务器可用 |
+| 📖 **Reddit** | ✅ 搜索 | ✅ 读帖子评论 |
+| 📕 **小红书** | — | ✅ 阅读/搜索/互动 |
+| 🎵 **抖音** | — | ✅ 视频解析/无水印 |
+| 🔍 **全网搜索** | — | ✅ AI 语义搜索 |
+
+### 核心优势
+
+| 特性 | 说明 |
+|------|------|
+| 💰 **完全免费** | 所有工具开源、所有 API 免费 |
+| 🔒 **隐私安全** | Cookie 本地存储，不上传不外传 |
+| 🔄 **持续更新** | 底层工具定期追踪更新 |
+| 🤖 **兼容所有 Agent** | Claude Code、OpenClaw、Cursor 等 |
+| 🩺 **自带诊断** | `agent-reach doctor` 一键检测 |
+
+### 与记忆系统集成
+
+Agent-Reach 与长期记忆系统深度集成：
+
+```
+互联网调研 → 结果持久化 → 记忆检索
+    ↓            ↓            ↓
+GitHub/Twitter  Hourly 层    混合检索
+YouTube/Reddit  Daily 层     本地 + 实时
+```
+
+**详细文档**: [Agent-Reach 集成指南](guidelines/12-AGENT_REACH_INTEGRATION.md)
+
+---
+
 ## 📚 学习路径
 
 ### 新手入门（第 1 周）
