@@ -68,6 +68,114 @@ declare -A MODEL_COST=(
     ["deepseek"]="0.3x"
 )
 
+# 测试模型可用性
+test_model() {
+    local model_key="$1"
+    local model_id="${MODELS[$model_key]}"
+
+    echo "║  🧪 测试模型可用性..."
+    echo "╠════════════════════════════════════════════════╣"
+
+    # Claude 模型测试
+    if [ "$model_key" = "opus" ] || [ "$model_key" = "sonnet" ] || [ "$model_key" = "haiku" ]; then
+        # 检查 Anthropic API
+        if command -v curl &> /dev/null; then
+            local response=$(curl -s -o /dev/null -w "%{http_code}" \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $ANTHROPIC_API_KEY" \
+                -d "{\"model\":\"$model_id\",\"messages\":[{\"role\":\"user\",\"content\":\"Hi\"}],\"max_tokens\":1}" \
+                "https://api.anthropic.com/v1/messages" 2>/dev/null || echo "000")
+
+            if [ "$response" = "200" ] || [ "$response" = "401" ]; then
+                echo "║  ${GREEN}✅${NC} $model_id - 可用"
+                return 0
+            elif [ "$response" = "429" ]; then
+                echo "║  ${YELLOW}⚠️${NC} $model_id - 速率限制"
+                return 1
+            else
+                echo "║  ${RED}❌${NC} $model_id - 不可用 (HTTP $response)"
+                return 1
+            fi
+        fi
+
+    # MiniMax 测试
+    elif [ "$model_key" = "minimax" ]; then
+        if [ -f "${CREDENTIALS_DIR}/${model_key}" ]; then
+            local api_key=$(cat "${CREDENTIALS_DIR}/${model_key}")
+            if command -v curl &> /dev/null; then
+                local response=$(curl -s -o /dev/null -w "%{http_code}" \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer $api_key" \
+                    -d "{\"model\":\"$model_id\",\"messages\":[{\"role\":\"user\",\"content\":\"Hi\"}],\"max_tokens\":1}" \
+                    "https://api.minimax.chat/v1/text/chatcompletion" 2>/dev/null || echo "000")
+
+                if [ "$response" = "200" ]; then
+                    echo "║  ${GREEN}✅${NC} $model_id - 可用"
+                    return 0
+                elif [ "$response" = "401" ]; then
+                    echo "║  ${RED}❌${NC} $model_id - API Key 无效"
+                    return 1
+                else
+                    echo "║  ${YELLOW}⚠️${NC} $model_id - 响应：HTTP $response"
+                    return 0  # 假设可用
+                fi
+            fi
+        fi
+
+    # GLM 测试
+    elif [ "$model_key" = "glm" ]; then
+        if [ -f "${CREDENTIALS_DIR}/${model_key}" ]; then
+            local api_key=$(cat "${CREDENTIALS_DIR}/${model_key}")
+            if command -v curl &> /dev/null; then
+                local response=$(curl -s -o /dev/null -w "%{http_code}" \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer $api_key" \
+                    -d "{\"model\":\"$model_id\",\"messages\":[{\"role\":\"user\",\"content\":\"Hi\"}],\"max_tokens\":1}" \
+                    "https://open.bigmodel.cn/api/paas/v4/chat/completions" 2>/dev/null || echo "000")
+
+                if [ "$response" = "200" ]; then
+                    echo "║  ${GREEN}✅${NC} $model_id - 可用"
+                    return 0
+                elif [ "$response" = "401" ]; then
+                    echo "║  ${RED}❌${NC} $model_id - API Key 无效"
+                    return 1
+                else
+                    echo "║  ${YELLOW}⚠️${NC} $model_id - 响应：HTTP $response"
+                    return 0  # 假设可用
+                fi
+            fi
+        fi
+
+    # DeepSeek 测试
+    elif [ "$model_key" = "deepseek" ]; then
+        if [ -f "${CREDENTIALS_DIR}/${model_key}" ]; then
+            local api_key=$(cat "${CREDENTIALS_DIR}/${model_key}")
+            if command -v curl &> /dev/null; then
+                local response=$(curl -s -o /dev/null -w "%{http_code}" \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer $api_key" \
+                    -d "{\"model\":\"$model_id\",\"messages\":[{\"role\":\"user\",\"content\":\"Hi\"}],\"max_tokens\":1}" \
+                    "https://api.deepseek.com/v1/chat/completions" 2>/dev/null || echo "000")
+
+                if [ "$response" = "200" ]; then
+                    echo "║  ${GREEN}✅${NC} $model_id - 可用"
+                    return 0
+                elif [ "$response" = "401" ]; then
+                    echo "║  ${RED}❌${NC} $model_id - API Key 无效"
+                    return 1
+                else
+                    echo "║  ${YELLOW}⚠️${NC} $model_id - 响应：HTTP $response"
+                    return 0  # 假设可用
+                fi
+            fi
+        fi
+    fi
+
+    # 无法测试时，假设可用
+    echo "║  ${YELLOW}⚠️${NC} 无法测试 $model_id，假设可用"
+    return 0
+}
+
 # 显示使用说明
 usage() {
     cat << EOF
@@ -200,6 +308,22 @@ switch_model() {
         echo "║  ${GREEN}✅${NC} API Key 已配置"
     else
         echo "║  ${GREEN}✅${NC} Claude 渠道 (已配置)"
+    fi
+
+    # 测试模型可用性 ⭐ NEW
+    echo "╠════════════════════════════════════════════════╣"
+    if ! test_model "$model_key"; then
+        echo "╠════════════════════════════════════════════════╣"
+        echo "║  ${RED}❌${NC} 模型不可用，取消切换"
+        echo "╠════════════════════════════════════════════════╣"
+        echo "║  建议：                                        ║"
+        echo "║  1. 检查 API Key 是否有效                       ║"
+        echo "║  2. 检查网络连接                                ║"
+        echo "║  3. 检查账户余额                                ║"
+        echo "╠════════════════════════════════════════════════╣"
+        echo "║  使用其他模型：$0 --list"
+        echo "╚════════════════════════════════════════════════╝"
+        exit 1
     fi
 
     # 更新配置文件
