@@ -1017,46 +1017,99 @@ GET http://localhost:8083/api/tasks?status=pending
 
 ## 🤖 大模型渠道切换 ⭐ NEW
 
-> 随时切换不同的大模型渠道 —— Claude Opus/Sonnet/Haiku、MiniMax、GLM、DeepSeek 等
+> 随时切换不同的大模型渠道，带用量监控和智能推荐
 
-### 快速切换
+### 快速开始
 
 ```bash
-# 切换到 Claude Opus（深度推理）
-/opus
+# 新项目初始化（交互式配置）
+./scripts/init-model-channels.sh
 
-# 切换到 Claude Haiku（快速修改）
-/haiku
+# 查看用量监控
+/switch-model --usage
 
-# 切换到 MiniMax（中文写作）
-/minimax
-
-# 查看所有渠道
-/switch-model --list
+# 切换模型
+/opus      # Claude Opus
+/sonnet    # Claude Sonnet
+/haiku     # Claude Haiku
+/minimax   # MiniMax
+/glm       # GLM-4
+/deepseek  # DeepSeek
 ```
 
-### 支持的模型
+### 支持的模型渠道
 
-| 模型 | 简称 | 适用场景 | 成本 |
-|------|------|---------|------|
-| Claude Opus | `/opus` | 架构设计、深度推理 | $$$$ |
-| Claude Sonnet | `/sonnet` | 主力开发、平衡性能 | $$$ |
-| Claude Haiku | `/haiku` | 快速任务、经济实惠 | $ |
-| MiniMax | `/minimax` | 中文内容生成 | $ |
-| GLM-4 | `/glm` | 中文理解 | $$ |
-| DeepSeek | `/deepseek` | 数学推理 | $ |
+| 类别 | 模型 | 简称 | 适用场景 |
+|------|------|------|---------|
+| **国际** | Claude Opus | `/opus` | 架构设计、深度推理 |
+| **国际** | Claude Sonnet | `/sonnet` | 主力开发、平衡性能 |
+| **国际** | Claude Haiku | `/haiku` | 快速任务、经济实惠 |
+| **国际** | Codex/GPT | `/codex` | 通用任务 |
+| **国际** | Gemini | `/gemini` | 多模态任务 |
+| **国内** | Qwen (阿里云) | `/qwen` | 多语言支持 |
+| **国内** | GLM (智谱) | `/glm` | 中文理解 |
+| **国内** | MiniMax | `/minimax` | 中文内容生成 |
+| **国内** | DeepSeek | `/deepseek` | 数学推理 |
+
+### 用量监控
+
+```bash
+# 查看所有模型用量
+/switch-model --usage
+
+# 输出示例:
+╔════════════════════════════════════════════════════════════════════╗
+║                    📊 大模型用量监控                                ║
+╠════════════════════════════════════════════════════════════════════╣
+║  模型            级别     已用 / 总额        剩余                   ║
+╠════════════════════════════════════════════════════════════════════╣
+║  ✅ opus         L1       1.2M / 10M      8.8M (12%)               ║
+║  ⚠️  sonnet      L2       7.5M / 10M      2.5M (75%)               ║
+║  🚨 haiku        L3       9.5M / 10M      0.5M (95%)               ║
+╚════════════════════════════════════════════════════════════════════╝
+```
+
+### 智能推荐
+
+当用量达紧急阈值 (95%) 时，自动推荐可用模型：
+
+```bash
+# 切换到用量不足的模型
+/switch-model haiku
+
+# 输出:
+╔════════════════════════════════════════════════╗
+║  🚨 用量已达紧急阈值，正在为您推荐可用模型...  ║
+╠════════════════════════════════════════════════╣
+║  💡 推荐切换：opus (Claude Opus - 最强推理)    ║
+║     用量：12% (剩余：8.8M)                     ║
+╠════════════════════════════════════════════════╣
+║  是否切换到推荐模型？(y/N)                     ║
+╚════════════════════════════════════════════════╝
+```
+
+### 告警阈值
+
+| 级别 | 用量 | 动作 |
+|------|------|------|
+| ⚠️ 警告 | 70% | 通知用户 |
+| ⚠️ 严重 | 85% | 建议切换模型 |
+| 🚨 紧急 | 95% | 自动推荐可用模型 |
 
 ### 渠道选择建议
 
 ```
-复杂架构设计  →  Claude Opus    (最强推理)
-主力开发      →  Claude Sonnet  (性能平衡)
-快速修改      →  Claude Haiku   (快速经济)
-中文写作      →  MiniMax/GLM    (中文优化)
-数学推理      →  DeepSeek/Opus  (数学能力强)
+复杂架构设计  →  Claude Opus    (最强推理，L1)
+主力开发      →  Claude Sonnet  (性能平衡，L2)
+快速修改      →  Claude Haiku   (快速经济，L3)
+中文写作      →  MiniMax/GLM    (中文优化，L3)
+数学推理      →  DeepSeek/Opus  (数学能力强，L3/L1)
 ```
 
-**详细文档**: [大模型渠道配置](config/MODEL_CHANNELS.md)
+**详细文档**:
+- [大模型渠道配置](config/MODEL_CHANNELS.md)
+- [用量监控脚本](scripts/model-usage-check.sh)
+- [初始化向导](scripts/init-model-channels.sh)
 
 ---
 
