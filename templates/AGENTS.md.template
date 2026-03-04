@@ -1,7 +1,49 @@
 # Agent 行为规范
 
 > 定义 Agent 的工作方式、行为边界和协作规则
-> **版本**：2.0.0 (整合 Agent-Reach 互联网访问能力)
+> **版本**：3.0.0 (整合 Agent-Reach + 大模型渠道切换)
+
+---
+
+## 🤖 大模型渠道切换 ⭐ NEW
+
+### 支持的模型渠道
+
+| 渠道 | 模型 | 适用场景 | 成本 |
+|------|------|---------|------|
+| **Claude Opus** | claude-opus-4 | 架构设计、深度推理 | $$$$ |
+| **Claude Sonnet** | claude-sonnet-4 | 主力开发、平衡性能 | $$$ |
+| **Claude Haiku** | claude-3.5-haiku | 快速任务、经济实惠 | $ |
+| **MiniMax** | minimax-text-01 | 中文内容生成 | $ |
+| **GLM** | glm-4-plus | 中文理解、代码生成 | $$ |
+| **DeepSeek** | deepseek-chat | 代码生成、数学推理 | $ |
+
+### 快速切换命令
+
+```bash
+# 切换模型
+/opus           # Claude Opus (深度推理)
+/sonnet         # Claude Sonnet (主力开发)
+/haiku          # Claude Haiku (快速修改)
+/minimax        # MiniMax (中文写作)
+/glm            # GLM-4 (中文理解)
+/deepseek       # DeepSeek (数学推理)
+
+# 查看状态
+/switch-model --list     # 列出所有渠道
+/switch-model --current  # 查看当前模型
+/switch-model --stats    # 查看使用统计
+```
+
+### 渠道选择原则
+
+| 任务类型 | 推荐模型 | 说明 |
+|---------|---------|------|
+| 复杂架构设计 | Claude Opus | 深度推理最佳 |
+| 主力开发 | Claude Sonnet | 性能成本平衡 |
+| 快速修改 | Claude Haiku | 响应快、成本低 |
+| 中文内容 | MiniMax / GLM | 中文优化 |
+| 数学推理 | DeepSeek / Opus | 数学能力强 |
 
 ---
 

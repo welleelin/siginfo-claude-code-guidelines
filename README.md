@@ -1015,6 +1015,51 @@ GET http://localhost:8083/api/tasks?status=pending
 
 ---
 
+## 🤖 大模型渠道切换 ⭐ NEW
+
+> 随时切换不同的大模型渠道 —— Claude Opus/Sonnet/Haiku、MiniMax、GLM、DeepSeek 等
+
+### 快速切换
+
+```bash
+# 切换到 Claude Opus（深度推理）
+/opus
+
+# 切换到 Claude Haiku（快速修改）
+/haiku
+
+# 切换到 MiniMax（中文写作）
+/minimax
+
+# 查看所有渠道
+/switch-model --list
+```
+
+### 支持的模型
+
+| 模型 | 简称 | 适用场景 | 成本 |
+|------|------|---------|------|
+| Claude Opus | `/opus` | 架构设计、深度推理 | $$$$ |
+| Claude Sonnet | `/sonnet` | 主力开发、平衡性能 | $$$ |
+| Claude Haiku | `/haiku` | 快速任务、经济实惠 | $ |
+| MiniMax | `/minimax` | 中文内容生成 | $ |
+| GLM-4 | `/glm` | 中文理解 | $$ |
+| DeepSeek | `/deepseek` | 数学推理 | $ |
+
+### 渠道选择建议
+
+```
+复杂架构设计  →  Claude Opus    (最强推理)
+主力开发      →  Claude Sonnet  (性能平衡)
+快速修改      →  Claude Haiku   (快速经济)
+中文写作      →  MiniMax/GLM    (中文优化)
+数学推理      →  DeepSeek/Opus  (数学能力强)
+```
+
+**详细文档**: [大模型渠道配置](config/MODEL_CHANNELS.md)
+
+---
+
 ## 🌐 Agent-Reach 互联网访问能力 ⭐ NEW
 
 > 给 AI Agent 一键装上互联网能力 —— 读推特、搜 Reddit、看 YouTube、刷小红书
