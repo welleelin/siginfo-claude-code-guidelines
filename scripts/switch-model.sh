@@ -68,6 +68,163 @@ declare -A MODEL_COST=(
     ["deepseek"]="0.3x"
 )
 
+# 模型级别
+declare -A MODEL_LEVELS=(
+    ["opus"]="L1"
+    ["sonnet"]="L2"
+    ["haiku"]="L3"
+    ["minimax"]="L3"
+    ["glm"]="L2"
+    ["qwen"]="L2"
+    ["deepseek"]="L3"
+)
+
+# 用量告警阈值
+WARNING_THRESHOLD=70
+CRITICAL_THRESHOLD=85
+EMERGENCY_THRESHOLD=95
+
+# 用量配置文件
+USAGE_FILE="${CLAUDE_CONFIG_DIR}/model-usage.yaml"
+
+# 获取模型用量
+get_model_usage() {
+    local model_key="$1"
+
+    if [ ! -f "$USAGE_FILE" ]; then
+        echo "0:10000000:0"
+        return 0
+    fi
+
+    # 从 YAML 文件读取用量（简化处理）
+    local usage_section=$(sed -n "/^  ${model_key}:/,/^[a-z]/p" "$USAGE_FILE" 2>/dev/null)
+
+    if [ -z "$usage_section" ]; then
+        echo "0:10000000:0"
+        return 0
+    fi
+
+    local used=$(echo "$usage_section" | grep "used:" | head -1 | awk '{print $2}')
+    local limit=$(echo "$usage_section" | grep "limit:" | head -1 | awk '{print $2}')
+    local remaining=$(echo "$usage_section" | grep "remaining:" | head -1 | awk '{print $2}')
+
+    used=${used:-0}
+    limit=${limit:-10000000}
+    remaining=${remaining:-$((limit - used))}
+
+    echo "${used}:${limit}:${remaining}"
+}
+
+# 检查用量并告警
+check_usage_alert() {
+    local model_key="$1"
+    local usage_data=$(get_model_usage "$model_key")
+
+    IFS=':' read -r used limit remaining <<< "$usage_data"
+
+    if [ "$limit" -gt 0 ]; then
+        local percentage=$((used * 100 / limit))
+    else
+        local percentage=0
+    fi
+
+    # 存储百分比供后续使用
+    MODEL_USAGE_PERCENTAGE[$model_key]=$percentage
+
+    if [ "$percentage" -ge "$EMERGENCY_THRESHOLD" ]; then
+        return 3  # 紧急
+    elif [ "$percentage" -ge "$CRITICAL_THRESHOLD" ]; then
+        return 2  # 严重
+    elif [ "$percentage" -ge "$WARNING_THRESHOLD" ]; then
+        return 1  # 警告
+    fi
+    return 0  # 正常
+}
+
+# 显示用量告警
+show_usage_alert() {
+    local model_key="$1"
+    local alert_level="$2"
+
+    local usage_data=$(get_model_usage "$model_key")
+    IFS=':' read -r used limit remaining <<< "$usage_data"
+    local percentage="${MODEL_USAGE_PERCENTAGE[$model_key]}"
+
+    local title=""
+    local color=""
+    case "$alert_level" in
+        1) title="⚠️  警告"; color="$YELLOW" ;;
+        2) title="⚠️  严重告警"; color="$RED" ;;
+        3) title="🚨 紧急告警"; color="$RED" ;;
+    esac
+
+    echo "╠════════════════════════════════════════════════╣"
+    echo "║  $title：${MODELS[$model_key]}"
+    echo "║  已用：${percentage}% (${used} / ${limit})"
+    echo "║  剩余：${remaining}"
+
+    if [ "$alert_level" -ge 2 ]; then
+        echo "╠════════════════════════════════════════════════╣"
+        echo "║  建议切换模型："
+
+        # 推荐用量充足的 L2/L3 模型
+        for key in "${!MODEL_LEVELS[@]}"; do
+            local level="${MODEL_LEVELS[$key]}"
+            local other_pct="${MODEL_USAGE_PERCENTAGE[$key]:-0}"
+            if [ "$level" = "L2" ] || [ "$level" = "L3" ]; then
+                if [ "$other_pct" -lt 50 ] && [ "$key" != "$model_key" ]; then
+                    echo "║    - $key (用量 ${other_pct}%)"
+                fi
+            fi
+        done
+    fi
+}
+
+# 用量感知切换（推荐模型）
+recommend_model() {
+    local task="$1"
+
+    echo ""
+    echo "╔════════════════════════════════════════════════╗"
+    echo "║  📊 模型推荐                                    ║"
+    echo "╠════════════════════════════════════════════════╣"
+    echo "║  任务：$task"
+    echo "╠════════════════════════════════════════════════╣"
+
+    # 根据任务类型推荐
+    local recommended=""
+    local reason=""
+
+    if [[ "$task" =~ .*[中中中文文文].* ]] || [[ "$task" =~ .*写作.* ]] || [[ "$task" =~ .*文案.* ]]; then
+        recommended="minimax"
+        reason="中文内容生成优化"
+    elif [[ "$task" =~ .*数学.* ]] || [[ "$task" =~ .*推理.* ]]; then
+        recommended="deepseek"
+        reason="数学推理能力强"
+    elif [[ "$task" =~ .*架构.* ]] || [[ "$task" =~ .*设计.* ]]; then
+        recommended="opus"
+        reason="深度推理最佳"
+    else
+        recommended="sonnet"
+        reason="平衡性能和成本"
+    fi
+
+    # 检查推荐模型的用量
+    local rec_usage=$(get_model_usage "$recommended")
+    IFS=':' read -r used limit remaining <<< "$rec_usage"
+    local rec_pct=$((used * 100 / limit))
+
+    if [ "$rec_pct" -ge "$CRITICAL_THRESHOLD" ]; then
+        # 用量不足，推荐备选
+        recommended="sonnet"
+        reason="$recommended 用量不足，切换到平衡模型"
+    fi
+
+    echo "║  推荐：$recommended (${MODEL_DESC[$recommended]})"
+    echo "║  原因：$reason"
+    echo "╚════════════════════════════════════════════════╝"
+}
+
 # 测试模型可用性
 test_model() {
     local model_key="$1"
@@ -279,6 +436,7 @@ switch_model() {
     local model_id="${MODELS[$model_key]}"
     local desc="${MODEL_DESC[$model_key]}"
     local cost="${MODEL_COST[$model_key]}"
+    local level="${MODEL_LEVELS[$model_key]}"
 
     # 获取当前模型
     local current_model=""
@@ -308,6 +466,88 @@ switch_model() {
         echo "║  ${GREEN}✅${NC} API Key 已配置"
     else
         echo "║  ${GREEN}✅${NC} Claude 渠道 (已配置)"
+    fi
+
+    # 检查用量 ⭐ NEW
+    echo "╠════════════════════════════════════════════════╣"
+    check_usage_alert "$model_key"
+    local alert_level=$?
+
+    if [ $alert_level -eq 3 ]; then
+        # 紧急告警 - 自动推荐可用模型
+        show_usage_alert "$model_key" 3
+        echo "╠════════════════════════════════════════════════╣"
+        echo "║  🚨 用量已达紧急阈值，正在为您推荐可用模型...  ║"
+
+        # 查找用量充足且级别合适的模型
+        local recommended=""
+        local recommended_level=""
+        local current_level="${MODEL_LEVELS[$model_key]}"
+
+        for key in "${!MODEL_LEVELS[@]}"; do
+            if [ "$key" != "$model_key" ]; then
+                check_usage_alert "$key"
+                local other_level=$?
+                local key_model_level="${MODEL_LEVELS[$key]}"
+
+                # 优先推荐同级或更高级别且用量充足的模型
+                if [ "$other_level" -lt 2 ]; then
+                    # 用量充足 (<70%)
+                    if [ -z "$recommended" ]; then
+                        recommended="$key"
+                        recommended_level="$key_model_level"
+                    elif [ "$key_model_level" = "L1" ] && [ "$recommended_level" != "L1" ]; then
+                        # L1 优先
+                        recommended="$key"
+                        recommended_level="$key_model_level"
+                    elif [ "$key_model_level" = "L2" ] && [ "$recommended_level" = "L3" ]; then
+                        # L2 优于 L3
+                        recommended="$key"
+                        recommended_level="$key_model_level"
+                    fi
+                fi
+            fi
+        done
+
+        if [ -n "$recommended" ]; then
+            local rec_desc="${MODEL_DESC[$recommended]}"
+            local rec_usage=$(get_model_usage "$recommended")
+            IFS=':' read -r used limit remaining <<< "$rec_usage"
+            local rec_pct=0
+            if [ "$limit" -gt 0 ]; then
+                rec_pct=$((used * 100 / limit))
+            fi
+
+            echo "╠════════════════════════════════════════════════╣"
+            echo "║  💡 推荐切换：$recommended ($rec_desc)"
+            printf "║     用量：${rec_pct}%% (剩余：${remaining})                     ║\n"
+            echo "╠════════════════════════════════════════════════╣"
+            echo "║  是否切换到推荐模型？(y/N)"
+            echo "╚════════════════════════════════════════════════╝"
+            read -r confirm
+            if [[ $confirm =~ ^[Yy]$ ]]; then
+                info "正在切换到 $recommended..."
+                switch_model "$recommended"
+                exit 0
+            fi
+        else
+            echo "╠════════════════════════════════════════════════╣"
+            echo "║  ⚠️  暂无合适的推荐模型，您可手动选择           ║"
+            echo "╠════════════════════════════════════════════════╣"
+            echo "║  是否继续切换到 $model_key？(y/N)"
+            echo "╚════════════════════════════════════════════════╝"
+            read -r confirm
+            if [[ ! $confirm =~ ^[Yy]$ ]]; then
+                info "已取消切换"
+                exit 0
+            fi
+        fi
+    elif [ $alert_level -eq 2 ]; then
+        # 严重告警
+        show_usage_alert "$model_key" 2
+    elif [ $alert_level -eq 1 ]; then
+        # 警告
+        show_usage_alert "$model_key" 1
     fi
 
     # 测试模型可用性 ⭐ NEW
@@ -407,6 +647,39 @@ show_stats() {
     echo "╚════════════════════════════════════════════════╝"
 }
 
+# 显示用量概览
+show_usage() {
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════════════╗"
+    echo "║                    📊 大模型用量监控                                ║"
+    echo "╠════════════════════════════════════════════════════════════════════╣"
+    printf "║  %-15s %-8s %-18s %-25s ║\n" "模型" "级别" "已用 / 总额" "剩余"
+    echo "╠════════════════════════════════════════════════════════════════════╣"
+
+    for key in "opus" "sonnet" "haiku" "minimax" "glm" "qwen" "deepseek"; do
+        local usage_data=$(get_model_usage "$key")
+        IFS=':' read -r used limit remaining <<< "$usage_data"
+        local percentage=0
+        if [ "$limit" -gt 0 ]; then
+            percentage=$((used * 100 / limit))
+        fi
+
+        local status="${GREEN}✅${NC}"
+        if [ "$percentage" -ge "$EMERGENCY_THRESHOLD" ]; then
+            status="${RED}🚨${NC}"
+        elif [ "$percentage" -ge "$CRITICAL_THRESHOLD" ]; then
+            status="${RED}⚠️${NC}"
+        elif [ "$percentage" -ge "$WARNING_THRESHOLD" ]; then
+            status="${YELLOW}⚠️${NC}"
+        fi
+
+        printf "%s %-13s %-8s %8d / %-8d %8d (%3d%%) ║\n" \
+            "$status" "$key" "${MODEL_LEVELS[$key]}" "$used" "$limit" "$remaining" "$percentage"
+    done
+
+    echo "╚════════════════════════════════════════════════════════════════════╝"
+}
+
 # 主函数
 main() {
     # 检查参数
@@ -424,6 +697,17 @@ main() {
             ;;
         --stats|-s)
             show_stats
+            ;;
+        --usage|-u)
+            show_usage
+            ;;
+        --recommend|-r)
+            if [ -z "$2" ]; then
+                error "请提供任务描述"
+                usage
+                exit 1
+            fi
+            recommend_model "$2"
             ;;
         --configure|-C)
             if [ -z "$2" ]; then

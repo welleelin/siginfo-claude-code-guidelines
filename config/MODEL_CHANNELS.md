@@ -1,49 +1,173 @@
-# 大模型渠道配置
+# 大模型渠道配置与管理
 
-> **版本**：1.0.0
+> **版本**：2.0.0
 > **创建日期**：2026-03-05
+> **更新**：添加用量追踪与 Agent-Reach 集成
 
 ---
 
 ## 📋 概述
 
-支持快速切换不同的大模型渠道，根据任务需求选择最合适的模型。
+支持大模型渠道的快速切换、用量监控和场景化推荐。
 
 ---
 
-## 🤖 支持的大模型渠道
+## 🤖 支持的模型渠道
 
-| 渠道 | 模型 | 适用场景 | 成本 |
-|------|------|---------|------|
-| **Claude** | claude-sonnet-4-20250514 | 主力开发、复杂任务 | $$$ |
-| **Claude** | claude-opus-4-20250514 | 架构设计、深度推理 | $$$$ |
-| **Claude** | claude-3-5-haiku-20241022 | 快速任务、简单修改 | $ |
-| **MiniMax** | minimax-text-01 | 中文内容生成 | $ |
-| **GLM** | glm-4-plus | 中文理解、代码生成 | $$ |
-| **Qwen** | qwen-max | 多语言支持 | $$ |
-| **DeepSeek** | deepseek-chat | 代码生成、数学推理 | $ |
+| 渠道 | 模型 ID | 级别 | 适用场景 | 成本 | 状态 |
+|------|--------|------|---------|------|------|
+| **Claude Opus** | claude-opus-4-20250514 | L1 | 架构设计、深度推理 | $$$$ | ✅ |
+| **Claude Sonnet** | claude-sonnet-4-20250514 | L2 | 主力开发、平衡性能 | $$$ | ✅ |
+| **Claude Haiku** | claude-3-5-haiku-20241022 | L3 | 快速任务、经济实惠 | $ | ✅ |
+| **MiniMax** | minimax-text-01 | L3 | 中文内容生成 | $ | ⚠️ |
+| **GLM** | glm-4-plus | L2 | 中文理解、代码生成 | $$ | ⚠️ |
+| **Qwen** | qwen-max | L2 | 多语言支持 | $$ | ⚠️ |
+| **DeepSeek** | deepseek-chat | L3 | 代码生成、数学推理 | $ | ⚠️ |
+
+**级别说明**：
+- **L1** - 最强能力，用于复杂架构设计和深度推理
+- **L2** - 平衡能力，用于主力开发和一般任务
+- **L3** - 经济实惠，用于快速任务和简单操作
 
 ---
 
-## 🔧 渠道配置
+## 📊 用量监控
 
-### 当前激活渠道
+### 用量获取方式
 
-```bash
-# 查看当前渠道
-cat ~/.claude/active-model
+| 渠道 | 获取方式 | 说明 |
+|------|---------|------|
+| Claude | API + Agent-Reach | 优先 API，失败时用 Agent-Reach 获取控制台数据 |
+| MiniMax | Agent-Reach | 需要 Cookie 登录控制台 |
+| GLM | Agent-Reach | 需要 Cookie 登录控制台 |
+| DeepSeek | API | 直接调用 API 查询 |
+| Qwen | Agent-Reach | 需要 Cookie 登录阿里云控制台 |
 
-# 输出示例:
-claude-sonnet-4-20250514
+### 用量配置文件
+
+```yaml
+# ~/.claude/model-usage.yaml
+last_updated: 2026-03-05T10:00:00+08:00
+
+channels:
+  claude-opus:
+    model_id: claude-opus-4-20250514
+    level: L1
+    usage:
+      type: token
+      used: 1250000
+      limit: 5000000
+      remaining: 3750000
+      reset_date: 2026-04-01
+      percentage: 25%
+    source: api
+
+  claude-sonnet:
+    model_id: claude-sonnet-4-2025050514
+    level: L2
+    usage:
+      type: token
+      used: 2800000
+      limit: 10000000
+      remaining: 7200000
+      reset_date: 2026-04-01
+      percentage: 28%
+    source: api
+
+  claude-haiku:
+    model_id: claude-3-5-haiku-20241022
+    level: L3
+    usage:
+      type: token
+      used: 450000
+      limit: 20000000
+      remaining: 19550000
+      reset_date: 2026-04-01
+      percentage: 2%
+    source: api
+
+  minimax:
+    model_id: minimax-text-01
+    level: L3
+    usage:
+      type: token
+      used: 85000
+      limit: 1000000
+      remaining: 915000
+      reset_date: 2026-03-31
+      percentage: 8%
+    source: agent-reach
+    auth:
+      type: cookie
+      required: true
+
+  glm:
+    model_id: glm-4-plus
+    level: L2
+    usage:
+      type: token
+      used: 320000
+      limit: 2000000
+      remaining: 1680000
+      reset_date: 2026-03-31
+      percentage: 16%
+    source: agent-reach
+    auth:
+      type: cookie
+      required: true
 ```
 
-### 配置文件位置
+---
 
-| 文件 | 说明 |
-|------|------|
-| `~/.claude/active-model` | 当前激活的模型 |
-| `~/.claude/model-channels.yaml` | 所有渠道配置 |
-| `~/.claude/model-presets/` | 预设配置目录 |
+## 🔧 Agent-Reach 集成
+
+### 用量获取流程
+
+当 API 无法获取用量信息时，自动使用 Agent-Reach 获取供应商控制台数据：
+
+```
+┌─────────────────┐
+│ 1. 尝试 API 查询  │
+└────────┬────────┘
+         │
+       失败
+         │
+         ▼
+┌─────────────────┐
+│ 2. 检查 Cookie   │ ← Agent-Reach 能力
+└────────┬────────┘
+         │
+       未配置
+         │
+         ▼
+┌─────────────────┐
+│ 3. 引导用户配置  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ 4. 访问控制台   │
+│ - Anthropic     │
+│ - MiniMax       │
+│ - Zhipu (GLM)   │
+│ - Aliyun (Qwen) │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ 5. 提取用量数据  │
+└─────────────────┘
+```
+
+### 供应商控制台 URL
+
+| 渠道 | 控制台 URL | 需要认证 |
+|------|-----------|---------|
+| Claude | https://console.anthropic.com/dashboard | Cookie |
+| MiniMax | https://platform.minimaxi.com/ | Cookie |
+| GLM | https://open.bigmodel.cn/ | Cookie |
+| Qwen | https://dashscope.console.aliyun.com/ | Cookie |
+| DeepSeek | https://platform.deepseek.com/ | Cookie |
 
 ---
 
@@ -52,231 +176,134 @@ claude-sonnet-4-20250514
 ### 命令方式
 
 ```bash
-# 切换到 Claude Opus (深度推理)
-/switch-model claude-opus
+# 切换到指定模型（自动检查用量）
+/switch-model opus
 
-# 切换到 Claude Haiku (快速任务)
-/switch-model claude-haiku
+# 查看用量状态
+/switch-model --usage
 
-# 切换到 MiniMax (中文生成)
-/switch-model minimax
-
-# 切换到 GLM (中文理解)
-/switch-model glm
-
-# 查看可用渠道
-/switch-model --list
+# 查看推荐模型
+/switch-model --recommend "任务描述"
 ```
 
 ### 快捷命令
 
 ```bash
-# 使用别名
-/opus    # 切换到 Claude Opus
-/sonnet  # 切换到 Claude Sonnet
-/haiku   # 切换到 Claude Haiku
-/minimax # 切换到 MiniMax
-/glm     # 切换到 GLM
+/opus      /sonnet     /haiku
+/minimax   /glm        /qwen       /deepseek
 ```
 
 ---
 
-## 📊 渠道选择建议
+## 📊 用量告警
 
-### 按任务类型
+### 告警阈值
 
-| 任务类型 | 推荐模型 | 原因 |
-|---------|---------|------|
-| 复杂功能开发 | claude-sonnet / claude-opus | 代码能力强、推理深 |
-| 架构设计 | claude-opus | 深度推理最佳 |
-| 快速修改 | claude-haiku | 响应快、成本低 |
-| 中文写作 | minimax / glm | 中文优化 |
-| 代码审查 | claude-sonnet | 代码理解强 |
-| 数学推理 | deepseek / claude-opus | 数学能力强 |
-| 多语言翻译 | qwen / claude | 多语言支持好 |
+| 级别 | 用量百分比 | 动作 |
+|------|-----------|------|
+| 警告 | 70% | 通知用户 |
+| 严重 | 85% | 建议切换模型 |
+| 紧急 | 95% | 自动切换 L3 模型 |
 
-### 按成本预算
-
-| 预算 | 推荐模型 |
-|------|---------|
-| 无限 | claude-opus |
-| 充足 | claude-sonnet |
-| 经济 | claude-haiku / minimax / glm |
-| 极限 | deepseek |
-
----
-
-## 🔍 渠道状态诊断
+### 告警输出
 
 ```bash
-# 检查所有渠道状态
-/model-doctor
-
-# 输出示例:
-# ═══════════════════════════════════════
-#         大模型渠道状态
-# ═══════════════════════════════════════
-#
-# ✅ Claude Sonnet (当前)
-# ✅ Claude Opus
-# ✅ Claude Haiku
-# ⚠️  MiniMax (需要配置 API Key)
-# ✅ GLM
-# ⚠️  Qwen (余额不足)
-# ✅ DeepSeek
+╔════════════════════════════════════════════════╗
+║         ⚠️  模型用量告警                        ║
+╠════════════════════════════════════════════════╣
+║  模型：Claude Opus                              ║
+║  已用：85% (4,250,000 / 5,000,000)             ║
+║  剩余：750,000 tokens                          ║
+║  重置：2026-04-01                              ║
+╠════════════════════════════════════════════════╣
+║  建议：                                        ║
+║  1. 切换到 Claude Sonnet (当前 28%)            ║
+║  2. 切换到 Claude Haiku (当前 2%)              ║
+║  3. 联系管理员增加配额                         ║
+╚════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 🔐 API Key 管理
+## 🔐 Cookie 配置
 
-### 配置 API Key
+### 使用 Cookie-Editor 配置
 
 ```bash
-# 配置 MiniMax
-/model-configure minimax-key "YOUR_API_KEY"
+# 1. 浏览器登录供应商控制台
+# 2. 使用 Cookie-Editor 导出 Cookie
+# 3. 配置到 Agent-Reach
 
-# 配置 GLM
-/model-configure glm-key "YOUR_API_KEY"
-
-# 配置 DeepSeek
-/model-configure deepseek-key "YOUR_API_KEY"
+/model-configure cookie claude "YOUR_COOKIE"
+/model-configure cookie minimax "YOUR_COOKIE"
+/model-configure cookie glm "YOUR_COOKIE"
 ```
 
-### 安全存储
+### Cookie 安全
 
-| 渠道 | 存储位置 | 说明 |
-|------|---------|------|
-| Claude | `~/.claude/credentials` | 自动配置 |
-| MiniMax | `~/.claude/credentials/minimax` | 手动配置 |
-| GLM | `~/.claude/credentials/glm` | 手动配置 |
-| DeepSeek | `~/.claude/credentials/deepseek` | 手动配置 |
+| 措施 | 说明 |
+|------|------|
+| 🔒 **本地存储** | Cookie 存在 `~/.claude/credentials/`，权限 600 |
+| 🛡️ **专用小号** | 使用专用账号，避免主账号风险 |
+| 🔄 **定期更换** | 建议每月更换一次 |
+| 🚫 **不上传** | Cookie 不上传任何服务器 |
 
 ---
 
 ## 📝 使用场景
 
-### 场景 1：复杂功能开发
+### 场景 1：用量不足自动切换
 
 ```bash
-# 1. 开始复杂任务
-/switch-model claude-opus
+# 当前使用 Opus，用量 85%
+# 切换时自动检查并提示
 
-# 2. 开始任务规划
-/plan "实现分布式缓存系统"
+$ /switch-model opus
 
-# 3. 执行开发
-# ... 开发完成
-
-# 4. 切回主力模型
-/switch-model claude-sonnet
+╔════════════════════════════════════════════════╗
+║  ⚠️  用量告警                                   ║
+║  Claude Opus 已用 85%，建议切换                ║
+╠════════════════════════════════════════════════╣
+║  推荐替代:                                     ║
+║  1. Claude Sonnet (用量 28%，能力相近)         ║
+║  2. Claude Haiku (用量 2%，经济实惠)           ║
+╠════════════════════════════════════════════════╣
+║  是否切换到 Claude Sonnet? (y/N)               ║
+╚════════════════════════════════════════════════╝
 ```
 
-### 场景 2：中文内容生成
+### 场景 2：基于任务推荐模型
 
 ```bash
-# 1. 切换到 MiniMax
-/switch-model minimax
+# 根据任务描述推荐模型
+$ /switch-model --recommend "写一篇中文技术博客"
 
-# 2. 生成中文内容
-# "写一篇关于 AI 的技术博客..."
-
-# 3. 切回主力模型
-/switch-model claude-sonnet
+╔════════════════════════════════════════════════╗
+║  📊 模型推荐                                    ║
+╠════════════════════════════════════════════════╣
+║  任务：写一篇中文技术博客                       ║
+╠════════════════════════════════════════════════╣
+║  推荐：MiniMax (中文内容生成优化)              ║
+║  原因：                                        ║
+║  - 中文生成能力强                              ║
+║  - 当前用量 8%，充足                           ║
+║  - 成本较低                                    ║
+╠════════════════════════════════════════════════╣
+║  备选：                                        ║
+║  - GLM-4 (中文理解，用量 16%)                  ║
+║  - Claude Sonnet (通用，用量 28%)              ║
+╚════════════════════════════════════════════════╝
 ```
-
-### 场景 3：快速迭代修改
-
-```bash
-# 1. 切换到 Haiku (快速、便宜)
-/switch-model claude-haiku
-
-# 2. 快速修改代码
-# "把这个函数改成异步的..."
-# "修复这个 bug..."
-
-# 3. 需要深度思考时切回
-/switch-model claude-sonnet
-```
-
----
-
-## 🔄 自动切换规则
-
-### 基于任务类型自动切换
-
-```yaml
-# ~/.claude/model-channels.yaml
-autoSwitch:
-  enabled: true
-  rules:
-    - pattern: "架构设计 | 系统规划"
-      model: claude-opus
-    - pattern: "快速修复 | 简单修改"
-      model: claude-haiku
-    - pattern: "中文写作 | 翻译"
-      model: minimax
-    - pattern: "代码审查 | 安全分析"
-      model: claude-sonnet
-```
-
-### 基于成本自动切换
-
-```yaml
-# 成本阈值
-costThreshold:
-  daily: 10  # 每日预算上限
-  task: 2    # 单任务预算上限
-
-# 超出后自动切换到经济模型
-exceedAction:
-  switch: claude-haiku
-  notify: true
-```
-
----
-
-## 📊 使用统计
-
-```bash
-# 查看模型使用统计
-/model-stats
-
-# 输出示例:
-# ═══════════════════════════════════════
-#        大模型使用统计 (今日)
-# ═══════════════════════════════════════
-#
-# Claude Sonnet: 45 次 ($2.50)
-# Claude Opus:   12 次 ($3.60)
-# Claude Haiku:  28 次 ($0.30)
-# MiniMax:        5 次 ($0.15)
-# GLM:            3 次 ($0.20)
-#
-# 总计：93 次 ($6.75)
-# 预算剩余：$3.25
-```
-
----
-
-## 🚫 注意事项
-
-| 注意 | 说明 |
-|------|------|
-| 🔒 **API Key 安全** | 不提交到 git，使用环境变量 |
-| 💰 **成本监控** | 设置预算提醒，避免超支 |
-| 🔄 **切换频率** | 避免频繁切换，保持上下文连贯 |
-| 📝 **上下文保持** | 切换模型后上下文保留 |
 
 ---
 
 ## 🔗 相关文档
 
-- [大模型渠道切换命令](../commands/switch-model.md)
-- [Agent 行为规范](../templates/AGENTS.md.template)
-- [成本优化指南](../guidelines/cost-optimization.md)
+- [switch-model 命令](../commands/switch-model.md)
+- [Agent-Reach 集成](12-AGENT_REACH_INTEGRATION.md)
+- [用量监控脚本](../scripts/model-usage-check.sh)
 
 ---
 
-*版本：1.0.0*
+*版本：2.0.0*
 *最后更新：2026-03-05*
