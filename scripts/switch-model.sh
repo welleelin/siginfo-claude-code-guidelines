@@ -35,7 +35,7 @@ get_model_id() {
         haiku) echo "claude-3-5-haiku-20241022" ;;
         minimax) echo "minimax-text-01" ;;
         glm) echo "glm-4-plus" ;;
-        qwen) echo "qwen-max" ;;
+        qwen) echo "qwen3.5-plus" ;;
         deepseek) echo "deepseek-chat" ;;
         *) echo "" ;;
     esac
