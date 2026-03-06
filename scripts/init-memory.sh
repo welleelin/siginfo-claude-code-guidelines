@@ -117,11 +117,13 @@ copy_templates() {
         local dst="${template##*:}"
 
         if [ -f "${templates_dir}/${src}" ]; then
-            # 替换项目名称
-            sed "s/{PROJECT_NAME}/${PROJECT_NAME}/g" "${templates_dir}/${src}" > "${PROJECT_ROOT}/${dst}"
-            # 替换时间戳
-            sed -i'' "s/{TIMESTAMP}/$(date -Iseconds)/g" "${PROJECT_ROOT}/${dst}" 2>/dev/null || \
-            sed -i "s/{TIMESTAMP}/$(date -Iseconds)/g" "${PROJECT_ROOT}/${dst}"
+            # 替换项目名称和时间戳
+            local timestamp=$(date -Iseconds 2>/dev/null || date +%Y-%m-%dT%H:%M:%S%z)
+
+            # 使用 perl 替代 sed，兼容 macOS 和 Linux
+            perl -pe "s/{PROJECT_NAME}/${PROJECT_NAME}/g; s/{TIMESTAMP}/${timestamp}/g" \
+                "${templates_dir}/${src}" > "${PROJECT_ROOT}/${dst}"
+
             success "创建文件：${dst}"
         else
             warning "模板文件不存在：${src}"

@@ -1,0 +1,11 @@
+# Memory System
+.heartbeat-status.json
+checkpoints/*.json
+memory/.archive/
+*.local
+# Sensitive
+.env
+.env.local
+*.key
+*.pem
+.secrets/
