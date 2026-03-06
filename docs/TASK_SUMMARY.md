@@ -4,11 +4,11 @@
 
 ## ✅ 已完成任务
 
-### 任务 1: 创建 sig-claude-code-guidelines 行动准则项目
+### 任务 1: 创建 siginfo-claude-code-guidelines 行动准则项目
 
 **状态**: ✅ 完成
 
-**项目位置**: `/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines`
+**项目位置**: `/Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines`
 
 **创建的文件**:
 | 文件 | 大小 | 说明 |
@@ -23,7 +23,7 @@
 ```
 fe89a38 docs: 添加开发日志记录
 5a5b437 docs: 添加 CLAUDE.md 项目说明文件
-5039b3e feat: 初始化 sig-claude-code-guidelines 行动准则项目
+5039b3e feat: 初始化 siginfo-claude-code-guidelines 行动准则项目
 ```
 
 **核心内容**:
@@ -37,7 +37,7 @@ fe89a38 docs: 添加开发日志记录
 
 **目录结构**:
 ```
-sig-claude-code-guidelines/
+siginfo-claude-code-guidelines/
 ├── README.md                 # 项目总览
 ├── CLAUDE.md                 # 项目说明
 ├── guidelines/
@@ -118,19 +118,19 @@ POST /api/task/status             # 更新任务状态
 ```
 
 **职责分工**:
-- **sig-claude-code-guidelines**: 定义行动准则、开发规范、模板脚本
+- **siginfo-claude-code-guidelines**: 定义行动准则、开发规范、模板脚本
 - **claude-monitor-ui**: 提供任务监督、通知发送、确认反馈处理
 
 ---
 
 ## 📋 下一步行动
 
-### sig-claude-code-guidelines 项目
+### siginfo-claude-code-guidelines 项目
 
 1. **推送代码到 GitHub**:
    ```bash
-   cd /Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines
-   git remote add origin https://github.com/your-org/sig-claude-code-guidelines.git
+   cd /Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines
+   git remote add origin https://github.com/your-org/siginfo-claude-code-guidelines.git
    git push -u origin main
    ```
 
@@ -157,7 +157,7 @@ POST /api/task/status             # 更新任务状态
 
 ## 🔗 相关链接
 
-- **sig-claude-code-guidelines 项目**: `/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines`
+- **siginfo-claude-code-guidelines 项目**: `/Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines`
 - **claude-monitor-ui 项目**: `/Users/cloud/.copaw/claude-monitor-ui`
 
 ---

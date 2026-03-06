@@ -4,11 +4,11 @@
 
 ## ✅ 已完成任务
 
-### 任务 1: 创建 sig-claude-code-guidelines 行动准则项目 ✅
+### 任务 1: 创建 siginfo-claude-code-guidelines 行动准则项目 ✅
 
 **状态**: ✅ 完成
 
-**项目位置**: `/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines`
+**项目位置**: `/Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines`
 
 **创建的文件**:
 | 文件 | 大小 | 说明 |
@@ -30,7 +30,7 @@ bc8924c feat: 添加 Anthropic 长期运行 Agent 官方指南
 c1158fd docs: 添加任务完成总结文档
 fe89a38 docs: 添加开发日志记录
 5a5b437 docs: 添加 CLAUDE.md 项目说明文件
-5039b3e feat: 初始化 sig-claude-code-guidelines 行动准则项目
+5039b3e feat: 初始化 siginfo-claude-code-guidelines 行动准则项目
 ```
 
 ---
@@ -53,7 +53,7 @@ fe89a38 docs: 添加开发日志记录
 | 103 | 通知渠道配置管理 | P1 | 通知配置 |
 | 104 | 超时检测与通知升级机制 | P1 | 超时升级 |
 | 105 | 通知追踪与统计面板 | P2 | 通知追踪 |
-| 106 | 与 sig-claude-code-guidelines 集成 | P0 | 集成对接 |
+| 106 | 与 siginfo-claude-code-guidelines 集成 | P0 | 集成对接 |
 | 107 | 通知消息模板管理 | P2 | 消息模板 |
 | 108 | 静默期与免打扰机制 | P2 | 静默期 |
 | 109 | 窗口上下文监控与自动压缩 | P0 | 上下文管理 |
@@ -114,12 +114,12 @@ fe89a38 docs: 添加开发日志记录
 
 ## 📋 下一步行动
 
-### sig-claude-code-guidelines 项目
+### siginfo-claude-code-guidelines 项目
 
 1. **推送代码到 GitHub**:
    ```bash
-   cd /Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines
-   git remote add origin https://github.com/your-org/sig-claude-code-guidelines.git
+   cd /Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines
+   git remote add origin https://github.com/your-org/siginfo-claude-code-guidelines.git
    git push -u origin main
    ```
 
@@ -144,7 +144,7 @@ fe89a38 docs: 添加开发日志记录
 
 ## 🔗 相关链接
 
-- **sig-claude-code-guidelines 项目**: `/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines`
+- **siginfo-claude-code-guidelines 项目**: `/Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines`
 - **claude-monitor-ui 项目**: `/Users/cloud/.copaw/claude-monitor-ui`
 
 ---

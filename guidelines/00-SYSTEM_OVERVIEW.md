@@ -424,7 +424,7 @@ git log --oneline -5   # 查看最近提交
 
 | 功能 | 负责项目 | 说明 |
 |------|---------|------|
-| 行动准则定义 | sig-claude-code-guidelines | 定义流程、规范、模板 |
+| 行动准则定义 | siginfo-claude-code-guidelines | 定义流程、规范、模板 |
 | 任务监督 | claude-monitor-ui | PM Agent 自动监督各窗口任务状态 |
 | 通知发送 | claude-monitor-ui | 多渠道通知（飞书/钉钉/短信等） |
 | 确认反馈 | claude-monitor-ui | 接收用户确认，生成确认凭证 |

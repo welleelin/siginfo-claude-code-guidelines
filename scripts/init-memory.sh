@@ -94,8 +94,8 @@ copy_templates() {
 
     # 检查模板目录是否存在
     if [ ! -d "$templates_dir" ]; then
-        # 尝试从 sig-claude-code-guidelines 项目复制
-        local guidelines_dir="${HOME}/Documents/projects/Claude/sig-claude-code-guidelines/templates"
+        # 尝试从 siginfo-claude-code-guidelines 项目复制
+        local guidelines_dir="${HOME}/Documents/projects/Claude/siginfo-claude-code-guidelines/templates"
         if [ -d "$guidelines_dir" ]; then
             templates_dir="$guidelines_dir"
         else

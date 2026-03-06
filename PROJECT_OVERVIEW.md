@@ -1,4 +1,4 @@
-# sig-claude-code-guidelines - 项目概要
+# siginfo-claude-code-guidelines - 项目概要
 
 > **版本**: 2.0.0
 > **最后更新**: 2026-03-05
@@ -42,8 +42,8 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-org/sig-claude-code-guidelines.git
-cd sig-claude-code-guidelines
+git clone https://github.com/your-org/siginfo-claude-code-guidelines.git
+cd siginfo-claude-code-guidelines
 
 # 2. 安装规则
 ./scripts/install.sh
@@ -89,7 +89,7 @@ cd sig-claude-code-guidelines
 ## 🏗️ 项目结构
 
 ```
-sig-claude-code-guidelines/
+siginfo-claude-code-guidelines/
 │
 ├── README.md                 # 完整文档（36KB）
 ├── PROJECT_OVERVIEW.md       # 本文件 - 项目概要
@@ -228,7 +228,7 @@ Weekly 层 → 长期记忆（每周日总结）
 
 | 功能 | 负责项目 |
 |------|---------|
-| 行动准则定义 | sig-claude-code-guidelines |
+| 行动准则定义 | siginfo-claude-code-guidelines |
 | 任务监督 | claude-monitor-ui |
 | 通知发送 | claude-monitor-ui (飞书/钉钉/短信) |
 | 确认反馈 | claude-monitor-ui |

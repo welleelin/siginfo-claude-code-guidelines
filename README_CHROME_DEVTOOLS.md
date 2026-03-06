@@ -10,7 +10,7 @@
 
 ```bash
 # 克隆仓库
-cd /Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines
+cd /Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines
 
 # 运行安装脚本
 ./scripts/install-chrome-devtools-mcp.sh
@@ -98,7 +98,7 @@ npx playwright test tests/devtools/accessibility.test.ts
 ## 📁 文件结构
 
 ```
-sig-claude-code-guidelines/
+siginfo-claude-code-guidelines/
 ├── CHROME_DEVTOOLS_MCP_SETUP.md       # 完整安装和使用文档
 ├── scripts/
 │   ├── install-chrome-devtools-mcp.sh  # 安装脚本

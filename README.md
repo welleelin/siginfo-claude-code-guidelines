@@ -1,4 +1,4 @@
-# sig-claude-code-guidelines
+# SIGINFO-Claude 开发环境
 
 > 一套经过实战验证的 AI 辅助软件开发规范，让团队开发像流水线一样高效
 
@@ -48,8 +48,8 @@
 
 ```bash
 # 1. 克隆本项目
-git clone https://github.com/your-org/sig-claude-code-guidelines.git
-cd sig-claude-code-guidelines
+git clone https://github.com/your-org/siginfo-claude-code-guidelines.git
+cd siginfo-claude-code-guidelines
 
 # 2. 运行安装脚本
 ./scripts/install.sh
@@ -767,7 +767,7 @@ Agent 是 Claude Code 中的"专家角色"，每个 Agent 擅长不同领域：
 ## 📁 项目结构
 
 ```
-sig-claude-code-guidelines/
+siginfo-claude-code-guidelines/
 │
 ├── README.md                 # 📖 你正在阅读的文件
 ├── CLAUDE.md                 # 项目自身使用说明
@@ -970,7 +970,7 @@ sig-claude-code-guidelines/
 
 | 功能 | 负责项目 | 说明 |
 |------|---------|------|
-| 行动准则定义 | sig-claude-code-guidelines | 定义流程、规范、模板 |
+| 行动准则定义 | siginfo-claude-code-guidelines | 定义流程、规范、模板 |
 | 任务监督 | claude-monitor-ui | PM Agent 自动监督各窗口任务状态 |
 | 通知发送 | claude-monitor-ui | 多渠道通知（飞书/钉钉/短信等） |
 | 确认反馈 | claude-monitor-ui | 接收用户确认，生成确认凭证 |

@@ -1,4 +1,4 @@
-# sig-claude-code-guidelines 与 Claude Monitor UI 接口规范
+# siginfo-claude-code-guidelines 与 Claude Monitor UI 接口规范
 
 > 本文档定义了两个项目之间的 API 接口和集成方式
 
@@ -10,7 +10,7 @@
 
 | 项目 | 职责 |
 |------|------|
-| **sig-claude-code-guidelines** | 定义行动准则、开发规范、模板脚本 |
+| **siginfo-claude-code-guidelines** | 定义行动准则、开发规范、模板脚本 |
 | **claude-monitor-ui** | 任务监督、通知发送、确认反馈处理 |
 
 ### 集成架构

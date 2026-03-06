@@ -6,9 +6,9 @@
 
 ### 完成内容
 
-#### 1. sig-claude-code-guidelines 行动准则项目创建 ✅
+#### 1. siginfo-claude-code-guidelines 行动准则项目创建 ✅
 
-**项目位置**: `/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines`
+**项目位置**: `/Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines`
 
 **创建的文件**:
 - `README.md` - 项目总览和快速开始指南（17KB）
@@ -18,7 +18,7 @@
 
 **目录结构**:
 ```
-sig-claude-code-guidelines/
+siginfo-claude-code-guidelines/
 ├── README.md
 ├── CLAUDE.md
 ├── guidelines/
@@ -36,7 +36,7 @@ sig-claude-code-guidelines/
 ```
 
 **Git 状态**:
-- 初始 commit: `5039b3e` - feat: 初始化 sig-claude-code-guidelines 行动准则项目
+- 初始 commit: `5039b3e` - feat: 初始化 siginfo-claude-code-guidelines 行动准则项目
 - 第二次 commit: `5a5b437` - docs: 添加 CLAUDE.md 项目说明文件
 - 分支：main
 
@@ -58,7 +58,7 @@ sig-claude-code-guidelines/
 | 103 | 通知渠道配置管理 | P1 | 通知配置 |
 | 104 | 超时检测与通知升级机制 | P1 | 超时升级 |
 | 105 | 通知追踪与统计面板 | P2 | 通知追踪 |
-| 106 | 与 sig-claude-code-guidelines 集成 | P0 | 集成对接 |
+| 106 | 与 siginfo-claude-code-guidelines 集成 | P0 | 集成对接 |
 | 107 | 通知消息模板管理 | P2 | 消息模板 |
 | 108 | 静默期与免打扰机制 | P2 | 静默期 |
 
@@ -99,14 +99,14 @@ sig-claude-code-guidelines/
 ```
 
 **职责分工**:
-- **sig-claude-code-guidelines**: 定义行动准则、开发规范、模板脚本
+- **siginfo-claude-code-guidelines**: 定义行动准则、开发规范、模板脚本
 - **claude-monitor-ui**: 提供任务监督、通知发送、确认反馈处理
 
 ---
 
 ### 下一步行动
 
-1. **sig-claude-code-guidelines 项目**:
+1. **siginfo-claude-code-guidelines 项目**:
    - [ ] 推送代码到 GitHub 远程仓库
    - [ ] 继续创建核心准则文档（ACTION_GUIDELINES.md 等）
    - [ ] 创建模板文件

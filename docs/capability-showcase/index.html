@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>siginfo-claude-code-guidelines - 能力展示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --purple: #8B5CF6;
+      --pink: #EC4899;
+      --cyan: #06B6D4;
+      --bg: #F8FAFC;
+      --bg-white: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #1E293B;
+      --text-light: #64748B;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.25rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 24px;
+    }
+
+    nav a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    /* Header Action Button */
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .header-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .header-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .header-btn.secondary {
+      background: var(--bg);
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .header-btn.secondary:hover {
+      background: var(--bg-white);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      margin-bottom: 32px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 48px;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-value {
+      font-size: 3rem;
+      font-weight: 800;
+      display: block;
+    }
+
+    .hero-stat-label {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Bento Grid */
+    .section {
+      padding: 80px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 48px;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, minmax(280px, auto));
+      gap: 24px;
+    }
+
+    .bento-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+
+    .bento-card.large {
+      grid-column: span 2;
+    }
+
+    .bento-card.tall {
+      grid-row: span 2;
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 20px;
+    }
+
+    .card-icon.blue { background: #DBEAFE; }
+    .card-icon.green { background: #D1FAE5; }
+    .card-icon.purple { background: #EDE9FE; }
+    .card-icon.orange { background: #FEF3C7; }
+    .card-icon.pink { background: #FCE7F3; }
+    .card-icon.cyan { background: #CFFAFE; }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .card-description {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .card-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .card-feature::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    /* Agent Matrix */
+    .agent-matrix {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .agent-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      min-width: 140px;
+    }
+
+    .agent-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .agent-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .agent-icon.opus { background: linear-gradient(135deg, #FDE68A, #F59E0B); }
+    .agent-icon.sonnet { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+    .agent-icon.haiku { background: linear-gradient(135deg, #A78BFA, #7C3AED); }
+
+    .agent-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .agent-model {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Detailed Agent Cards */
+    .agents-detailed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+    }
+
+    .agent-detail-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .agent-detail-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+
+    .agent-detail-header {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .agent-detail-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .agent-detail-icon.opus {
+      background: linear-gradient(135deg, #FDE68A, #F59E0B);
+    }
+    .agent-detail-icon.sonnet {
+      background: linear-gradient(135deg, #60A5FA, #2563EB);
+    }
+    .agent-detail-icon.haiku {
+      background: linear-gradient(135deg, #A78BFA, #7C3AED);
+    }
+
+    .agent-detail-info h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .agent-detail-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .agent-detail-badge.opus {
+      background: #FEF3C7;
+      color: #D97706;
+    }
+    .agent-detail-badge.sonnet {
+      background: #DBEAFE;
+      color: #2563EB;
+    }
+    .agent-detail-badge.haiku {
+      background: #EDE9FE;
+      color: #7C3AED;
+    }
+
+    .agent-detail-body {
+      padding: 20px;
+    }
+
+    .agent-detail-section {
+      margin-bottom: 16px;
+    }
+
+    .agent-detail-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .agent-detail-section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .agent-detail-description {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .agent-capability-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .capability-tag {
+      padding: 4px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .agent-scenario-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .agent-scenario-list li {
+      padding: 6px 0;
+      padding-left: 18px;
+      position: relative;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .agent-scenario-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .agent-workflow {
+      background: var(--bg);
+      padding: 12px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      overflow-x: auto;
+      color: var(--text);
+    }
+
+    /* Model Legend */
+    .model-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .model-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .model-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .model-dot.opus { background: linear-gradient(135deg, #FDE68A, #F59E0B); }
+    .model-dot.sonnet { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+    .model-dot.haiku { background: linear-gradient(135deg, #A78BFA, #7C3AED); }
+
+    /* Handbook */
+    .handbook {
+      background: var(--bg-white);
+    }
+
+    .handbook-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .handbook-step {
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      font-size: 1.125rem;
+      margin-bottom: 8px;
+    }
+
+    .step-content p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .step-code {
+      background: #1E293B;
+      color: #E2E8F0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      margin-top: 12px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      background: var(--text);
+      color: white;
+      padding: 60px 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .stat-item-value {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+    }
+
+    .stat-item-label {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      margin-top: 8px;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-white);
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .bento-card.large {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero-stats {
+        flex-direction: column;
+        gap: 24px;
+      }
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+      .bento-card.large, .bento-card.tall {
+        grid-column: auto;
+        grid-row: auto;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+      .handbook-step {
+        flex-direction: column;
+        text-align: center;
+      }
+      .step-number {
+        margin: 0 auto;
+      }
+      nav {
+        display: none;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+    .animate-fade-in-down { animation: fadeInDown 0.6s ease-out forwards; }
+    .animate-scale-in { animation: scaleIn 0.4s ease-out forwards; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+
+    .hero {
+      background-size: 200% 200%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    .scroll-animate {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.6s ease-out;
+    }
+
+    .scroll-animate.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .bento-card:nth-child(1) { animation-delay: 0.1s; }
+    .bento-card:nth-child(2) { animation-delay: 0.2s; }
+    .bento-card:nth-child(3) { animation-delay: 0.3s; }
+    .bento-card:nth-child(4) { animation-delay: 0.4s; }
+    .bento-card:nth-child(5) { animation-delay: 0.5s; }
+
+    .agent-card:nth-child(n) { animation: fadeInUp 0.5s ease-out backwards; }
+    .agent-card:nth-child(1) { animation-delay: 0.05s; }
+    .agent-card:nth-child(2) { animation-delay: 0.1s; }
+    .agent-card:nth-child(3) { animation-delay: 0.15s; }
+    .agent-card:nth-child(4) { animation-delay: 0.2s; }
+    .agent-card:nth-child(5) { animation-delay: 0.25s; }
+    .agent-card:nth-child(6) { animation-delay: 0.3s; }
+    .agent-card:nth-child(7) { animation-delay: 0.35s; }
+    .agent-card:nth-child(8) { animation-delay: 0.4s; }
+    .agent-card:nth-child(9) { animation-delay: 0.45s; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo">
+        <div class="logo-icon">📋</div>
+        <span>siginfo-claude-code-guidelines</span>
+      </div>
+      <nav>
+        <a href="#capabilities">核心能力</a>
+        <a href="#agents">专家矩阵</a>
+        <a href="#handbook">使用手册</a>
+      </nav>
+      <div class="header-actions">
+        <a href="presentation.html" class="header-btn secondary">📊 PPT 演示</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>AI 辅助软件开发规范</h1>
+        <p>一套经过实战验证的开发规范体系，让团队开发像流水线一样高效</p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-value">33</span>
+            <span class="hero-stat-label">规则文件</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">5</span>
+            <span class="hero-stat-label">核心模块</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">9</span>
+            <span class="hero-stat-label">专家 Agent</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">15</span>
+            <span class="hero-stat-label">脚本工具</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Capabilities Bento Grid -->
+  <section id="capabilities" class="section">
+    <div class="container">
+      <h2 class="section-title">核心能力模块</h2>
+      <div class="bento-grid">
+        <!-- 长期记忆系统 -->
+        <div class="bento-card tall">
+          <div class="card-icon purple">🧠</div>
+          <h3 class="card-title">长期记忆系统</h3>
+          <p class="card-description">三层记忆架构解决 AI 失忆问题，支持长周期任务上下文保持</p>
+          <div class="card-features">
+            <div class="card-feature">Hourly 层 - 短期记忆（每小时同步）</div>
+            <div class="card-feature">Daily 层 - 中期记忆（每日 23:00 归档）</div>
+            <div class="card-feature">Weekly 层 - 长期记忆（周日 22:00 总结）</div>
+            <div class="card-feature">自动检查点保存与恢复</div>
+            <div class="card-feature">上下文 70%/80%/90% 三级管理</div>
+          </div>
+        </div>
+
+        <!-- 大模型渠道 -->
+        <div class="bento-card">
+          <div class="card-icon blue">🔄</div>
+          <h3 class="card-title">大模型渠道切换</h3>
+          <p class="card-description">支持 7+ 大模型，智能路由与用量监控</p>
+          <div class="card-features">
+            <div class="card-feature">Claude Opus/Sonnet/Haiku</div>
+            <div class="card-feature">Qwen/GLM/DeepSeek/MiniMax</div>
+            <div class="card-feature">70%/85%/95% 用量告警</div>
+            <div class="card-feature">基于任务场景智能推荐</div>
+          </div>
+        </div>
+
+        <!-- Agent-Reach -->
+        <div class="bento-card">
+          <div class="card-icon green">🌐</div>
+          <h3 class="card-title">Agent-Reach 互联网访问</h3>
+          <p class="card-description">解锁 13+ 互联网平台访问能力</p>
+          <div class="card-features">
+            <div class="card-feature">Twitter/X, YouTube, GitHub</div>
+            <div class="card-feature">小红书，抖音，LinkedIn</div>
+            <div class="card-feature">微信公众号，全网搜索</div>
+            <div class="card-feature">搜索结果持久化到记忆</div>
+          </div>
+        </div>
+
+        <!-- Chrome DevTools -->
+        <div class="bento-card large">
+          <div class="card-icon orange">🔧</div>
+          <h3 class="card-title">Chrome DevTools + Playwright</h3>
+          <p class="card-description">深度浏览器自动化测试能力</p>
+          <div class="card-features">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="card-feature">性能分析 (FCP, DCL, 内存泄漏)</div>
+              <div class="card-feature">网络监控 (API 调用，资源加载)</div>
+              <div class="card-feature">代码覆盖率分析</div>
+              <div class="card-feature">无障碍测试 (AXTree)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 行动准则 -->
+        <div class="bento-card">
+          <div class="card-icon pink">⚡</div>
+          <h3 class="card-title">行动准则核心</h3>
+          <p class="card-description">TDD 流程、多 Agent 协作、质量门禁</p>
+          <div class="card-features">
+            <div class="card-feature">TDD 优先开发流程</div>
+            <div class="card-feature">9 专家 Agent 协作</div>
+            <div class="card-feature">P0-P3 通知级别</div>
+            <div class="card-feature">端口冲突排查规范</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-item-value">27</span>
+          <span class="stat-item-label">Markdown 文档</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-value">15</span>
+          <span class="stat-item-label">可执行脚本</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-value">4</span>
+          <span class="stat-item-label">模板文件</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-value">6</span>
+          <span class="stat-item-label">命令定义</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-value">8,500+</span>
+          <span class="stat-item-label">总代码行数</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Matrix -->
+  <section id="agents" class="section">
+    <div class="container">
+      <h2 class="section-title">专家 Agent 矩阵</h2>
+      <p style="text-align: center; color: var(--text-light); margin-bottom: 24px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        9 个专业化 Agent，覆盖软件开发全流程。基于任务复杂度智能分配 Model：Opus(最深推理) → Sonnet(最佳编码) → Haiku(经济高效)
+      </p>
+
+      <!-- Model Legend -->
+      <div class="model-legend">
+        <div class="model-badge">
+          <span class="model-dot opus"></span>
+          <span>Opus - 复杂架构决策</span>
+        </div>
+        <div class="model-badge">
+          <span class="model-dot sonnet"></span>
+          <span>Sonnet - 主要开发工作</span>
+        </div>
+        <div class="model-badge">
+          <span class="model-dot haiku"></span>
+          <span>Haiku - 轻量级任务</span>
+        </div>
+      </div>
+
+      <div class="agents-detailed-grid">
+
+        <!-- Planner -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon opus">🎯</div>
+            <div class="agent-detail-info">
+              <h3>planner</h3>
+              <span class="agent-detail-badge opus">Opus</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                任务规划专家。负责将复杂需求分解为可执行的步骤，识别依赖关系和风险点，创建详细的实施路线图。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">需求分析</span>
+                <span class="capability-tag">任务分解</span>
+                <span class="capability-tag">依赖识别</span>
+                <span class="capability-tag">风险评估</span>
+                <span class="capability-tag">时间估算</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>收到复杂功能需求时</li>
+                <li>需要重构大型模块前</li>
+                <li>多阶段项目需要明确执行顺序</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+需求输入 → 理解目标 → 分解子任务 → 建立依赖 → 输出计划
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architect -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon opus">🏗️</div>
+            <div class="agent-detail-info">
+              <h3>architect</h3>
+              <span class="agent-detail-badge opus">Opus</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                系统架构设计专家。负责技术选型、架构模式选择、可扩展性评估，并记录架构决策 (ADR)。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">系统架构设计</span>
+                <span class="capability-tag">技术选型</span>
+                <span class="capability-tag">架构模式</span>
+                <span class="capability-tag">可扩展性评估</span>
+                <span class="capability-tag">ADR 记录</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>新项目需要选择技术栈</li>
+                <li>现有系统需要重构升级</li>
+                <li>需要在多个技术方案间做决策</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+架构问题 → 分析需求 → 对比方案 → 权衡利弊 → 做出决策 → 记录 ADR
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TDD Guide -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon sonnet">✅</div>
+            <div class="agent-detail-info">
+              <h3>tdd-guide</h3>
+              <span class="agent-detail-badge sonnet">Sonnet</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                测试驱动开发专家。强制执行 TDD 流程：先写测试 (RED)→实现功能 (GREEN)→重构优化 (IMPROVE)，确保 80%+ 测试覆盖率。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">TDD 流程</span>
+                <span class="capability-tag">测试用例设计</span>
+                <span class="capability-tag">单元测试</span>
+                <span class="capability-tag">集成测试</span>
+                <span class="capability-tag">覆盖率验证</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>开发新功能时（必须先写测试）</li>
+                <li>修复 Bug 时（先写复现测试）</li>
+                <li>重构代码时（确保测试保护）</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+RED(写失败测试) → GREEN(实现通过) → IMPROVE(重构优化) → 验证覆盖率
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code Reviewer -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon sonnet">🔍</div>
+            <div class="agent-detail-info">
+              <h3>code-reviewer</h3>
+              <span class="agent-detail-badge sonnet">Sonnet</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                代码审查专家。对所有代码变更进行审查，按 CRITICAL/HIGH/MEDIUM/LOW 分级问题，提供具体的修复建议。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">代码质量审查</span>
+                <span class="capability-tag">问题分级</span>
+                <span class="capability-tag">最佳实践</span>
+                <span class="capability-tag">代码异味检测</span>
+                <span class="capability-tag">性能优化建议</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>写完代码后（必须审查）</li>
+                <li>提交 PR 前</li>
+                <li>Code Review 会议前预审</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+代码提交 → 静态分析 → 问题识别 → 分级标注 → 提供建议
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Reviewer -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon sonnet">🔒</div>
+            <div class="agent-detail-info">
+              <h3>security-reviewer</h3>
+              <span class="agent-detail-badge sonnet">Sonnet</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                安全审查专家。检测安全漏洞和敏感信息，检查 OWASP Top 10 风险，确保代码符合安全最佳实践。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">漏洞检测</span>
+                <span class="capability-tag">OWASP Top 10</span>
+                <span class="capability-tag">密钥检测</span>
+                <span class="capability-tag">注入攻击防护</span>
+                <span class="capability-tag">认证授权检查</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>实现认证/授权功能后</li>
+                <li>处理用户输入前</li>
+                <li>添加 API 端点后</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+代码扫描 → 敏感信息检测 → 漏洞识别 → 风险评估 → 修复建议
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Build Error Resolver -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon sonnet">🔧</div>
+            <div class="agent-detail-info">
+              <h3>build-error-resolver</h3>
+              <span class="agent-detail-badge sonnet">Sonnet</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                构建错误解决专家。专门修复构建失败和 TypeScript 类型错误，采用最小改动原则，避免引入新问题。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">构建错误分析</span>
+                <span class="capability-tag">TypeScript 错误</span>
+                <span class="capability-tag">依赖冲突解决</span>
+                <span class="capability-tag">配置修复</span>
+                <span class="capability-tag">最小改动原则</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>npm run build 失败时</li>
+                <li>TypeScript 类型检查报错</li>
+                <li>依赖安装冲突</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+错误分析 → 定位原因 → 生成修复方案 → 最小化修改 → 验证构建
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Refactor Cleaner -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon sonnet">🧹</div>
+            <div class="agent-detail-info">
+              <h3>refactor-cleaner</h3>
+              <span class="agent-detail-badge sonnet">Sonnet</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                重构清理专家。使用 knip、depcheck、ts-prune 等工具检测死代码，识别代码重复，安全移除未使用的导入和导出。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">死代码检测</span>
+                <span class="capability-tag">重复代码识别</span>
+                <span class="capability-tag">导入/导出清理</span>
+                <span class="capability-tag">代码合并</span>
+                <span class="capability-tag">安全删除</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>项目长期未清理技术债务</li>
+                <li>发现大量未使用的导入</li>
+                <li>代码重复严重</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+运行分析工具 → 识别死代码 → 生成报告 → 确认删除列表 → 执行清理
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E2E Runner -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon sonnet">🎭</div>
+            <div class="agent-detail-info">
+              <h3>e2e-runner</h3>
+              <span class="agent-detail-badge sonnet">Sonnet</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                E2E 测试专家。使用 Playwright 创建和执行端到端测试，管理测试旅程，捕获截图/视频/trace，处理 flaky 测试。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">E2E 测试设计</span>
+                <span class="capability-tag">Playwright</span>
+                <span class="capability-tag">Page Object Model</span>
+                <span class="capability-tag">测试旅程管理</span>
+                <span class="capability-tag">截图/视频/Trace</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>需要测试关键用户流程</li>
+                <li>回归测试自动化</li>
+                <li>跨浏览器兼容性测试</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+识别关键流程 → 设计测试用例 → 编写测试脚本 → 执行测试 → 生成报告
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doc Updater -->
+        <div class="agent-detail-card">
+          <div class="agent-detail-header">
+            <div class="agent-detail-icon haiku">📝</div>
+            <div class="agent-detail-info">
+              <h3>doc-updater</h3>
+              <span class="agent-detail-badge haiku">Haiku</span>
+            </div>
+          </div>
+          <div class="agent-detail-body">
+            <div class="agent-detail-section">
+              <p class="agent-detail-description">
+                文档和 Codemap 维护专家。运行/update-codemaps 和/update-docs 命令，生成 docs/CODEMAPS/*文件，更新 README 和指南。使用经济的 Haiku 模型。
+              </p>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">核心能力</h4>
+              <div class="agent-capability-tags">
+                <span class="capability-tag">Codemap 生成</span>
+                <span class="capability-tag">文档更新</span>
+                <span class="capability-tag">README 维护</span>
+                <span class="capability-tag">API 文档</span>
+                <span class="capability-tag">变更日志</span>
+              </div>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">使用场景</h4>
+              <ul class="agent-scenario-list">
+                <li>代码结构变更后</li>
+                <li>添加新功能需要文档</li>
+                <li>准备发布前的文档更新</li>
+              </ul>
+            </div>
+
+            <div class="agent-detail-section">
+              <h4 class="agent-detail-section-title">工作流</h4>
+              <div class="agent-workflow">
+分析代码变更 → 更新 Codemap → 同步文档 → 验证链接 → 提交更新
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Workflow Summary -->
+  <section class="section" style="background: var(--bg-white);">
+    <div class="container">
+      <h2 class="section-title">完整开发流程中的 Agent 协作</h2>
+      <p style="text-align: center; color: var(--text-light); margin-bottom: 40px;">从需求到上线，各位专家各司其职</p>
+
+      <div style="max-width: 800px; margin: 0 auto;">
+
+        <div class="agent-detail-card" style="margin-bottom: 16px;">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">1️⃣</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">需求分析阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">planner</strong> 分析需求，分解任务，识别风险
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-detail-card" style="margin-bottom: 16px;">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">2️⃣</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">架构设计阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">architect</strong> 进行技术选型，设计系统架构，记录 ADR
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-detail-card" style="margin-bottom: 16px;">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">3️⃣</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">TDD 开发阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">tdd-guide</strong> 强制执行 TDD：RED→GREEN→IMPROVE
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-detail-card" style="margin-bottom: 16px;">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">4️⃣</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">代码审查阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">code-reviewer</strong> 审查代码质量<br/>
+                  <strong style="color: var(--primary);">security-reviewer</strong> 检查安全问题
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-detail-card" style="margin-bottom: 16px;">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">5️⃣</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">测试验证阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">e2e-runner</strong> 执行端到端测试，生成测试报告
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-detail-card" style="margin-bottom: 16px;">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">6️⃣</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">文档更新阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">doc-updater</strong> 更新 Codemap 和文档
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-detail-card">
+          <div class="agent-detail-body">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 2rem; flex-shrink: 0;">🔄</span>
+              <div>
+                <h4 style="margin-bottom: 4px;">持续维护阶段</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                  <strong style="color: var(--primary);">build-error-resolver</strong> 随时修复构建错误<br/>
+                  <strong style="color: var(--primary);">refactor-cleaner</strong> 定期清理技术债务
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Handbook -->
+  <section id="handbook" class="section handbook">
+    <div class="container">
+      <h2 class="section-title">快速开始手册</h2>
+      <div class="handbook-steps">
+        <div class="handbook-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>添加为 Git 子模块</h3>
+            <p>将规范库添加到你的项目中</p>
+            <div class="step-code">git submodule add https://github.com/your-org/siginfo-claude-code-guidelines.git .guidelines</div>
+          </div>
+        </div>
+        <div class="handbook-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>复制模板到项目根目录</h3>
+            <p>初始化项目所需的配置文件</p>
+            <div class="step-code">cp -r .guidelines/templates/* ./</div>
+          </div>
+        </div>
+        <div class="handbook-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>配置 MCP 服务</h3>
+            <p>在 Claude Code 中配置所需的 MCP 服务</p>
+            <div class="step-code">/plugin install bmad-method</div>
+            <div class="step-code">/plugin install workflow-studio</div>
+          </div>
+        </div>
+        <div class="handbook-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>开始使用命令</h3>
+            <p>使用内置命令开始高效开发</p>
+            <div class="step-code">/plan - 创建实施计划
+/tdd - TDD 开发流程
+/e2e - E2E 测试</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>MIT License · <a href="https://github.com/your-org/siginfo-claude-code-guidelines" style="color: var(--primary);">GitHub</a> · 版本 2.0.0 · 最后更新 2026-03-06</p>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Scroll animation observer
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements
+    document.querySelectorAll('.bento-card, .agent-card, .handbook-step, .stat-item').forEach(el => {
+      el.classList.add('scroll-animate');
+      observer.observe(el);
+    });
+
+    // Counter animation for stats
+    function animateCounter(element, target, duration = 2000) {
+      let start = 0;
+      const increment = target / (duration / 16);
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= target) {
+          element.textContent = target;
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(start);
+        }
+      }, 16);
+    }
+
+    // Animate stats when visible
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const statValue = entry.target.querySelector('.stat-item-value');
+          if (statValue) {
+            const text = statValue.textContent;
+            const number = parseFloat(text.replace(/[^0-9.]/g, ''));
+            if (!isNaN(number)) {
+              statValue.classList.add('animate-float');
+            }
+          }
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-box, .hero-stat').forEach(el => {
+      statsObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

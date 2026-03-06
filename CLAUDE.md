@@ -1,10 +1,10 @@
-# sig-claude-code-guidelines
+# siginfo-claude-code-guidelines
 
 > 一套经过实战验证的 AI 辅助软件开发规范，让团队开发像流水线一样高效
 
 **仓库地址**:
-- GitHub: `https://github.com/your-org/sig-claude-code-guidelines`
-- 本地 Git: `/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines`
+- GitHub: `https://github.com/your-org/siginfo-claude-code-guidelines`
+- 本地 Git: `/Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines`
 
 ---
 
@@ -15,7 +15,7 @@
 ```bash
 # 在你的项目中添加为 submodule
 cd your-project
-git submodule add https://github.com/your-org/sig-claude-code-guidelines.git .guidelines
+git submodule add https://github.com/your-org/siginfo-claude-code-guidelines.git .guidelines
 
 # 复制模板到项目根目录
 cp .guidelines/templates/* ./
@@ -25,11 +25,11 @@ cp .guidelines/templates/* ./
 
 ```bash
 # 克隆本项目
-git clone https://github.com/your-org/sig-claude-code-guidelines.git
+git clone https://github.com/your-org/siginfo-claude-code-guidelines.git
 
 # 复制需要的文件
-cp -r sig-claude-code-guidelines/guidelines ~/.claude/rules/
-cp -r sig-claude-code-guidelines/templates/* your-project/
+cp -r siginfo-claude-code-guidelines/guidelines ~/.claude/rules/
+cp -r siginfo-claude-code-guidelines/templates/* your-project/
 ```
 
 ---

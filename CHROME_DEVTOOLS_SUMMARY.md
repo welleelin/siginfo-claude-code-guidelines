@@ -130,7 +130,7 @@ npx -y chrome-devtools-mcp@latest --headless
 
 ```bash
 # 进入项目目录
-cd /Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines
+cd /Users/cloud/Documents/projects/Claude/siginfo-claude-code-guidelines
 
 # 安装依赖
 npm install -D @playwright/test

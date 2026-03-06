@@ -225,7 +225,7 @@
 ```bash
 # 在新项目中初始化记忆系统
 cd /path/to/your/project
-/path/to/sig-claude-code-guidelines/scripts/init-memory.sh
+/path/to/siginfo-claude-code-guidelines/scripts/init-memory.sh
 ```
 
 ### 日常使用
