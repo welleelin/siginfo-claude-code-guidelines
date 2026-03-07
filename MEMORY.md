@@ -62,6 +62,8 @@
 | 2026-03-07 | 代码质量检查前置到测试之前 | 确保代码质量在测试前就得到保障，避免低质量代码进入测试阶段 | 开发流程 Phase 3 |
 | 2026-03-07 | 新增安全性检查阶段（Phase 7） | 在 API 完整性和联调测试后进行全面安全检查，降低安全风险 | 开发流程 Phase 7 |
 | 2026-03-07 | 建立三道质量门禁 | 质量门禁（Phase 3）、完整性门禁（Phase 5）、安全门禁（Phase 7）确保多层质量保障 | 整体开发流程 |
+| 2026-03-07 | 集成 BMAD Method v6 框架 | 引入专业化 Agent 和结构化规划流程，提升需求分析和架构设计能力 | 整体开发流程 |
+| 2026-03-07 | 插件和技能自动更新机制 | 会话启动前自动检查 bmad-method 和 GitHub 技能更新，确保使用最新版本 | Phase 1 会话启动 |
 | 2026-03-07 | 使用现有工具实现互联网访问 | Agent-Reach 安装受阻，但已有足够工具 | 技术调研流程 |
 | 2026-03-06 | 使用 perl 替代 sed 处理模板替换 | macOS sed 兼容性问题 | init-memory.sh |
 
@@ -89,6 +91,8 @@
 
 | 里程碑 | 状态 | 完成时间 | 备注 |
 |--------|------|---------|------|
+| BMAD Method v6 集成 | ✅ 完成 | 2026-03-07 | 集成 9 个专业化 Agent，完整规划流程 |
+| 插件和技能自动更新机制 | ✅ 完成 | 2026-03-07 | 会话启动时自动检查更新 |
 | 开发流程重构 - 质量前置 + 安全检查 | ✅ 完成 | 2026-03-07 | 代码质量前置，新增安全检查阶段 |
 | Mock 模式规范 + API 完整性检查 | ✅ 完成 | 2026-03-07 | 确保生产环境 95% 无 Bug |
 | Guidelines 增强 - 效率与确定性 | ✅ 完成 | 2026-03-07 | 新增 2 个文档，增强 5 个文档，3 个脚本 |
@@ -151,6 +155,95 @@
 - guidelines/05-QUALITY_GATE.md（增强检查清单）
 
 **提交记录**：commit 11b21b0
+
+---
+
+### 2026-03-07 - BMAD Method v6 集成
+
+**背景**：用户要求学习并集成 https://docs.bmad-method.org/ 的最新方法和技能
+
+**实施方案**：
+1. **下载完整文档**
+   - 使用 curl 下载 AI 优化版文档（llms-full.txt）
+   - 5249 行完整的 BMAD Method v6 文档
+   - 包含所有 Agent、工作流、命令说明
+
+2. **创建集成指南**（docs/BMAD_METHOD_INTEGRATION.md）
+   - 300+ 行完整集成文档
+   - 四阶段流程：Analysis → Planning → Solutioning → Implementation
+   - 三种规划轨道：Quick Flow / BMad Method / Enterprise
+   - 9 个专业化 Agent 详细说明
+
+3. **集成到现有流程**
+   - Phase 2（任务规划）：使用 Analyst、PM、Architect
+   - Phase 4（TDD 开发）：使用 Developer Agent
+   - Phase 6（E2E 测试）：使用 QA Agent
+   - Phase 8（质量门禁）：使用 Code Review Agent
+
+4. **更新系统总则**
+   - 添加 BMAD Method 插件能力使用场景
+   - 更新插件初始化检查流程
+   - 添加 `/bmad-help` 智能指导命令
+
+**核心能力**：
+- **BMad-Help**：智能指导，自动检测项目状态并推荐下一步
+- **快速流程**：`/bmad-bmm-quick-spec` + `/bmad-bmm-quick-dev`（小型任务）
+- **完整规划**：`/bmad-bmm-create-prd` → `/bmad-bmm-create-architecture` → `/bmad-bmm-create-epics-and-stories`（中大型项目）
+- **Story 驱动开发**：Epic 和 Story 分解，Sprint 规划和跟踪
+
+**效果**：
+- ✅ 引入结构化需求分析流程（PRD/Architecture）
+- ✅ 提供 9 个专业化 Agent 支持
+- ✅ 建立 Story 驱动的开发模式
+- ✅ 增强任务规划和架构设计能力
+
+**修改文件**：
+- docs/BMAD_METHOD_INTEGRATION.md（新建）
+- guidelines/00-SYSTEM_OVERVIEW.md（更新插件能力）
+- README.md（更新会话启动步骤）
+
+**相关资源**：
+- BMAD Method 官方文档：https://docs.bmad-method.org/
+- GitHub 仓库：https://github.com/bmad-code-org/BMAD-METHOD
+- Discord 社区：https://discord.gg/gk8jAdXWmj
+
+---
+
+### 2026-03-07 - 插件和技能自动更新机制
+
+**背景**：用户要求在执行行为准则前先检查插件和技能更新
+
+**实施方案**：
+1. **添加 Step 0**（最高优先级）
+   - 在 Phase 1 会话启动准备前执行
+   - 自动检查 bmad-method 插件更新
+   - 自动检查 everything-claude-code 插件更新
+   - 自动检查所有 GitHub 学习到的技能更新
+
+2. **更新命令**：
+   ```bash
+   /plugin update bmad-method
+   /plugin update everything-claude-code
+   /plugin update workflow-studio
+   /skill update --all
+   ```
+
+3. **更新策略**：
+   - ✅ 每次会话启动时自动检查
+   - ✅ 优先更新核心插件（bmad-method）
+   - ✅ 更新所有 GitHub 技能
+   - ⚠️ 更新后验证功能正常
+   - ⚠️ 如更新失败，使用现有版本继续
+
+**效果**：
+- ✅ 确保始终使用最新版本的插件和技能
+- ✅ 自动化更新流程，无需手动干预
+- ✅ 降低因版本过时导致的问题
+
+**修改文件**：
+- guidelines/00-SYSTEM_OVERVIEW.md（添加 Step 0）
+- guidelines/01-ACTION_GUIDELINES.md（添加 Step 0）
+- README.md（更新会话启动步骤）
 
 ---
 
@@ -354,6 +447,8 @@ gh search code "zustand create" --language=typescript --limit 3
 
 | 日期 | 更新内容 | 更新者 |
 |------|---------|--------|
+| 2026-03-07 | 集成 BMAD Method v6：9 个专业化 Agent + 完整规划流程 | Claude |
+| 2026-03-07 | 插件和技能自动更新机制：会话启动前自动检查更新 | Claude |
 | 2026-03-07 | 开发流程重构：代码质量前置 + 新增安全检查阶段 | Claude |
 | 2026-03-07 | 添加 Mock 模式规范 + API 完整性检查机制 | Claude |
 | 2026-03-07 | 配置互联网访问工具（gh CLI + yt-dlp） | Claude |
