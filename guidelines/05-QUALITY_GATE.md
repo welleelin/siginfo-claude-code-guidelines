@@ -18,35 +18,46 @@
 │              质量门禁 v1.0                  │
 ├────────────────────────────────────────────┤
 │                                            │
-│  □ 1. 构建成功                             │
+│  □ 1. 代码质量（Phase 3）                  │
+│     代码规范检查通过                        │
+│     无 CRITICAL/HIGH 问题                  │
+│                                            │
+│  □ 2. 构建成功                             │
 │     npm run build 无错误                   │
 │                                            │
-│  □ 2. 测试通过                             │
-│     所有相关 E2E 测试通过                    │
+│  □ 3. 单元测试通过                         │
+│     所有单元测试通过                        │
+│     覆盖率 ≥ 80%                           │
+│                                            │
+│  □ 4. API 完整性（Phase 5）                │
+│     所有核心 API 已完成                     │
+│     API 功能验证通过                        │
+│                                            │
+│  □ 5. 集成测试通过                         │
+│     前后端联调测试通过                      │
+│     E2E 测试通过                           │
 │     通过率 100%                            │
 │                                            │
-│  □ 3. 测试覆盖率                           │
+│  □ 6. 测试覆盖率                           │
 │     语句覆盖率 ≥ 80%                       │
 │     分支覆盖率 ≥ 80%                       │
 │     函数覆盖率 ≥ 80%                       │
 │                                            │
-│  □ 4. 代码审查                             │
-│     无 CRITICAL 级别问题                    │
-│     无 HIGH 级别问题                        │
+│  □ 7. 安全性检查（Phase 7）                │
+│     无 CRITICAL 级别安全漏洞                │
+│     无 HIGH 级别安全漏洞                    │
+│     敏感数据已加密                         │
+│     认证授权机制完整                        │
 │                                            │
-│  □ 5. 安全检查                             │
-│     无安全漏洞                             │
-│     无敏感信息泄露                         │
-│                                            │
-│  □ 6. 文档更新                             │
+│  □ 8. 文档更新                             │
 │     MEMORY.md 已更新任务历史                │
 │     task.json 已更新任务状态                │
 │                                            │
-│  □ 7. Git 提交                             │
+│  □ 9. Git 提交                             │
 │     所有更改已提交                         │
 │     提交信息规范                           │
 │                                            │
-│  □ 8. 确定性验证                           │
+│  □ 10. 确定性验证                          │
 │     测试可重复性 100%                      │
 │     Mock 接口 100% 已标记                  │
 │     无未隔离的不确定性来源                  │
@@ -60,6 +71,19 @@
 
 ## 🔧 自动化检查
 
+### 代码质量检查
+
+```bash
+# 检查代码规范
+npm run lint
+
+# 检查类型
+npm run type-check
+
+# 代码审查
+/code-review
+```
+
 ### 构建检查
 
 ```bash
@@ -68,9 +92,6 @@ npm run build
 
 # 检查类型
 npm run type-check
-
-# 检查 Lint
-npm run lint
 ```
 
 ### 测试检查
@@ -86,13 +107,29 @@ npm test -- --coverage
 npx playwright test
 ```
 
-### 代码审查
+### API 完整性检查
 
 ```bash
-# 自动代码审查
-/code-review
+# 检查 API 完整性
+./scripts/check-api-completeness.sh api-checklist.md
 
-# 安全审查
+# 指定 API 基础 URL
+./scripts/check-api-completeness.sh api-checklist.md http://localhost:8000
+```
+
+### 安全性检查
+
+```bash
+# 依赖漏洞扫描
+npm audit
+
+# 或使用 yarn
+yarn audit
+
+# 代码安全扫描
+npm run security-scan
+
+# 自动安全审查
 /security-review
 ```
 
