@@ -1,6 +1,6 @@
 # 项目记忆 - sig-claude-code-guidelines
 
-> 最后更新：2026-03-07T14:45:00+08:00
+> 最后更新：2026-03-07T15:00:00+08:00
 > 会话 ID: session-20260307-001
 > 项目状态：活跃开发中
 
@@ -208,6 +208,50 @@ yt-dlp --dump-json "URL" | jq '.title, .channel, .view_count'
 4. **YouTube 教程** (补充) ⭐
    - 仅在需要视频教程时使用
    - 提前准备好等待时间
+
+### 实战案例：React 状态管理技术选型
+
+**调研目标**：为 React 项目选择合适的状态管理方案
+
+**步骤 1**：搜索热门库
+```bash
+gh search repos "state management" --language=typescript --stars=">10000" --limit 8
+```
+
+**结果**：找到 8 个高质量项目
+- Redux (61,438⭐) - 老牌方案，生态最完善
+- Zustand (57,270⭐) - 新兴方案，轻量简洁
+- React Query (48,719⭐) - 服务端状态管理专家
+- react-hook-form (44,562⭐) - 表单状态管理
+- XState (29,296⭐) - 基于 Actor 模型
+- MobX (28,181⭐) - 简单可扩展
+- Jotai (21,034⭐) - 原始且灵活
+- boardgame.io (12,285⭐) - 游戏状态管理
+
+**步骤 2**：深入了解 Zustand
+```bash
+gh repo view pmndrs/zustand
+```
+
+**发现**：
+- 57,270 stars, 1,965 forks
+- 最后更新：2026-03-02（5 天前）
+- 活跃维护，社区活跃
+
+**步骤 3**：搜索实际使用案例
+```bash
+gh search code "zustand create" --language=typescript --limit 3
+```
+
+**发现**：被 graphql/graphiql、coze-dev、jellyfin 等知名项目采用
+
+**调研耗时**：约 5 秒完成完整调研（传统方式需 30 分钟）
+
+**技术选型建议**：
+- 小型项目：Zustand（轻量、简洁）
+- 中型项目：Zustand / Jotai（灵活、性能好）
+- 大型项目：Redux Toolkit（生态完善）
+- 服务端状态：React Query（专业、功能全面）
 
 ---
 
