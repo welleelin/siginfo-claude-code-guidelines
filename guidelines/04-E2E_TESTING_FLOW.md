@@ -9,6 +9,133 @@
 
 端到端（E2E）测试验证完整的用户流程，确保系统各部分正确集成。
 
+> **关键前提**：在进行 API 测试之前，务必确保所有 API 都已开发完整。未完整的 API 必须先开发完成，再进行下一步测试。
+
+---
+
+## 🔍 前置检查：API 完整性验证
+
+### 为什么需要 API 完整性检查？
+
+在不完整的 API 上进行测试会导致：
+- ❌ 测试结果不可信
+- ❌ 浪费测试时间
+- ❌ 难以定位问题根源
+- ❌ 影响质量评估
+
+### API 完整性检查流程
+
+#### Step 1: 列出所有需要的 API
+
+```bash
+# 根据需求文档列出 API 清单
+cat requirements.md | grep "API:"
+
+# 或手动创建 API 清单
+cat > api-checklist.md <<EOF
+## 用户登录功能 API 清单
+
+- [ ] POST /api/auth/login - 用户登录
+- [ ] POST /api/auth/logout - 用户登出
+- [ ] GET /api/auth/verify - 验证 Token
+- [ ] GET /api/user/profile - 获取用户信息
+- [ ] PUT /api/user/profile - 更新用户信息
+EOF
+```
+
+#### Step 2: 检查 API 实现状态
+
+```bash
+# 检查路由定义
+grep -r "POST.*\/api\/auth\/login" src/
+
+# 检查控制器实现
+ls -la src/controllers/auth.ts
+
+# 检查测试文件
+ls -la tests/api/auth.test.ts
+
+# 运行 API 健康检查
+curl http://localhost:8000/api/health
+```
+
+#### Step 3: 验证 API 功能
+
+```bash
+# 测试 API 是否可用
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"test123"}'
+
+# 预期响应：
+# {
+#   "success": true,
+#   "token": "eyJhbGc...",
+#   "user": { "id": "123", "email": "test@example.com" }
+# }
+```
+
+#### Step 4: 生成完整性报告
+
+```markdown
+## API 完整性检查报告
+
+**检查时间**：2026-03-07 10:00
+**功能模块**：用户登录
+
+### 已完成的 API（4/5）
+
+| API | 路由 | 控制器 | 测试 | 状态 |
+|-----|------|--------|------|------|
+| 用户登录 | ✅ | ✅ | ✅ | ✅ 完成 |
+| Token 验证 | ✅ | ✅ | ✅ | ✅ 完成 |
+| 获取用户信息 | ✅ | ✅ | ✅ | ✅ 完成 |
+| 更新用户信息 | ✅ | ✅ | ✅ | ✅ 完成 |
+
+### 未完成的 API（1/5）
+
+| API | 缺失项 | 预计完成 | 影响 |
+|-----|--------|---------|------|
+| 用户登出 | 控制器实现 | 2026-03-15 | 非核心功能 |
+
+### 决策
+
+✅ **可以继续测试**
+- 核心 API 已完成（4/5）
+- 登出功能暂时使用 Mock
+- 后续替换为真实 API
+
+⚠️ **需要标记 Mock**
+```typescript
+// ⚠️ MOCK: 登出 API 未完成，预计 2026-03-15 替换
+await page.route('**/api/auth/logout', route => {
+  route.fulfill({ status: 200, body: JSON.stringify({ success: true }) })
+})
+```
+```
+
+#### Step 5: 决策是否继续测试
+
+```
+API 完整性检查结果
+       │
+       ▼
+所有核心 API 都已完成？
+       │
+       ├─ 是 ──▶ ✅ 继续进行 E2E 测试
+       │
+       └─ 否 ──▶ 评估影响
+                  │
+                  ├─ 核心 API 未完成
+                  │   └─▶ ❌ 阻止测试
+                  │        └─▶ 优先开发核心 API
+                  │
+                  └─ 非核心 API 未完成
+                      └─▶ ⚠️ 标记 Mock
+                           └─▶ 继续测试
+                                └─▶ 后续替换
+```
+
 ---
 
 ## 🎯 测试层次
