@@ -1,7 +1,7 @@
 # 项目记忆 - sig-claude-code-guidelines
 
-> 最后更新：2026-03-06T14:10:00+08:00
-> 会话 ID: session-20260306-001
+> 最后更新：2026-03-07T14:45:00+08:00
+> 会话 ID: session-20260307-001
 > 项目状态：活跃开发中
 
 ---
@@ -42,6 +42,7 @@
 
 | 时间 | 决策 | 原因 | 影响范围 |
 |------|------|------|---------|
+| 2026-03-07 | 使用现有工具实现互联网访问 | Agent-Reach 安装受阻，但已有足够工具 | 技术调研流程 |
 | 2026-03-06 | 使用 perl 替代 sed 处理模板替换 | macOS sed 兼容性问题 | init-memory.sh |
 
 ---
@@ -68,6 +69,7 @@
 
 | 里程碑 | 状态 | 完成时间 | 备注 |
 |--------|------|---------|------|
+| 互联网访问工具配置 | ✅ 完成 | 2026-03-07 | gh CLI 完全可用，yt-dlp 已安装 |
 | 项目初始化 | ✅ 完成 | 2026-03-06 | 记忆系统已就绪 |
 | Chrome DevTools MCP 集成 | ✅ 完成 | 2026-03-05 | 深度测试能力 |
 | 大模型渠道切换 | ✅ 完成 | 2026-03-04 | 多模型支持 |
@@ -75,6 +77,18 @@
 ---
 
 ## ⚠️ 经验教训
+
+### 2026-03-07 - Agent-Reach 安装问题
+- **问题**：agent-reach 包不存在于 PyPI，GitHub 连接超时
+- **原因**：Agent-Reach 可能需要从源码安装，网络代理配置问题
+- **解决方案**：使用现有工具（gh CLI + yt-dlp）实现互联网访问
+- **预防措施**：优先使用成熟稳定的工具，避免依赖单一工具集
+
+### 2026-03-07 - YouTube 访问速度慢
+- **问题**：yt-dlp 访问 YouTube 超时（>30 秒）
+- **原因**：网络连接慢或 YouTube 访问受限
+- **解决方案**：优先使用 GitHub CLI 进行技术调研，YouTube 仅在必要时使用
+- **预防措施**：配置网络代理，或使用其他视频平台
 
 ### 2026-03-06 - macOS sed 兼容性问题
 - **问题**：init-memory.sh 中 sed 命令在 macOS 上报错
@@ -86,9 +100,114 @@
 
 ## 🔗 相关资源
 
-- 项目仓库：{repo_url}
-- 文档地址：{doc_url}
-- API 接口：{api_url}
+### 项目链接
+- 项目仓库：https://github.com/your-org/sig-claude-code-guidelines
+- 本地路径：/Users/cloud/Documents/projects/Claude/sig-claude-code-guidelines
+
+### 互联网访问工具
+- GitHub CLI 文档：https://cli.github.com/manual/
+- yt-dlp 文档：https://github.com/yt-dlp/yt-dlp
+- Agent-Reach 仓库：https://github.com/Panniantong/Agent-Reach
+
+### 已配置工具
+
+| 工具 | 版本 | 状态 | 用途 |
+|------|------|------|------|
+| gh | 2.86.0 | ✅ 可用 | GitHub 仓库/代码搜索 |
+| yt-dlp | 2025.04.30 | ⚠️ 慢 | YouTube 字幕提取、视频信息 |
+| curl | 8.7.1 | ✅ 可用 | HTTP 请求 |
+| jq | 1.7.1 | ✅ 可用 | JSON 处理 |
+| pipx | 1.7.1 | ✅ 可用 | Python 应用管理 |
+
+---
+
+## 🌐 互联网访问最佳实践
+
+### GitHub 调研流程（推荐）✅
+
+#### 1. 搜索相关项目
+```bash
+# 按 stars 排序，查看高质量项目
+gh search repos "关键词" --language=python --stars=">1000" --limit 10
+
+# 示例：搜索 AI agent 框架
+gh search repos "AI agent framework" --language=python --limit 5
+```
+
+**优势**：
+- 响应快速（<2 秒）
+- 结果质量高
+- 可按语言、stars 过滤
+
+#### 2. 搜索代码实现
+```bash
+# 查找具体实现
+gh search code "函数名" --language=python --limit 5
+
+# 示例：搜索 agent framework 实现
+gh search code "agent framework" --language=python --limit 3
+```
+
+**用途**：
+- 学习最佳实践
+- 复用代码片段
+- 了解实现细节
+
+#### 3. 查看项目详情
+```bash
+# 获取项目完整信息
+gh repo view owner/repo --json name,description,stargazerCount,forkCount,primaryLanguage
+
+# 示例：查看 SuperAGI
+gh repo view TransformerOptimus/SuperAGI
+```
+
+**信息包含**：
+- stars/forks 数量
+- 主要编程语言
+- 创建和更新时间
+- 项目描述
+
+### YouTube 调研流程（谨慎使用）⚠️
+
+#### 问题
+- 访问速度慢（>30 秒）
+- 可能需要代理
+
+#### 建议
+- 仅在必要时使用
+- 优先使用 GitHub 文档
+- 或使用其他视频平台
+
+#### 基本用法
+```bash
+# 提取视频字幕
+yt-dlp --write-sub --skip-download "URL"
+
+# 获取视频信息
+yt-dlp --dump-json "URL" | jq '.title, .channel, .view_count'
+```
+
+### 技术调研推荐顺序
+
+1. **GitHub 搜索** (首选) ⭐⭐⭐
+   - 快速找到相关项目
+   - 查看 stars/forks 判断质量
+   - 阅读 README 了解用法
+
+2. **代码搜索** (深入) ⭐⭐
+   - 找到具体实现
+   - 学习最佳实践
+   - 复用代码片段
+
+3. **项目详情** (验证) ⭐⭐
+   - 确认项目活跃度
+   - 查看最新更新
+   - 了解社区规模
+
+4. **YouTube 教程** (补充) ⭐
+   - 仅在需要视频教程时使用
+   - 提前准备好等待时间
 
 ---
 
@@ -96,7 +215,8 @@
 
 | 日期 | 更新内容 | 更新者 |
 |------|---------|--------|
-| {date} | {content} | {author} |
+| 2026-03-07 | 配置互联网访问工具（gh CLI + yt-dlp） | Claude |
+| 2026-03-06 | 初始化长期记忆系统 | Claude |
 
 ---
 
