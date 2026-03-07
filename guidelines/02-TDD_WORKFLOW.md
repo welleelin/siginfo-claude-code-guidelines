@@ -1,7 +1,7 @@
 # TDD 开发流程
 
 > 版本：1.0.0
-> 最后更新：2026-03-07
+> 最后更新：2026-03-08
 
 ---
 
@@ -541,6 +541,149 @@ npx playwright test --ui
 - [ ] 检查覆盖率 ≥ 80%
 - [ ] 代码审查
 - [ ] 提交代码
+
+---
+
+## 🎲 确定性测试原则
+
+### 目标
+
+确保测试结果可重复：相同输入 → 相同输出
+
+### 核心原则
+
+#### 1. 隔离时间依赖
+
+```typescript
+// ❌ 错误：使用真实时间
+test('创建订单时间戳', () => {
+  const order = createOrder()
+  expect(order.createdAt).toBe(Date.now())  // 每次运行结果不同
+})
+
+// ✅ 正确：Mock 时间
+import { jest } from '@jest/globals'
+
+test('创建订单时间戳', () => {
+  jest.useFakeTimers()
+  jest.setSystemTime(new Date('2026-03-08'))
+
+  const order = createOrder()
+  expect(order.createdAt).toBe(new Date('2026-03-08').getTime())
+
+  jest.useRealTimers()
+})
+```
+
+#### 2. 隔离随机性
+
+```typescript
+// ❌ 错误：使用真实随机数
+test('生成随机 ID', () => {
+  const id = generateId()
+  expect(id).toBe('abc123')  // 每次运行结果不同
+})
+
+// ✅ 正确：使用固定种子
+import seedrandom from 'seedrandom'
+
+test('生成随机 ID', () => {
+  const rng = seedrandom('fixed-seed')
+  const id = generateId(rng)
+  expect(id).toBe('abc123')  // 每次运行结果相同
+})
+```
+
+#### 3. Mock 外部依赖
+
+```typescript
+// ❌ 错误：真实网络请求
+test('获取用户信息', async () => {
+  const user = await fetchUser(123)
+  expect(user.name).toBe('John')  // 依赖外部 API
+})
+
+// ✅ 正确：Mock 网络请求
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+
+const server = setupServer(
+  rest.get('/api/users/:id', (req, res, ctx) => {
+    return res(ctx.json({ id: 123, name: 'John' }))
+  })
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+test('获取用户信息', async () => {
+  const user = await fetchUser(123)
+  expect(user.name).toBe('John')  // 结果可重复
+})
+```
+
+#### 4. 确定性排序
+
+```typescript
+// ❌ 错误：依赖文件系统顺序
+test('读取文件列表', async () => {
+  const files = await readdir('./data')
+  expect(files[0]).toBe('file1.txt')  // 顺序不确定
+})
+
+// ✅ 正确：显式排序
+test('读取文件列表', async () => {
+  const files = await readdir('./data')
+  const sorted = files.sort()  // 确定性排序
+  expect(sorted[0]).toBe('file1.txt')
+})
+```
+
+#### 5. 显式状态管理
+
+```typescript
+// ❌ 错误：全局状态
+let counter = 0
+
+test('增加计数器', () => {
+  counter++
+  expect(counter).toBe(1)  // 依赖全局状态
+})
+
+test('再次增加计数器', () => {
+  counter++
+  expect(counter).toBe(2)  // 依赖前一个测试
+})
+
+// ✅ 正确：显式状态
+test('增加计数器', () => {
+  const counter = new Counter()
+  counter.increment()
+  expect(counter.value).toBe(1)  // 独立状态
+})
+
+test('再次增加计数器', () => {
+  const counter = new Counter()
+  counter.increment()
+  expect(counter.value).toBe(1)  // 独立状态
+})
+```
+
+### 验证清单
+
+- [ ] 时间依赖已隔离（使用 `jest.useFakeTimers()`）
+- [ ] 随机性已隔离（使用固定种子）
+- [ ] 网络请求已 Mock（使用 MSW/nock）
+- [ ] 文件系统操作已确定性排序
+- [ ] 并发操作已确定性排序
+- [ ] 环境变量已固定配置
+- [ ] 测试可重复性验证（运行 3 次）
+
+### 相关文档
+
+- [确定性开发规范](14-DETERMINISTIC_DEVELOPMENT.md) - 完整指南
+- [质量门禁](05-QUALITY_GATE.md) - 确定性验证
 
 ---
 
