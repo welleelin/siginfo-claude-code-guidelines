@@ -14,10 +14,20 @@
 - [ ] 同步 Hourly 层记忆
 - [ ] 检查是否有待确认事项
 - [ ] 检查上下文使用率
+- [ ] 检查互联网访问工具状态（gh CLI、yt-dlp）
 
 ### 执行脚本
 ```bash
 ./scripts/sync-hourly.sh
+```
+
+### 互联网工具检查
+```bash
+# 验证 gh CLI 可用性
+gh auth status
+
+# 验证 yt-dlp 可用性
+yt-dlp --version
 ```
 
 ### 状态回复
@@ -34,10 +44,22 @@
 - [ ] 归档日志到 memory/
 - [ ] 准备明日待办清单
 - [ ] 检查 Git 提交状态
+- [ ] 归档今日互联网调研结果到 MEMORY.md
 
 ### 执行脚本
 ```bash
 ./scripts/archive-daily.sh
+```
+
+### 互联网调研归档
+```bash
+# 提取今日 GitHub 搜索记录
+grep -A 10 "gh search" memory/$(date +%Y-%m-%d).md
+
+# 归档重要发现到 MEMORY.md
+# - 技术选型决策
+# - 最佳实践发现
+# - 工具使用经验
 ```
 
 ### 日报模板
@@ -54,6 +76,10 @@
 ### 问题
 - {issue}
 
+### 互联网调研
+- GitHub 搜索：{search_count} 次
+- 关键发现：{findings}
+
 ### 明日计划
 - {plan_1}
 - {plan_2}
@@ -69,10 +95,22 @@
 - [ ] 更新 MEMORY.md 中的相关章节
 - [ ] 清理 MEMORY.md 中过时的信息
 - [ ] 生成周度总结报告
+- [ ] 总结本周互联网调研最佳实践
 
 ### 执行脚本
 ```bash
 ./scripts/summarize-weekly.sh
+```
+
+### 互联网调研总结
+```bash
+# 统计本周 GitHub 搜索次数
+grep -r "gh search" memory/2026-03-*.md | wc -l
+
+# 提取高价值发现
+grep -A 5 "关键发现" memory/2026-03-*.md
+
+# 更新 MEMORY.md 互联网调研最佳实践章节
 ```
 
 ### 周报模板
@@ -91,6 +129,11 @@
 ### 经验教训
 - {lesson_1}
 - {lesson_2}
+
+### 互联网调研统计
+- GitHub 搜索：{search_count} 次
+- 技术选型决策：{tech_decisions} 个
+- 最佳实践发现：{best_practices} 条
 
 ### 下周计划
 - {plan_1}
