@@ -93,8 +93,13 @@ cd siginfo-claude-code-guidelines
 
 **步骤**：
 
+0. **检查插件和技能更新** - 确保使用最新版本
+   - 更新 bmad-method
+   - 更新 everything-claude-code
+   - 更新所有 GitHub 学习到的技能
+
 1. **检查插件环境** - 确认必备插件已安装
-   - bmad-method（需求分析）
+   - bmad-method（需求分析、架构设计、开发管理）
    - everything-claude-code（命令库）
    - workflow-studio（流程图）
    - pencil（UI 设计）

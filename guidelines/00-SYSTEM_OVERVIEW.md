@@ -83,16 +83,23 @@
 
 | 阶段 | 使用插件 | 具体能力 |
 |------|---------|---------|
-| **需求分析** | bmad-method | `bmm-create-product-brief`, `bmm-market-research` |
-| **架构设计** | bmad-method + pencil | `bmm-create-architecture` + 绘制架构图 |
-| **任务规划** | everything-claude-code | `/plan` 命令 + workflow-studio 流程图 |
-| **TDD 开发** | everything-claude-code | `/tdd` 命令 |
-| **UI 设计** | pencil | 创建页面原型 |
+| **需求分析** | bmad-method | `/bmad-help`, `/bmad-brainstorming`, `/bmad-bmm-research`, `/bmad-bmm-create-product-brief` |
+| **架构设计** | bmad-method + pencil | `/bmad-bmm-create-prd`, `/bmad-bmm-create-architecture` + 绘制架构图 |
+| **任务规划** | bmad-method + everything-claude-code | `/bmad-bmm-create-epics-and-stories`, `/plan` 命令 + workflow-studio 流程图 |
+| **TDD 开发** | bmad-method + everything-claude-code | `/bmad-bmm-dev-story`, `/tdd` 命令 |
+| **UI 设计** | bmad-method + pencil | `/bmad-bmm-create-ux-design`, 创建页面原型 |
 | **流程设计** | workflow-studio | 创建业务流程图、时序图 |
-| **代码审查** | bmad-method + everything-claude-code | `bmm-code-review` + `/code-review` |
-| **E2E 测试** | everything-claude-code | `/e2e` 命令 |
+| **代码审查** | bmad-method + everything-claude-code | `/bmad-bmm-code-review`, `/code-review` |
+| **E2E 测试** | bmad-method + everything-claude-code | `/bmad-agent-bmm-qa`, `/e2e` 命令 |
 | **构建修复** | everything-claude-code | `/build-fix` 命令 |
 | **重构优化** | everything-claude-code | `/refactor-clean` 命令 |
+
+**BMAD Method 核心命令**：
+- `/bmad-help` - 智能指导，自动检测项目状态并推荐下一步
+- `/bmad-bmm-quick-spec` + `/bmad-bmm-quick-dev` - 快速流程（小型任务）
+- `/bmad-bmm-create-prd` → `/bmad-bmm-create-architecture` → `/bmad-bmm-create-epics-and-stories` - 完整规划流程（中大型项目）
+
+详见：[BMAD Method 集成指南](../docs/BMAD_METHOD_INTEGRATION.md)
 
 ---
 
