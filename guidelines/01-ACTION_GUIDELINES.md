@@ -53,6 +53,39 @@ Git 提交 & 发布
 
 **步骤**：
 
+0. **检查插件和技能更新**（最高优先级）
+   ```bash
+   # 检查 bmad-method 插件更新
+   /plugin update bmad-method
+
+   # 检查其他已安装插件更新
+   /plugin update everything-claude-code
+   /plugin update workflow-studio
+
+   # 检查 GitHub 学习到的技能更新
+   /skill update
+
+   # 或批量更新所有
+   /plugin update --all
+   /skill update --all
+   ```
+
+   **更新策略**：
+   - ✅ 优先更新 bmad-method（核心需求分析工具）
+   - ✅ 更新 everything-claude-code（命令库、技能库）
+   - ✅ 更新 workflow-studio（流程图工具）
+   - ✅ 更新所有 GitHub 学习到的技能
+   - ⚠️ 更新后验证功能正常
+
+   **验证更新**：
+   ```bash
+   # 验证插件版本
+   /plugin list
+
+   # 验证技能可用性
+   /skill list
+   ```
+
 1. **检查插件环境**
    ```bash
    /plugin list

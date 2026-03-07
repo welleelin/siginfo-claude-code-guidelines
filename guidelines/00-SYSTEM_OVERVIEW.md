@@ -34,6 +34,20 @@
 在每次新会话或新项目开始时，必须执行：
 
 ```bash
+# Step 0: 检查并更新插件和技能（最高优先级）
+# 更新 bmad-method 插件
+/plugin update bmad-method
+
+# 更新其他核心插件
+/plugin update everything-claude-code
+/plugin update workflow-studio
+
+# 更新所有 GitHub 学习到的技能
+/skill update --all
+
+# 或批量更新所有插件
+/plugin update --all
+
 # Step 1: 检查已安装插件
 /plugin list
 
@@ -51,7 +65,19 @@
 /plugin install workflow-studio
 
 # Pencil MCP 如未配置，需手动添加 MCP 配置
+
+# Step 4: 验证更新成功
+/plugin list  # 查看插件版本
+/skill list   # 查看技能列表
 ```
+
+**更新策略**：
+- ✅ 每次会话启动时自动检查更新
+- ✅ 优先更新 bmad-method（核心需求分析工具）
+- ✅ 更新 everything-claude-code（命令库、技能库）
+- ✅ 更新所有 GitHub 学习到的技能
+- ⚠️ 更新后验证功能正常
+- ⚠️ 如更新失败，使用现有版本继续
 
 ### 插件能力使用场景
 
@@ -76,6 +102,7 @@
 
 | 任务类型 | 自动化命令 | 说明 |
 |---------|-----------|------|
+| ✅ 插件更新 | `/plugin update --all`, `/skill update --all` | 检查并更新插件和技能 |
 | ✅ 环境检查 | `/plugin list`, `git status` | 检查插件状态、代码状态 |
 | ✅ 代码检查 | `npm run lint` | 静态代码分析 |
 | ✅ 构建验证 | `npm run build` | 编译检查 |
@@ -374,28 +401,55 @@ Compact 后自动恢复：
 
 ## 🔄 会话启动流程
 
-### Step 0: 插件环境检查（最高优先级）
+### Step 0: 插件和技能更新检查（最高优先级）
 
 ```bash
-# 0.1 检查插件列表
+# 0.1 更新核心插件
+/plugin update bmad-method
+/plugin update everything-claude-code
+/plugin update workflow-studio
+
+# 0.2 更新所有 GitHub 学习到的技能
+/skill update --all
+
+# 0.3 或批量更新所有插件
+/plugin update --all
+
+# 0.4 验证更新成功
+/plugin list  # 查看插件版本
+/skill list   # 查看技能列表
+```
+
+**更新原则**：
+- ✅ 每次会话启动时自动检查更新
+- ✅ 优先更新 bmad-method（核心需求分析工具）
+- ✅ 更新 everything-claude-code（命令库、技能库）
+- ✅ 更新所有 GitHub 学习到的技能
+- ⚠️ 更新后验证功能正常
+- ⚠️ 如更新失败，使用现有版本继续
+
+### Step 1: 插件环境检查
+
+```bash
+# 1.1 检查已安装插件
 /plugin list
 
-# 0.2 验证必备插件
+# 1.2 验证必备插件
 必需插件：
 - bmad-method (需求分析/多 Agent 协作)
 - everything-claude-code (命令/技能/规则)
 - workflow-studio (流程图/可视化)
 - pencil (UI 原型设计 - MCP 服务)
 
-# 0.3 缺失插件安装
+# 1.3 缺失插件安装
 如果缺失，立即执行：
 /plugin install <插件名>
 
-# 0.4 验证规则加载
+# 1.4 验证规则加载
 ls ~/.claude/rules/  # 确认规则文件存在
 ```
 
-### Step 1: 读取核心文档（必做，按顺序）
+### Step 2: 读取核心文档（必做，按顺序）
 
 1. `CLAUDE.md` - 项目概述
 2. `ACTION_GUIDELINES.md` - 行动准则
@@ -404,7 +458,7 @@ ls ~/.claude/rules/  # 确认规则文件存在
 5. `architecture.md` - 工程文档
 6. `task.json` - 待执行任务列表
 
-### Step 2: 环境检查
+### Step 3: 环境检查
 
 ```bash
 pwd                    # 确认当前目录
@@ -412,7 +466,7 @@ git status --short     # 检查未提交更改
 git log --oneline -5   # 查看最近提交
 ```
 
-### Step 3: 确认下一个任务
+### Step 4: 确认下一个任务
 
 从 `task.json` 中找到第一个 `passes: false` 的任务，告知用户即将执行。
 
