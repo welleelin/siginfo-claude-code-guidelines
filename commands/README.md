@@ -158,6 +158,7 @@ VERIFY (验证闭环)
 **命令格式**：
 ```bash
 /verify
+/verify --determinism  # 确定性验证
 ```
 
 **检查项**：
@@ -166,6 +167,43 @@ VERIFY (验证闭环)
 - ✅ 代码审查
 - ✅ 文档更新
 - ✅ Git 提交
+- ✅ 确定性验证（使用 --determinism）
+
+### 确定性验证
+
+```bash
+/verify --determinism
+```
+
+**验证内容**：
+- 时间依赖检测（`Date.now()`, `new Date()`）
+- 随机性检测（`Math.random()`, `crypto.randomUUID()`）
+- 未 Mock 的 API 检测
+- 测试可重复性验证（运行 3 次）
+
+**输出示例**：
+```
+🔍 确定性验证报告
+
+时间依赖：
+  ⚠️  src/utils/time.ts:15 - Date.now()
+  ✅  src/utils/time.ts:20 - jest.useFakeTimers()
+
+随机性：
+  ⚠️  src/utils/id.ts:10 - Math.random()
+  ✅  src/utils/id.ts:15 - seedrandom('fixed-seed')
+
+测试可重复性：
+  ✅ 用户登录 - 3 次运行结果一致
+  ⚠️  订单创建 - 3 次运行结果不一致
+
+统计：
+  ✅ 已隔离：12 处
+  ⚠️  未隔离：3 处
+  隔离率：80%
+```
+
+**相关文档**：[确定性开发规范](../guidelines/14-DETERMINISTIC_DEVELOPMENT.md)
 
 ---
 

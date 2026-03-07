@@ -46,6 +46,11 @@
 │     所有更改已提交                         │
 │     提交信息规范                           │
 │                                            │
+│  □ 8. 确定性验证                           │
+│     测试可重复性 100%                      │
+│     Mock 接口 100% 已标记                  │
+│     无未隔离的不确定性来源                  │
+│                                            │
 │  ✅ 全部通过后方可进入下一任务              │
 │                                            │
 └────────────────────────────────────────────┘
@@ -89,6 +94,19 @@ npx playwright test
 
 # 安全审查
 /security-review
+```
+
+### 确定性验证
+
+```bash
+# 快速检查（不运行测试）
+./scripts/verify-determinism.sh --quick
+
+# 完整验证（包含测试可重复性）
+./scripts/verify-determinism.sh "用户登录" 3
+
+# 扫描 Mock 接口
+./scripts/scan-mock-interfaces.sh
 ```
 
 ---

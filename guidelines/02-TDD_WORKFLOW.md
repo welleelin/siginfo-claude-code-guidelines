@@ -369,6 +369,91 @@ test('应该验证有效的邮箱地址', () => {
 })
 ```
 
+### 8. 确定性测试原则
+
+**目标**：确保测试结果可重复
+
+**原则**：
+- 隔离时间依赖（使用 `jest.useFakeTimers()`）
+- 隔离随机性（使用固定种子）
+- Mock 外部依赖（使用 MSW/nock）
+- 确定性排序（显式排序规则）
+
+**示例**：
+
+```typescript
+// ❌ 错误：依赖真实时间
+test('创建用户', () => {
+  const user = createUser('Alice')
+  expect(user.createdAt).toBe(Date.now()) // 测试会失败
+})
+
+// ✅ 正确：Mock 时间
+test('创建用户', () => {
+  jest.useFakeTimers()
+  jest.setSystemTime(new Date('2024-03-07T00:00:00Z'))
+
+  const user = createUser('Alice')
+  expect(user.createdAt).toBe(1709769600000) // 测试通过
+
+  jest.useRealTimers()
+})
+
+// ❌ 错误：依赖随机性
+test('生成 ID', () => {
+  const id = generateId()
+  expect(id).toBe('abc123') // 测试会失败
+})
+
+// ✅ 正确：使用固定种子
+import seedrandom from 'seedrandom'
+
+test('生成 ID', () => {
+  const rng = seedrandom('fixed-seed')
+  const id = generateId(rng)
+  expect(id).toBe('abc123') // 测试通过
+})
+
+// ❌ 错误：依赖真实 API
+test('获取用户', async () => {
+  const user = await fetchUser('123')
+  expect(user.name).toBe('Alice') // 测试可能失败
+})
+
+// ✅ 正确：使用 MSW Mock
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+
+const server = setupServer(
+  rest.get('/api/users/:id', (req, res, ctx) => {
+    return res(ctx.json({ id: '123', name: 'Alice' }))
+  })
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+test('获取用户', async () => {
+  const user = await fetchUser('123')
+  expect(user.name).toBe('Alice') // 测试通过
+})
+```
+
+**验证方法**：
+
+```bash
+# 运行 3 次测试，验证结果一致
+npm test -- --testNamePattern="用户登录" --runInBand
+npm test -- --testNamePattern="用户登录" --runInBand
+npm test -- --testNamePattern="用户登录" --runInBand
+
+# 使用确定性验证脚本
+./scripts/verify-determinism.sh "用户登录" 3
+```
+
+**相关文档**：[确定性开发规范](14-DETERMINISTIC_DEVELOPMENT.md)
+
 ---
 
 ## 🔧 TDD 工具
