@@ -245,13 +245,205 @@ feat: 实现用户登录功能 (任务 5)
 
 ### Mock 模式使用规范
 
-| 阶段 | 是否使用 Mock | 说明 |
-|------|-------------|------|
-| **前端开发阶段** | ✅ 使用 | 前端独立开发时，使用 Mock 数据验证 UI 交互 |
-| **前端 Mock 测试** | ✅ 使用 | 验证前端组件逻辑，不依赖后端 |
-| **后端 API 测试** | ❌ **禁止** | 必须用真实数据测试后端接口 |
-| **前后端联调测试** | ❌ **禁止** | 必须连接真实后端，使用真实数据 |
-| **E2E 端到端测试** | ❌ **禁止** | 完整流程必须使用真实 API 和数据 |
+> **核心原则**：前端和后端可以独立使用 Mock 测试，但前后端联调和 E2E 测试必须使用真实数据，确保生产环境 95% 无 Bug。
+
+#### 测试阶段与 Mock 使用规则
+
+| 阶段 | 是否使用 Mock | 说明 | 质量目标 |
+|------|-------------|------|---------|
+| **前端开发阶段** | ✅ 允许 | 前端独立开发时，使用 Mock 数据验证 UI 交互 | UI 功能正常 |
+| **前端单元测试** | ✅ 允许 | 验证前端组件逻辑，不依赖后端 | 组件覆盖率 ≥80% |
+| **后端开发阶段** | ✅ 允许 | 后端独立开发时，使用 Mock 数据验证业务逻辑 | 业务逻辑正确 |
+| **后端单元测试** | ✅ 允许 | 验证后端服务逻辑，Mock 外部依赖（数据库/第三方 API） | 服务覆盖率 ≥80% |
+| **后端 API 测试** | ⚠️ 部分允许 | 可 Mock 外部依赖，但必须用真实数据库测试核心逻辑 | API 功能正确 |
+| **前后端联调测试** | ❌ **严格禁止** | 必须连接真实后端，使用真实数据，按需求规定流程测试 | 集成无问题 |
+| **E2E 端到端测试** | ❌ **严格禁止** | 完整流程必须使用真实 API 和数据，模拟真实用户操作 | 生产环境 95% 无 Bug |
+
+#### Mock 使用的三个层次
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Mock 使用层次                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Layer 1: 单元测试（✅ 允许 Mock）                           │
+│  ├─ 前端组件测试 - Mock API 响应                            │
+│  ├─ 后端服务测试 - Mock 数据库/外部 API                      │
+│  └─ 目标：验证单个模块逻辑正确                               │
+│                                                             │
+│  Layer 2: 集成测试（⚠️ 部分 Mock）                          │
+│  ├─ 后端 API 测试 - 真实数据库 + Mock 外部 API              │
+│  ├─ 前端集成测试 - Mock 后端 API                            │
+│  └─ 目标：验证模块间接口正确                                 │
+│                                                             │
+│  Layer 3: 联调 & E2E（❌ 禁止 Mock）                        │
+│  ├─ 前后端联调 - 真实前端 + 真实后端 + 真实数据库            │
+│  ├─ E2E 测试 - 完整真实环境 + 真实数据 + 真实流程            │
+│  └─ 目标：确保生产环境 95% 无 Bug                           │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Mock 标记规范
+
+所有 Mock 代码必须明确标记，便于后续替换：
+
+```typescript
+// ⚠️ MOCK: 用户服务 API 未开发，预计 2026-03-15 替换为真实 API
+const mockUserApi = {
+  getUser: (id: string) => ({
+    id,
+    name: 'Mock User',
+    email: 'mock@example.com'
+  })
+}
+
+// ⚠️ MOCK: 支付网关未接入，预计 2026-03-20 替换为真实支付
+const mockPayment = {
+  charge: (amount: number) => ({
+    success: true,
+    transactionId: 'mock-tx-' + Date.now()
+  })
+}
+```
+
+#### 联调测试强制要求
+
+**前后端联调测试必须满足**：
+
+1. **真实环境**：
+   - ✅ 前端连接真实后端 API
+   - ✅ 后端连接真实数据库
+   - ✅ 使用真实数据（非 Mock 数据）
+   - ✅ 按需求规定的完整流程测试
+
+2. **测试覆盖**：
+   - ✅ 正常流程（Happy Path）
+   - ✅ 异常流程（Error Handling）
+   - ✅ 边界条件（Boundary Cases）
+   - ✅ 并发场景（Concurrency）
+
+3. **数据验证**：
+   - ✅ 数据库状态正确
+   - ✅ API 响应正确
+   - ✅ 前端显示正确
+   - ✅ 业务逻辑正确
+
+4. **质量目标**：
+   - ✅ 联调测试通过率 100%
+   - ✅ 无数据不一致问题
+   - ✅ 无接口调用错误
+   - ✅ 为生产环境 95% 无 Bug 提供保障
+
+#### E2E 测试强制要求
+
+**端到端测试必须满足**：
+
+1. **完整流程**：
+   - ✅ 从用户登录到业务完成的完整路径
+   - ✅ 模拟真实用户操作（点击、输入、等待）
+   - ✅ 验证每个步骤的正确性
+   - ✅ 检查最终结果的准确性
+
+2. **真实环境**：
+   - ✅ 使用与生产环境相同的配置
+   - ✅ 使用真实的 API 端点
+   - ✅ 使用真实的数据库
+   - ✅ 使用真实的第三方服务（或沙箱环境）
+
+3. **测试场景**：
+   - ✅ 核心业务流程（如下单、支付、发货）
+   - ✅ 用户权限验证
+   - ✅ 数据一致性验证
+   - ✅ 性能和稳定性验证
+
+4. **质量目标**：
+   - ✅ E2E 测试通过率 100%
+   - ✅ 关键路径无阻塞
+   - ✅ 用户体验流畅
+   - ✅ 生产环境 95% 无 Bug
+
+#### 测试报告验证机制
+
+生成测试报告前，必须执行验证：
+
+```javascript
+function validateTestReport(testResults) {
+  const errors = []
+
+  // 检查 1: 联调测试是否使用了 Mock
+  if (testResults.integrationTest?.usedMock) {
+    errors.push('❌ 前后端联调测试禁止使用 Mock 模式')
+  }
+
+  // 检查 2: E2E 测试是否使用了 Mock
+  if (testResults.e2eTest?.usedMock) {
+    errors.push('❌ E2E 测试禁止使用 Mock 模式')
+  }
+
+  // 检查 3: 是否所有 Mock 接口都有标记
+  const unmarkedMocks = scanForUnmarkedMocks()
+  if (unmarkedMocks.length > 0) {
+    errors.push(`⚠️ 发现 ${unmarkedMocks.length} 个未标记的 Mock 接口`)
+  }
+
+  // 检查 4: 联调测试是否覆盖完整流程
+  if (!testResults.integrationTest?.fullFlowCovered) {
+    errors.push('⚠️ 联调测试未覆盖完整业务流程')
+  }
+
+  // 检查 5: E2E 测试是否使用真实数据
+  if (!testResults.e2eTest?.usedRealData) {
+    errors.push('❌ E2E 测试未使用真实数据')
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    qualityScore: calculateQualityScore(testResults)
+  }
+}
+
+function calculateQualityScore(testResults) {
+  // 质量评分：目标 95%
+  const weights = {
+    unitTest: 0.2,        // 单元测试 20%
+    integrationTest: 0.3, // 集成测试 30%
+    e2eTest: 0.5          // E2E 测试 50%
+  }
+
+  const score =
+    testResults.unitTest.passRate * weights.unitTest +
+    testResults.integrationTest.passRate * weights.integrationTest +
+    testResults.e2eTest.passRate * weights.e2eTest
+
+  return {
+    score: Math.round(score * 100),
+    target: 95,
+    passed: score >= 0.95
+  }
+}
+```
+
+#### 违规处理
+
+如果发现违反 Mock 使用规范：
+
+1. **自动检测**：
+   ```bash
+   ./scripts/scan-mock-interfaces.sh
+   ./scripts/verify-determinism.sh
+   ```
+
+2. **阻止提交**：
+   - 联调测试使用 Mock → 阻止合并
+   - E2E 测试使用 Mock → 阻止合并
+   - Mock 接口未标记 → 警告并要求补充
+
+3. **质量门禁**：
+   - 质量评分 < 95% → 阻止发布
+   - 联调测试未通过 → 阻止发布
+   - E2E 测试未通过 → 阻止发布
 
 ### 端口冲突排查规范
 
