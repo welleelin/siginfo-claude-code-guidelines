@@ -59,6 +59,10 @@
 
 | 时间 | 决策 | 原因 | 影响范围 |
 |------|------|------|---------|
+| 2026-03-08 | 四项目集成架构设计 | 整合 BMAD Method + everything-cc + oh-my-cc + sig-guidelines，建立五层架构模型 | 整体开发生态 |
+| 2026-03-08 | 创建统一配置目录 .unified/ | 统一管理四个项目的配置、状态、路由、Hook、记忆 | 配置管理 |
+| 2026-03-08 | 创建 project-context.md | 存储静态的技术栈和实现规则，与 MEMORY.md 互补 | 项目记忆系统 |
+| 2026-03-08 | BMAD Method v6.0.4 安装成功 | 非交互式安装，配置 Claude Code 工具，安装 BMM 模块 | 规划层能力 |
 | 2026-03-07 | 代码质量检查前置到测试之前 | 确保代码质量在测试前就得到保障，避免低质量代码进入测试阶段 | 开发流程 Phase 3 |
 | 2026-03-07 | 新增安全性检查阶段（Phase 7） | 在 API 完整性和联调测试后进行全面安全检查，降低安全风险 | 开发流程 Phase 7 |
 | 2026-03-07 | 建立三道质量门禁 | 质量门禁（Phase 3）、完整性门禁（Phase 5）、安全门禁（Phase 7）确保多层质量保障 | 整体开发流程 |
@@ -91,6 +95,8 @@
 
 | 里程碑 | 状态 | 完成时间 | 备注 |
 |--------|------|---------|------|
+| 四项目集成 - 阶段 1 基础设施整合 | 🔄 进行中 | - | BMAD Method 已安装，配置整合中 |
+| 四项目集成分析文档 | ✅ 完成 | 2026-03-08 | 创建 docs/FOUR_PROJECTS_INTEGRATION.md |
 | Guidelines 增强 - 效率与确定性（实施） | ✅ 完成 | 2026-03-08 | 更新 4 个文档，验证 3 个脚本 |
 | BMAD Method v6 集成 | ✅ 完成 | 2026-03-07 | 集成 9 个专业化 Agent，完整规划流程 |
 | 插件和技能自动更新机制 | ✅ 完成 | 2026-03-07 | 会话启动时自动检查更新 |
@@ -207,6 +213,56 @@
 - BMAD Method 官方文档：https://docs.bmad-method.org/
 - GitHub 仓库：https://github.com/bmad-code-org/BMAD-METHOD
 - Discord 社区：https://discord.gg/gk8jAdXWmj
+
+---
+
+### 2026-03-08 - 四项目集成实施 - 阶段 1
+
+**背景**：开始实施四项目集成方案（BMAD Method + everything-cc + oh-my-cc + sig-guidelines）
+
+**实施步骤**：
+
+1. **BMAD Method 安装**
+   - 使用非交互式安装：`npx bmad-method@6.0.4 install --directory ... --modules bmm --tools claude-code --yes`
+   - 安装位置：`_bmad/`
+   - 产出位置：`_bmad-output/`
+   - 配置文件：`_bmad/_config/`
+   - 安装的 Agent：10 个（Analyst, PM, Architect, Scrum Master, Developer, QA, UX Designer, Tech Writer, Quick Flow Solo Dev, BMad Master）
+   - 安装的工作流：25 个
+   - 安装的任务：7 个
+
+2. **统一配置目录创建**
+   - 创建 `.unified/` 目录结构
+   - 子目录：config, state, routing, hooks, memory
+   - 用途：统一管理四个项目的配置和状态
+
+3. **project-context.md 创建**
+   - 存储静态的技术栈和实现规则
+   - 与 MEMORY.md 互补（MEMORY.md 存储动态决策）
+   - 包含：项目概述、技术栈、架构设计、开发规范、实现规则、集成项目、质量标准、部署运维
+
+4. **MEMORY.md 更新**
+   - 添加四项目集成相关决策
+   - 更新项目里程碑
+   - 记录实施进度
+
+**效果**：
+- ✅ BMAD Method 安装成功
+- ✅ 统一配置目录创建完成
+- ✅ project-context.md 创建完成
+- ✅ MEMORY.md 更新完成
+
+**下一步**：
+- 规则系统整合（保留 sig-guidelines 的 14 个核心文档作为主规则）
+- 长期记忆系统部署（配置自动同步）
+- 上下文管理配置（配置阈值和自动压缩）
+
+**相关文件**：
+- _bmad/ - BMAD Method 核心
+- _bmad-output/ - BMAD Method 产出
+- .unified/ - 统一配置目录
+- project-context.md - 项目上下文
+- docs/FOUR_PROJECTS_INTEGRATION.md - 集成分析文档
 
 ---
 
