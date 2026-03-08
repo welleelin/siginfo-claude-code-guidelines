@@ -42,6 +42,32 @@
 
 ---
 
+## 📚 文档导航
+
+### 快速查找
+
+**不知道从哪里开始？** 查看 [Guidelines 目录索引](guidelines/00-INDEX.md)
+
+这个索引按问题分类组织，帮助你快速找到需要的文档：
+- 🎯 按问题分类（13 个常见场景）
+- 🔄 按工作流索引（3 个常见工作流）
+- 📊 文档优先级（必读 vs 按需阅读）
+
+### 核心文档
+
+| 文档 | 用途 | 何时阅读 |
+|------|------|---------|
+| [00-INDEX.md](guidelines/00-INDEX.md) | 📖 目录索引 | 不知道读什么时 |
+| [00-SYSTEM_OVERVIEW.md](guidelines/00-SYSTEM_OVERVIEW.md) | 系统总则 | 每次会话开始 |
+| [01-ACTION_GUIDELINES.md](guidelines/01-ACTION_GUIDELINES.md) | 行动准则 | 每次会话开始 |
+| [15-STABLE_ZONE_PROTECTION.md](guidelines/15-STABLE_ZONE_PROTECTION.md) | 稳定区域保护 | 修改代码前 |
+
+### 按需阅读文档
+
+根据具体问题，查看 [目录索引](guidelines/00-INDEX.md) 找到相关文档。
+
+---
+
 ## 🚀 快速开始
 
 ### 5 分钟体验核心流程

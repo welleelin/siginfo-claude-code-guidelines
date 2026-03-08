@@ -47,6 +47,68 @@ Phase 8: 质量门禁（最终验证）
 Git 提交 & 发布
 ```
 
+### Phase 0: 变更影响分析（前置检查）
+
+**目标**：在开始任何代码修改前，检查是否影响稳定模块
+
+**执行时机**：接收到新需求后，开始任何代码修改前
+
+**步骤**：
+
+1. **读取稳定模块清单**
+   ```bash
+   cat MEMORY.md | grep -A 20 "🔒 稳定模块清单"
+   ```
+
+2. **分析需求涉及的文件**
+   - 列出需要新增的文件
+   - 列出需要修改的文件
+   - 列出需要删除的文件
+
+3. **检查是否与稳定模块重叠**
+   ```bash
+   ./scripts/check-stable-zones.sh
+   ```
+
+4. **判断影响级别**
+
+   | 影响级别 | 定义 | 处理方式 |
+   |---------|------|---------|
+   | 🟢 无影响 | 不涉及稳定模块 | 直接执行 Phase 1 |
+   | 🟡 间接影响 | 调用稳定模块的接口 | 验证接口兼容性后继续 |
+   | 🟠 直接影响 | 需要修改稳定模块 | **必须用户确认** |
+   | 🔴 破坏性影响 | 重构稳定模块 | **必须用户确认 + 详细方案** |
+
+5. **生成影响报告**（如果涉及稳定模块）
+   ```bash
+   ./scripts/generate-impact-report.sh
+   ```
+
+6. **发送确认通知**（如果需要）
+   ```javascript
+   await sendNotification({
+     level: 'P1',
+     type: 'change_impact_confirmation',
+     title: '稳定模块变更确认',
+     content: '需求涉及修改已稳定的XXX系统',
+     impactReport: '...',
+     options: ['confirm', 'modify_approach', 'reject']
+   })
+   ```
+
+7. **等待用户确认**（如果需要）
+   - 确认：继续执行 Phase 1
+   - 修改方案：重新设计实现方案
+   - 拒绝：停止任务
+
+**产出**：
+- 变更影响报告（如果涉及稳定模块）
+- 用户确认记录（如果需要确认）
+
+**详细文档**：[代码稳定区域保护规范](15-STABLE_ZONE_PROTECTION.md)
+
+---
+
 ### Phase 1: 会话启动准备
 
 **目标**：确保环境和上下文准备就绪
@@ -120,23 +182,70 @@ Git 提交 & 发布
 
 **目标**：在写代码前，先想清楚要做什么
 
+**规划轨道选择**（基于任务复杂度）：
+
+| 轨道 | 适用场景 | 预计时间 | 使用工具 |
+|------|---------|---------|---------|
+| **Quick Flow** | 小任务、Bug 修复 | < 2 小时 | `/plan` + `/bmad-quick-spec` |
+| **Standard** | 中型功能开发 | 2-8 小时 | `/plan` + BMAD Method 部分流程 |
+| **Enterprise** | 大型系统、架构设计 | > 8 小时 | BMAD Method 完整流程 |
+
+#### 轨道 1：Quick Flow（小任务）
+
+**适用场景**：Bug 修复、小功能、简单重构
+
 **步骤**：
 
-1. **运行规划命令**
+1. **快速规划**
    ```bash
    /plan "任务描述"
    ```
 
-2. **判断是否需要流程图**
+2. **可选：生成快速规格**
+   ```bash
+   /bmad-quick-spec
+   ```
 
-   需要流程图的场景：
-   - ✅ 涉及多个步骤的任务
-   - ✅ 有分支判断的业务逻辑
-   - ✅ 需要多人协作的复杂任务
-   - ✅ 有时序关系的 API 调用
-   - ✅ 状态流转复杂的功能
+3. **确认计划**
+   - 同意：回复 "yes" 或 "proceed"
+   - 修改：回复 "modify: [你的修改]"
 
-3. **生成流程图**（使用 workflow-studio）
+**产出**：实施计划（可选流程图）
+
+#### 轨道 2：Standard（中型任务）
+
+**适用场景**：新功能开发、模块重构、API 设计
+
+**步骤**：
+
+1. **智能指导**（推荐）
+   ```bash
+   /bmad-help
+   ```
+   BMAD 会自动检测项目状态，推荐下一步操作
+
+2. **需求分析**（可选）
+   ```bash
+   # 如果需要头脑风暴
+   /bmad-brainstorming
+
+   # 如果需要技术调研
+   /bmad-technical-research "调研主题"
+   ```
+
+3. **创建 PRD**（推荐）
+   ```bash
+   /bmad-create-prd
+   ```
+   产出：`_bmad-output/planning-artifacts/PRD.md`
+
+4. **架构设计**（推荐）
+   ```bash
+   /bmad-create-architecture
+   ```
+   产出：`_bmad-output/planning-artifacts/architecture.md`
+
+5. **生成流程图**（使用 workflow-studio）
    ```markdown
    ```flow
    TD
@@ -148,11 +257,91 @@ Git 提交 & 发布
    ```
    ```
 
-4. **确认或修改计划**
+6. **确认计划**
    - 同意：回复 "yes" 或 "proceed"
    - 修改：回复 "modify: [你的修改]"
 
-**产出**：清晰的实施计划 + 可视化流程图
+**产出**：PRD + Architecture + 流程图
+
+#### 轨道 3：Enterprise（大型任务）
+
+**适用场景**：大型系统、完整产品、架构重构
+
+**步骤**：
+
+1. **智能指导**
+   ```bash
+   /bmad-help
+   ```
+
+2. **分析阶段**
+   ```bash
+   # 头脑风暴
+   /bmad-brainstorming
+
+   # 领域调研
+   /bmad-domain-research "领域名称"
+
+   # 市场调研
+   /bmad-market-research "业务想法"
+
+   # 技术调研
+   /bmad-technical-research "技术主题"
+
+   # 创建产品简介
+   /bmad-create-product-brief
+   ```
+
+3. **规划阶段**
+   ```bash
+   # 创建 PRD
+   /bmad-create-prd
+
+   # UX 设计
+   /bmad-create-ux-design
+   ```
+
+4. **方案设计阶段**
+   ```bash
+   # 架构设计
+   /bmad-create-architecture
+
+   # Epic 和 Story 分解
+   /bmad-create-epics-and-stories
+
+   # 实现就绪检查
+   /bmad-check-implementation-readiness
+   ```
+
+5. **Sprint 规划**
+   ```bash
+   /bmad-sprint-planning
+   ```
+
+**产出**：完整的规划文档集
+- Product Brief
+- PRD
+- UX Design
+- Architecture
+- Epics & Stories
+- Sprint Plan
+
+#### 通用规则
+
+**需要流程图的场景**：
+- ✅ 涉及多个步骤的任务
+- ✅ 有分支判断的业务逻辑
+- ✅ 需要多人协作的复杂任务
+- ✅ 有时序关系的 API 调用
+- ✅ 状态流转复杂的功能
+
+**BMAD Method 产出位置**：
+- 规划产物：`_bmad-output/planning-artifacts/`
+- 实现产物：`_bmad-output/implementation-artifacts/`
+
+**项目上下文**：
+- 静态规则：`project-context.md`（技术栈、实现规则）
+- 动态记忆：`MEMORY.md`（关键决策、经验教训）
 
 ---
 
@@ -197,7 +386,20 @@ Git 提交 & 发布
 
 **目标**：用测试驱动的方式高质量实现功能
 
-#### Step 1: RED（写失败测试）
+**开发模式选择**：
+
+| 模式 | 适用场景 | 使用工具 |
+|------|---------|---------|
+| **Quick Dev** | 小任务、快速迭代 | `/tdd` + `/bmad-quick-dev` |
+| **Story Dev** | 中大型任务、Sprint 开发 | `/bmad-create-story` + `/bmad-dev-story` |
+
+#### 模式 1：Quick Dev（快速开发）
+
+**适用场景**：小任务、Bug 修复、简单功能
+
+**步骤**：
+
+##### Step 1: RED（写失败测试）
 
 ```bash
 /tdd
@@ -212,7 +414,7 @@ Git 提交 & 发布
 - 避免过度开发
 - 测试覆盖率自然达标
 
-#### Step 2: GREEN（实现功能）
+##### Step 2: GREEN（实现功能）
 
 1. 编写最小代码让测试通过
 2. 不要优化，先实现功能
@@ -223,7 +425,12 @@ Git 提交 & 发布
 - 快速验证方向正确
 - 后续重构更有针对性
 
-#### Step 3: REFACTOR（重构优化）
+**可选：使用 BMAD Quick Dev**
+```bash
+/bmad-quick-dev "quick-spec-file.md"
+```
+
+##### Step 3: REFACTOR（重构优化）
 
 1. 优化代码结构
 2. 消除重复
@@ -235,7 +442,7 @@ Git 提交 & 发布
 - 有测试保护，重构放心
 - 避免过早优化
 
-#### Step 4: VERIFY（验证闭环）
+##### Step 4: VERIFY（验证闭环）
 
 ```bash
 /verify
@@ -247,6 +454,85 @@ Git 提交 & 发布
 4. 修复或记录问题
 
 **产出**：通过测试的功能代码，测试报告
+
+#### 模式 2：Story Dev（Story 驱动开发）
+
+**适用场景**：中大型任务、Sprint 开发、团队协作
+
+**前提条件**：
+- ✅ 已完成 Epic 和 Story 分解（`/bmad-create-epics-and-stories`）
+- ✅ 已完成 Sprint 规划（`/bmad-sprint-planning`）
+
+**步骤**：
+
+##### Step 1: 创建 Story 文件
+
+```bash
+/bmad-create-story "story-identifier"
+```
+
+产出：`_bmad-output/implementation-artifacts/story-[id].md`
+
+Story 文件包含：
+- Story 描述和验收标准
+- 技术实现方案
+- 依赖关系
+- 测试要求
+
+##### Step 2: 实现 Story
+
+```bash
+/bmad-dev-story "story-file.md"
+```
+
+BMAD Developer Agent 会：
+1. 读取 Story 文件上下文
+2. 按照 TDD 流程实现（RED → GREEN → REFACTOR）
+3. 确保测试覆盖率 ≥ 80%
+4. 生成实现报告
+
+##### Step 3: 代码审查
+
+```bash
+/bmad-code-review
+```
+
+BMAD Code Reviewer 会：
+- 检查代码质量
+- 验证是否符合 Story 要求
+- 检查测试覆盖率
+- 提供改进建议
+
+##### Step 4: 更新 Sprint 状态
+
+```bash
+/bmad-sprint-status
+```
+
+查看：
+- 已完成的 Story
+- 进行中的 Story
+- 待开发的 Story
+- Sprint 风险
+
+##### Step 5: Sprint 完成后回顾
+
+```bash
+/bmad-retrospective "epic-name"
+```
+
+总结：
+- 成功经验
+- 遇到的问题
+- 改进建议
+- 下一步计划
+
+**产出**：
+- Story 实现代码
+- 测试代码
+- 代码审查报告
+- Sprint 状态报告
+- 回顾总结
 
 ---
 
