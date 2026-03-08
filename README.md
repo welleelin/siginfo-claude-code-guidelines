@@ -62,6 +62,7 @@
 | [01-ACTION_GUIDELINES.md](guidelines/01-ACTION_GUIDELINES.md) | 行动准则 | 每次会话开始 |
 | [15-STABLE_ZONE_PROTECTION.md](guidelines/15-STABLE_ZONE_PROTECTION.md) | 稳定区域保护 | 修改代码前 |
 | [PENCIL_INTEGRATION.md](docs/PENCIL_INTEGRATION.md) | Pencil 设计工具集成 | UI/UX 设计时 |
+| [16-DOCLING_INTEGRATION.md](guidelines/16-DOCLING_INTEGRATION.md) | Docling 文档处理集成 | 文档处理时 |
 
 ### 按需阅读文档
 
@@ -89,6 +90,7 @@ cd siginfo-claude-code-guidelines
 
 - [快速开始指南](docs/QUICK_START_GUIDE.md) - 代码稳定区域保护和目录索引
 - [Pencil 快速开始](docs/PENCIL_QUICK_START.md) - 5 分钟上手 Pencil 设计工具
+- [Docling 集成指南](guidelines/16-DOCLING_INTEGRATION.md) - 文档处理工具集成
 
 ---
 
@@ -818,7 +820,8 @@ siginfo-claude-code-guidelines/
 │   ├── 08-LONG_RUNNING_AGENTS.md       # 长期运行 Agent 最佳实践
 │   ├── 09-AUTOMATION_MODES.md          # 自动化模式配置
 │   ├── 10-ANTHROPIC_LONG_RUNNING_AGENTS.md # Anthropic 官方指南
-│   └── 11-LONG_TERM_MEMORY.md          # 长期记忆管理规范 ⭐ NEW
+│   ├── 11-LONG_TERM_MEMORY.md          # 长期记忆管理规范 ⭐ NEW
+│   └── 16-DOCLING_INTEGRATION.md       # Docling 文档处理集成 ⭐ NEW
 │
 ├── templates/                # 📝 项目模板
 │   ├── CLAUDE.md.template    # 项目配置模板
@@ -859,6 +862,7 @@ siginfo-claude-code-guidelines/
 │   ├── architect.md
 │   ├── tdd-guide.md
 │   ├── memory-keeper.md     # 记忆管理 Agent ⭐ NEW
+│   ├── document-processor.md # 文档处理 Agent ⭐ NEW
 │   └── ...
 │
 ├── skills/                   # 技能库
@@ -1263,6 +1267,98 @@ GitHub 搜索    Hourly 层    实时记录
 - 实时记录：`memory/YYYY-MM-DD.md` (Hourly 层)
 - 每日归档：`memory/YYYY-MM-DD.md` (Daily 层)
 - 长期记忆：`MEMORY.md` (Weekly 层)
+
+---
+
+## 🎨 Pencil 设计工具集成 ⭐ NEW
+
+> AI-Native 设计工具，支持设计即代码、MCP 集成、自动化导出
+
+### 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| **AI-Native 设计** | 使用自然语言描述设计需求，AI 自动生成设计稿 |
+| **设计即代码** | 设计文件即代码，支持版本控制和协作 |
+| **MCP 集成** | 通过 MCP 服务器与 Claude Code 无缝集成 |
+| **自动化导出** | 一键导出为 React/Vue/HTML/Tailwind 代码 |
+| **设计 Token 提取** | 自动提取颜色、字体、间距等设计 Token |
+| **视觉回归测试** | 对比设计稿和实际页面，确保一致性 |
+
+### 快速开始
+
+```bash
+# 1. 安装 OpenPencil CLI
+bun add -g @open-pencil/cli
+
+# 2. 提取设计 Token
+./scripts/extract-design-tokens.sh
+
+# 3. 视觉回归测试
+./scripts/visual-regression-test.sh designs/login.fig http://localhost:3000/login
+
+# 4. 验证设计文件
+./scripts/validate-design-files.sh
+```
+
+### 自动化工作流
+
+- **设计 Token 提取**：自动提取颜色、排版、间距等设计规范
+- **视觉回归测试**：对比设计稿和实际页面，生成差异报告
+- **CI/CD 集成**：设计文件变更自动触发 Token 更新和验证
+- **设计决策记录**：使用模板记录设计决策和原因
+
+### 详细文档
+
+- [Pencil 集成指南](docs/PENCIL_INTEGRATION.md) - 完整集成文档
+- [Pencil 快速开始](docs/PENCIL_QUICK_START.md) - 5 分钟上手指南
+- [OMC Tumx 模式](docs/OMC_TUMUX_MODE.md) - 多模型协作指南
+
+---
+
+## 📄 Docling 文档处理集成 ⭐ NEW
+
+> IBM Research 开发的生产级文档处理工具，支持 PDF/Office/音频等多种格式
+
+### 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| **多格式支持** | PDF, DOCX, PPTX, XLSX, HTML, 音频, 图像等 |
+| **高级 PDF 理解** | 布局分析、表格提取、公式识别、OCR |
+| **统一表示** | DoclingDocument 格式，保留结构和语义 |
+| **多种导出** | Markdown, HTML, JSON, DocTags |
+| **本地执行** | 支持离线运行，适合敏感数据 |
+| **AI 集成** | LangChain, LlamaIndex, MCP Server |
+
+### 快速开始
+
+```bash
+# 1. 安装 Docling
+./scripts/install-docling.sh
+
+# 2. 激活虚拟环境
+source activate-docling.sh
+
+# 3. 转换文档
+./scripts/convert-document.sh document.pdf markdown output.md
+
+# 4. 批量转换
+./scripts/batch-convert-documents.sh docs/ output/ markdown
+```
+
+### 使用场景
+
+- **技术文档处理**：转换 PDF 技术文档为 Markdown
+- **构建 RAG 知识库**：从多个文档构建向量数据库
+- **表格数据提取**：从 PDF 报告中提取表格数据
+- **音频转文本**：将会议录音转换为文本
+
+### 详细文档
+
+- [Docling 集成指南](guidelines/16-DOCLING_INTEGRATION.md) - 完整集成文档
+- [Docling 分析报告](docs/DOCLING_ANALYSIS.md) - 深度分析报告
+- [Document Processor Agent](agents/document-processor.md) - 文档处理 Agent
 
 ---
 
