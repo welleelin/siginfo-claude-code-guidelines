@@ -39,6 +39,42 @@
             margin: 0 0 15px 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
+        .search-box {
+            margin-bottom: 15px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #58a6ff;
+        }
+        .search-input::placeholder {
+            color: #6e7681;
+        }
+        .search-result-count {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+        .toc-list a.search-highlight {
+            background-color: #ffd33d20;
+            border-left: 2px solid #ffd33d;
+        }
+        .markdown-body mark.search-highlight-content {
+            background-color: #ffd33d;
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
         .toc-list {
             list-style: none;
             padding: 0;
@@ -174,6 +210,10 @@
     <div class="container">
         <aside class="toc-sidebar">
             <h3>📑 目录</h3>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索文档内容...">
+                <div class="search-result-count" id="searchResultCount"></div>
+            </div>
             <ul class="toc-list" id="toc"></ul>
         </aside>
         <div class="content-wrapper">
@@ -269,8 +309,17 @@
                         renderTree(node.children, childUl);
                         li.appendChild(childUl);
 
-                        // 设置初始高度
-                        childUl.style.maxHeight = childUl.scrollHeight + 'px';
+                        // 默认状态：H1展开，H2展开，H3及以下折叠
+                        if (node.level >= 3) {
+                            childUl.style.maxHeight = '0';
+                            childUl.classList.add('collapsed');
+                            toggle.classList.add('collapsed');
+                        } else {
+                            // H1和H2默认展开
+                            setTimeout(() => {
+                                childUl.style.maxHeight = childUl.scrollHeight + 'px';
+                            }, 0);
+                        }
 
                         // 展开/折叠功能
                         toggle.addEventListener('click', (e) => {
@@ -320,6 +369,98 @@
             headings.forEach(heading => observer.observe(heading));
         }
 
+        // 搜索功能
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResultCount = document.getElementById('searchResultCount');
+            const content = document.getElementById('content');
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim().toLowerCase();
+
+                // 清除之前的高亮
+                document.querySelectorAll('.toc-list a').forEach(link => {
+                    link.classList.remove('search-highlight');
+                });
+
+                if (!query) {
+                    searchResultCount.textContent = '';
+                    // 清除内容区域的高亮
+                    content.innerHTML = content.innerHTML.replace(/<mark class="search-highlight-content">(.*?)<\/mark>/g, '$1');
+                    return;
+                }
+
+                // 搜索目录
+                const tocLinks = document.querySelectorAll('.toc-list a');
+                let tocMatches = 0;
+                tocLinks.forEach(link => {
+                    if (link.textContent.toLowerCase().includes(query)) {
+                        link.classList.add('search-highlight');
+                        tocMatches++;
+
+                        // 展开父节点
+                        let parent = link.closest('.toc-children');
+                        while (parent) {
+                            if (parent.classList.contains('collapsed')) {
+                                parent.style.maxHeight = parent.scrollHeight + 'px';
+                                parent.classList.remove('collapsed');
+                                const toggle = parent.previousElementSibling?.querySelector('.toc-toggle');
+                                if (toggle) {
+                                    toggle.classList.remove('collapsed');
+                                }
+                            }
+                            parent = parent.parentElement.closest('.toc-children');
+                        }
+                    }
+                });
+
+                // 搜索内容区域
+                const textContent = content.textContent.toLowerCase();
+                const contentMatches = (textContent.match(new RegExp(query, 'g')) || []).length;
+
+                // 高亮内容区域的匹配文本
+                highlightContentMatches(query);
+
+                // 显示结果统计
+                const total = tocMatches + contentMatches;
+                if (total > 0) {
+                    searchResultCount.textContent = `找到 ${total} 个结果 (目录: ${tocMatches}, 内容: ${contentMatches})`;
+                } else {
+                    searchResultCount.textContent = '未找到匹配结果';
+                }
+            });
+        }
+
+        // 高亮内容区域的匹配文本
+        function highlightContentMatches(query) {
+            const content = document.getElementById('content');
+            const walker = document.createTreeWalker(
+                content,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+
+            const nodesToReplace = [];
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeValue.toLowerCase().includes(query)) {
+                    nodesToReplace.push(node);
+                }
+            }
+
+            nodesToReplace.forEach(node => {
+                const parent = node.parentNode;
+                if (parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE') {
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    const highlighted = node.nodeValue.replace(regex, '<mark class="search-highlight-content">$1</mark>');
+                    const span = document.createElement('span');
+                    span.innerHTML = highlighted;
+                    parent.replaceChild(span, node);
+                }
+            });
+        }
+
         // 加载并渲染 Markdown
         fetch('README.md')
             .then(response => response.text())
@@ -328,6 +469,9 @@
 
                 // 生成目录
                 generateTOC();
+
+                // 设置搜索功能
+                setupSearch();
 
                 // 为所有链接添加处理
                 document.querySelectorAll('.markdown-body a').forEach(link => {
