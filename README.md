@@ -61,6 +61,7 @@
 | [00-SYSTEM_OVERVIEW.md](guidelines/00-SYSTEM_OVERVIEW.md) | 系统总则 | 每次会话开始 |
 | [01-ACTION_GUIDELINES.md](guidelines/01-ACTION_GUIDELINES.md) | 行动准则 | 每次会话开始 |
 | [15-STABLE_ZONE_PROTECTION.md](guidelines/15-STABLE_ZONE_PROTECTION.md) | 稳定区域保护 | 修改代码前 |
+| [PENCIL_INTEGRATION.md](docs/PENCIL_INTEGRATION.md) | Pencil 设计工具集成 | UI/UX 设计时 |
 
 ### 按需阅读文档
 

@@ -91,6 +91,7 @@
 
 | 时间 | 决策 | 原因 | 影响范围 |
 |------|------|------|---------|
+| 2026-03-08 | 集成 Pencil 设计工具 | AI-Native 设计工具，支持设计即代码、MCP 集成、自动化导出 | UI/UX 设计能力 |
 | 2026-03-08 | 创建代码稳定区域保护机制 | 防止已稳定的代码被无意修改，确保系统稳定性 | 开发流程 Phase 0 |
 | 2026-03-08 | 创建 Guidelines 目录索引 | 帮助 Claude Code 按需加载相关规范，提升效率 | 文档组织 |
 | 2026-03-08 | Agent 去重策略 | 识别 6 个重复 Agent（code-reviewer, planner, architect, developer, qa, security-reviewer），采用功能合并和分层使用策略 | Agent 层整合 |
@@ -132,6 +133,7 @@
 
 | 里程碑 | 状态 | 完成时间 | 备注 |
 |--------|------|---------|------|
+| Pencil 设计工具集成 | ✅ 完成 | 2026-03-08 | 创建 PENCIL_INTEGRATION.md（AI-Native 设计工具集成指南） |
 | 代码稳定区域保护机制 | ✅ 完成 | 2026-03-08 | 创建 15-STABLE_ZONE_PROTECTION.md + 2 个脚本 + Phase 0 |
 | Guidelines 目录索引 | ✅ 完成 | 2026-03-08 | 创建 00-INDEX.md（按问题分类 + 工作流索引） |
 | 四项目集成完整手册 | ✅ 完成 | 2026-03-08 | 创建 docs/INTEGRATION_HANDBOOK.md（1225 行，9 个章节） |
