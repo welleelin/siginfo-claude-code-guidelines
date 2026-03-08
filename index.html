@@ -92,6 +92,12 @@
             align-items: center;
             gap: 4px;
         }
+        .toc-number {
+            color: #6e7681;
+            font-size: 12px;
+            margin-right: 4px;
+            flex-shrink: 0;
+        }
         .toc-toggle {
             width: 16px;
             height: 16px;
@@ -267,8 +273,8 @@
             });
 
             // 渲染树形结构
-            function renderTree(nodes, parentUl) {
-                nodes.forEach(node => {
+            function renderTree(nodes, parentUl, parentNumber = '') {
+                nodes.forEach((node, index) => {
                     const li = document.createElement('li');
                     li.className = 'toc-item';
 
@@ -277,12 +283,18 @@
 
                     // 展开/折叠按钮
                     const toggle = document.createElement('span');
-                    toggle.className = 'toc-toggle';
-                    toggle.innerHTML = '▼';
+                    toggle.className = 'toc-toggle collapsed';
+                    toggle.innerHTML = '▶';
 
                     if (node.children.length === 0) {
                         toggle.classList.add('empty');
                     }
+
+                    // 序号
+                    const number = parentNumber ? `${parentNumber}.${index + 1}` : `${index + 1}`;
+                    const numberSpan = document.createElement('span');
+                    numberSpan.className = 'toc-number';
+                    numberSpan.textContent = number;
 
                     // 链接
                     const a = document.createElement('a');
@@ -299,27 +311,17 @@
                     });
 
                     header.appendChild(toggle);
+                    header.appendChild(numberSpan);
                     header.appendChild(a);
                     li.appendChild(header);
 
                     // 子节点
                     if (node.children.length > 0) {
                         const childUl = document.createElement('ul');
-                        childUl.className = 'toc-children';
-                        renderTree(node.children, childUl);
+                        childUl.className = 'toc-children collapsed';
+                        childUl.style.maxHeight = '0';
+                        renderTree(node.children, childUl, number);
                         li.appendChild(childUl);
-
-                        // 默认状态：H1展开，H2展开，H3及以下折叠
-                        if (node.level >= 3) {
-                            childUl.style.maxHeight = '0';
-                            childUl.classList.add('collapsed');
-                            toggle.classList.add('collapsed');
-                        } else {
-                            // H1和H2默认展开
-                            setTimeout(() => {
-                                childUl.style.maxHeight = childUl.scrollHeight + 'px';
-                            }, 0);
-                        }
 
                         // 展开/折叠功能
                         toggle.addEventListener('click', (e) => {
@@ -330,10 +332,12 @@
                                 childUl.style.maxHeight = childUl.scrollHeight + 'px';
                                 childUl.classList.remove('collapsed');
                                 toggle.classList.remove('collapsed');
+                                toggle.innerHTML = '▼';
                             } else {
                                 childUl.style.maxHeight = '0';
                                 childUl.classList.add('collapsed');
                                 toggle.classList.add('collapsed');
+                                toggle.innerHTML = '▶';
                             }
                         });
                     }
