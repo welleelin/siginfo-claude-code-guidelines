@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGINFO-Claude 开发环境</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            gap: 30px;
+        }
+        .toc-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            background-color: #161b22;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .toc-sidebar h3 {
+            color: #58a6ff;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc-list li {
+            margin: 0;
+            padding: 0;
+        }
+        .toc-item {
+            position: relative;
+        }
+        .toc-item-header {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .toc-toggle {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #8b949e;
+            font-size: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .toc-toggle:hover {
+            color: #58a6ff;
+        }
+        .toc-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        .toc-toggle.empty {
+            visibility: hidden;
+        }
+        .toc-list a {
+            display: block;
+            padding: 6px 8px;
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            flex: 1;
+        }
+        .toc-list a:hover {
+            background-color: #21262d;
+            color: #58a6ff;
+        }
+        .toc-list a.active {
+            background-color: #1f6feb;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .toc-children {
+            list-style: none;
+            padding-left: 20px;
+            margin: 2px 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .toc-children.collapsed {
+            max-height: 0 !important;
+        }
+        .toc-h1 a {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .toc-h2 a {
+            font-size: 13px;
+        }
+        .toc-h3 a {
+            font-size: 12px;
+        }
+        .toc-h4 a {
+            font-size: 11px;
+            color: #6e7681;
+        }
+        .content-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+        .markdown-body {
+            box-sizing: border-box;
+            padding: 45px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            .toc-sidebar {
+                width: 100%;
+                position: static;
+                max-height: 300px;
+            }
+        }
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #8b949e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        /* 滚动条样式 */
+        .toc-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .toc-sidebar::-webkit-scrollbar-track {
+            background: #21262d;
+            border-radius: 3px;
+        }
+        .toc-sidebar::-webkit-scrollbar-thumb {
+            background: #484f58;
+            border-radius: 3px;
+        }
+        .toc-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #6e7681;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="toc-sidebar">
+            <h3>📑 目录</h3>
+            <ul class="toc-list" id="toc"></ul>
+        </aside>
+        <div class="content-wrapper">
+            <div class="markdown-body" id="content">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 配置 marked 选项
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            mangle: false
+        });
+
+        // 生成树形目录
+        function generateTOC() {
+            const content = document.getElementById('content');
+            const headings = content.querySelectorAll('h1, h2, h3, h4');
+            const tocList = document.getElementById('toc');
+            tocList.innerHTML = '';
+
+            // 构建树形结构
+            const tree = [];
+            const stack = [{ level: 0, children: tree }];
+
+            headings.forEach((heading, index) => {
+                const level = parseInt(heading.tagName.substring(1));
+                const text = heading.textContent;
+                const id = `heading-${index}`;
+                heading.id = id;
+
+                const node = {
+                    level,
+                    text,
+                    id,
+                    heading,
+                    children: []
+                };
+
+                // 找到合适的父节点
+                while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+                    stack.pop();
+                }
+
+                stack[stack.length - 1].children.push(node);
+                stack.push(node);
+            });
+
+            // 渲染树形结构
+            function renderTree(nodes, parentUl) {
+                nodes.forEach(node => {
+                    const li = document.createElement('li');
+                    li.className = 'toc-item';
+
+                    const header = document.createElement('div');
+                    header.className = 'toc-item-header';
+
+                    // 展开/折叠按钮
+                    const toggle = document.createElement('span');
+                    toggle.className = 'toc-toggle';
+                    toggle.innerHTML = '▼';
+
+                    if (node.children.length === 0) {
+                        toggle.classList.add('empty');
+                    }
+
+                    // 链接
+                    const a = document.createElement('a');
+                    a.href = `#${node.id}`;
+                    a.textContent = node.text;
+                    a.className = `toc-h${node.level}`;
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        node.heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        document.querySelectorAll('.toc-list a').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        a.classList.add('active');
+                    });
+
+                    header.appendChild(toggle);
+                    header.appendChild(a);
+                    li.appendChild(header);
+
+                    // 子节点
+                    if (node.children.length > 0) {
+                        const childUl = document.createElement('ul');
+                        childUl.className = 'toc-children';
+                        renderTree(node.children, childUl);
+                        li.appendChild(childUl);
+
+                        // 设置初始高度
+                        childUl.style.maxHeight = childUl.scrollHeight + 'px';
+
+                        // 展开/折叠功能
+                        toggle.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const isCollapsed = childUl.classList.contains('collapsed');
+
+                            if (isCollapsed) {
+                                childUl.style.maxHeight = childUl.scrollHeight + 'px';
+                                childUl.classList.remove('collapsed');
+                                toggle.classList.remove('collapsed');
+                            } else {
+                                childUl.style.maxHeight = '0';
+                                childUl.classList.add('collapsed');
+                                toggle.classList.add('collapsed');
+                            }
+                        });
+                    }
+
+                    parentUl.appendChild(li);
+                });
+            }
+
+            renderTree(tree, tocList);
+
+            // 监听滚动，高亮当前章节
+            setupScrollSpy(headings);
+        }
+
+        // 滚动监听
+        function setupScrollSpy(headings) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        document.querySelectorAll('.toc-list a').forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, {
+                rootMargin: '-100px 0px -80% 0px'
+            });
+
+            headings.forEach(heading => observer.observe(heading));
+        }
+
+        // 加载并渲染 Markdown
+        fetch('README.md')
+            .then(response => response.text())
+            .then(markdown => {
+                document.getElementById('content').innerHTML = marked.parse(markdown);
+
+                // 生成目录
+                generateTOC();
+
+                // 为所有链接添加处理
+                document.querySelectorAll('.markdown-body a').forEach(link => {
+                    const href = link.getAttribute('href');
+                    // 如果是相对路径的 .md 文件，转换为可预览的链接
+                    if (href && href.endsWith('.md') && !href.startsWith('http')) {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            loadMarkdownFile(href);
+                        });
+                    }
+                });
+            })
+            .catch(error => {
+                document.getElementById('content').innerHTML =
+                    '<div class="loading">加载失败: ' + error.message + '</div>';
+            });
+
+        // 加载其他 Markdown 文件
+        function loadMarkdownFile(path) {
+            document.getElementById('content').innerHTML = '<div class="loading">加载中...</div>';
+
+            fetch(path)
+                .then(response => response.text())
+                .then(markdown => {
+                    document.getElementById('content').innerHTML = marked.parse(markdown);
+                    window.scrollTo(0, 0);
+
+                    // 添加返回按钮
+                    const backButton = document.createElement('div');
+                    backButton.innerHTML = '<a href="/" style="display: inline-block; margin-bottom: 20px; padding: 8px 16px; background: #0969da; color: white; text-decoration: none; border-radius: 6px;">← 返回首页</a>';
+                    document.getElementById('content').insertBefore(backButton, document.getElementById('content').firstChild);
+
+                    // 重新生成目录
+                    generateTOC();
+
+                    // 为新加载的内容中的链接添加处理
+                    document.querySelectorAll('.markdown-body a').forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && href.endsWith('.md') && !href.startsWith('http')) {
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                loadMarkdownFile(href);
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('content').innerHTML =
+                        '<div class="loading">加载失败: ' + error.message + '</div>';
+                });
+        }
+    </script>
+</body>
+</html>
