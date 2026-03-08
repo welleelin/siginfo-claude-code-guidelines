@@ -607,6 +607,60 @@ echo "✅ 设计 Token 已更新"
 
 ### 3. 自动化工作流
 
+#### 自动化脚本
+
+本项目提供了三个自动化脚本，简化 Pencil 设计工作流：
+
+##### 提取设计 Token
+
+```bash
+# 提取所有设计 Token
+./scripts/extract-design-tokens.sh
+
+# 提取特定设计文件的 Token
+./scripts/extract-design-tokens.sh login.pen
+```
+
+**输出文件**：
+- `design-tokens/colors.json` - 颜色规范
+- `design-tokens/typography.json` - 排版规范
+- `design-tokens/spacing.json` - 间距规范
+- `design-tokens/border-radius.json` - 圆角规范
+- `design-tokens/shadows.json` - 阴影规范
+- `design-tokens/design-tokens.json` - 合并的完整 Token
+- `design-tokens/design-tokens.css` - CSS 变量格式
+
+##### 视觉回归测试
+
+```bash
+# 对比设计稿和实际页面
+./scripts/visual-regression-test.sh designs/login.pen http://localhost:3000/login
+
+# 自定义差异阈值（默认 0.1 即 10%）
+THRESHOLD=0.05 ./scripts/visual-regression-test.sh designs/dashboard.pen http://localhost:3000/dashboard
+```
+
+**输出文件**：
+- `test-results/visual-regression/baseline.png` - 设计稿基准
+- `test-results/visual-regression/actual.png` - 实际页面截图
+- `test-results/visual-regression/diff.png` - 差异对比图
+- `test-results/visual-regression/report.html` - 测试报告
+
+##### 验证设计文件
+
+```bash
+# 验证所有设计文件的完整性
+./scripts/validate-design-files.sh
+```
+
+**验证内容**：
+- 检查必需文件是否存在
+- 验证文件格式是否正确
+- 检查文件是否可读
+- 生成验证报告
+
+#### CI/CD 集成
+
 ```bash
 # .github/workflows/design-sync.yml
 name: Design Sync
@@ -615,23 +669,40 @@ on:
   push:
     paths:
       - 'designs/**'
+  pull_request:
+    paths:
+      - 'designs/**'
 
 jobs:
-  sync:
+  validate-and-sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install OpenPencil CLI
-        run: bun add -g @open-pencil/cli
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: |
+          npm install -g pixelmatch-cli
+          sudo apt-get update
+          sudo apt-get install -y imagemagick jq
+      - name: Validate Design Files
+        run: ./scripts/validate-design-files.sh
       - name: Extract Design Tokens
         run: ./scripts/extract-design-tokens.sh
-      - name: Commit Changes
+      - name: Commit Design Tokens
+        if: github.event_name == 'push'
         run: |
           git config user.name "Design Bot"
-          git config user.email "bot@example.com"
+          git config user.email "bot@github-actions"
           git add design-tokens/
-          git commit -m "chore: update design tokens"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update design tokens [skip ci]"
+            git push
+          fi
 ```
 
 ### 4. 设计审查流程

@@ -87,7 +87,8 @@ cd siginfo-claude-code-guidelines
 
 ### 完整安装指南
 
-详见 [快速开始指南](docs/getting-started.md)
+- [快速开始指南](docs/QUICK_START_GUIDE.md) - 代码稳定区域保护和目录索引
+- [Pencil 快速开始](docs/PENCIL_QUICK_START.md) - 5 分钟上手 Pencil 设计工具
 
 ---
 
