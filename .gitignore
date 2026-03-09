@@ -9,3 +9,7 @@ memory/.archive/
 *.key
 *.pem
 .secrets/
+
+# Temporary files
+.playwright-mcp/
+current-page-state.md
