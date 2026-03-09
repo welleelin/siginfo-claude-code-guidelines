@@ -62,6 +62,7 @@
 | [01-ACTION_GUIDELINES.md](guidelines/01-ACTION_GUIDELINES.md) | 行动准则 | 每次会话开始 |
 | [15-STABLE_ZONE_PROTECTION.md](guidelines/15-STABLE_ZONE_PROTECTION.md) | 稳定区域保护 | 修改代码前 |
 | [PENCIL_INTEGRATION.md](docs/PENCIL_INTEGRATION.md) | Pencil 设计工具集成 | UI/UX 设计时 |
+| [UI_UX_PRO_MAX_INTEGRATION.md](docs/UI_UX_PRO_MAX_INTEGRATION.md) | UI UX Pro Max 设计智能 | 设计决策时 |
 | [16-DOCLING_INTEGRATION.md](guidelines/16-DOCLING_INTEGRATION.md) | Docling 文档处理集成 | 文档处理时 |
 
 ### 按需阅读文档
@@ -1270,11 +1271,28 @@ GitHub 搜索    Hourly 层    实时记录
 
 ---
 
-## 🎨 Pencil 设计工具集成 ⭐ NEW
+## 🎨 UI/UX 设计工具集成 ⭐ NEW
 
-> AI-Native 设计工具，支持设计即代码、MCP 集成、自动化导出
+> 完整的设计工具链：UI UX Pro Max（设计决策）+ Pencil（AI 设计）+ Figma（专业设计）
 
-### 核心特性
+### UI UX Pro Max Skill - 设计智能系统
+
+| 资源 | 数量 | 说明 |
+|------|------|------|
+| **UI 风格** | 67 种 | Glassmorphism、Neumorphism、Minimalism 等 |
+| **配色方案** | 96 种 | Ocean Blue、Forest Green、Sunset Orange 等 |
+| **字体配对** | 57 种 | Modern Sans、Tech Stack、Editorial 等 |
+| **UX 指南** | 99 条 | 一致性、反馈、容错性、可访问性等 |
+| **图表类型** | 25 种 | Line Chart、Bar Chart、Heatmap 等 |
+| **推理规则** | 100 条 | AI 驱动的设计决策引擎 |
+
+**设计决策流程**：
+```
+需求分析 → 选择 UI 风格 → 选择配色方案 → 选择字体配对
+→ 创建设计稿（Pencil/Figma）→ UX 验证 → 代码生成
+```
+
+### Pencil - AI-Native 设计工具
 
 | 特性 | 说明 |
 |------|------|
@@ -1310,6 +1328,7 @@ bun add -g @open-pencil/cli
 
 ### 详细文档
 
+- [UI UX Pro Max 集成指南](docs/UI_UX_PRO_MAX_INTEGRATION.md) - 设计决策和风格指南
 - [Pencil 集成指南](docs/PENCIL_INTEGRATION.md) - 完整集成文档
 - [Pencil 快速开始](docs/PENCIL_QUICK_START.md) - 5 分钟上手指南
 - [OMC Tumx 模式](docs/OMC_TUMUX_MODE.md) - 多模型协作指南

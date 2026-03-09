@@ -771,6 +771,7 @@ open-pencil export design.fig -f jsx --style tailwind
 
 ## 📚 相关文档
 
+- [UI UX Pro Max 集成指南](./UI_UX_PRO_MAX_INTEGRATION.md) - 设计决策和风格指南
 - [Pencil 官方文档](https://docs.pencil.dev/)
 - [OpenPencil GitHub](https://github.com/open-pencil/open-pencil)
 - [OpenPencil 文档](https://openpencil.dev)
