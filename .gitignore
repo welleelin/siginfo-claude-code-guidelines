@@ -3,12 +3,17 @@
 checkpoints/*.json
 memory/.archive/
 *.local
+
 # Sensitive
 .env
 .env.local
 *.key
 *.pem
 .secrets/
+
+# cc-connect (IM bridge)
+.cc-connect/
+config.toml
 
 # Temporary files
 .playwright-mcp/

@@ -3,586 +3,1507 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGINFO-Claude 开发环境</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <title>SIGINFO-Claude 开发环境 - 文档中心</title>
+    <!-- Agent UI Annotation - AI UI 标注工具 -->
+    <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/agent-ui-annotation@latest/+esm';
+    </script>
     <style>
-        /* Notion 风格 - 温暖舒适的设计 */
+        /* 基于 Pencil 设计的 Notion 风格 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Pencil HiFi 设计配色 */
+            --bg-main: #f7f6f3;
+            --bg-sidebar: #f7f6f3;
+            --bg-content: #ffffff;
+            --bg-card: #ffffff;
+            --bg-nav-active: #ebebea;
+            --bg-hover: #e8e7e3;
+            --bg-highlight: #FFF9E6;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e5e5;
+            --accent-blue: #0066CC;
+            --accent-gold: #F59E0B;
+            --accent-green: #10B981;
+            --accent-red: #EF4444;
+            --accent: #0066CC;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-        }
-        .container {
-            display: flex;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
+            display: flex;
+            line-height: 1.7;
         }
-        .toc-sidebar {
+
+        /* ==================== 侧边栏 ==================== */
+        .sidebar {
             width: 280px;
-            flex-shrink: 0;
+            min-width: 280px;
+            background: var(--bg-sidebar);
+            height: 100vh;
             position: sticky;
             top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            background-color: #f7f6f3;
-            padding: 24px 20px;
-            border-right: 1px solid #e9e9e7;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 16px;
+            gap: 16px;
+            border-right: 1px solid var(--border-color);
         }
-        .toc-sidebar h3 {
-            color: #37352f;
-            font-size: 14px;
-            font-weight: 600;
-            margin: 0 0 16px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+
+        .sidebar-header {
+            padding-bottom: 16px;
         }
-        .search-box {
-            margin-bottom: 20px;
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
-        .search-input {
-            width: 100%;
-            padding: 10px 14px;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            color: #37352f;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-        .search-input:focus {
-            border-color: #0969da;
-            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
-        }
-        .search-input::placeholder {
-            color: #9b9a97;
-        }
-        .search-result-count {
-            margin-top: 8px;
+
+        .sidebar-header p {
             font-size: 12px;
-            color: #9b9a97;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
-        .toc-list a.search-highlight {
-            background-color: #fff7d1;
-            border-left: 3px solid #ffd33d;
+
+        /* 搜索框 */
+        .search-box {
+            width: 100%;
+            height: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .markdown-body mark.search-highlight-content {
-            background-color: #fff7d1;
-            color: #37352f;
-            padding: 2px 4px;
-            border-radius: 3px;
+
+        .search-box:hover {
+            border-color: #c0c0c0;
         }
-        .toc-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            border-width: 2px;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
         }
-        .toc-list li {
-            margin: 0;
-            padding: 0;
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+            color: var(--text-primary);
         }
-        .toc-item {
-            position: relative;
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
         }
-        .toc-item-header {
+
+        .search-icon {
+            font-size: 16px;
+        }
+
+        .search-shortcut {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-nav-active);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* 导航区域 */
+        .nav-section {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-group {
+            margin-bottom: 16px;
+        }
+
+        .nav-group-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .toc-number {
-            color: #9b9a97;
-            font-size: 12px;
-            margin-right: 4px;
-            flex-shrink: 0;
-            font-weight: 500;
-        }
-        .toc-toggle {
-            width: 18px;
-            height: 18px;
+
+        .nav-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #9b9a97;
-            font-size: 12px;
-            flex-shrink: 0;
-            transition: all 0.2s;
-            border-radius: 3px;
-        }
-        .toc-toggle:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            color: #37352f;
-        }
-        .toc-toggle.collapsed {
-            transform: rotate(-90deg);
-        }
-        .toc-toggle.empty {
-            visibility: hidden;
-        }
-        .toc-list a {
-            display: block;
-            padding: 8px 10px;
-            color: #6e6d6a;
-            text-decoration: none;
-            font-size: 14px;
+            height: 32px;
+            padding: 0 12px;
             border-radius: 6px;
-            transition: all 0.15s;
-            flex: 1;
-            line-height: 1.4;
+            cursor: pointer;
+            gap: 8px;
+            transition: background 0.15s;
+            text-decoration: none;
+            color: var(--text-secondary);
         }
-        .toc-list a:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            color: #37352f;
+
+        .nav-item:hover {
+            background: var(--bg-nav-active);
         }
-        .toc-list a.active {
-            background-color: #e9e9e7;
-            color: #37352f;
-            font-weight: 600;
+
+        .nav-item.active {
+            background: var(--bg-nav-active);
+            color: var(--text-primary);
         }
-        .toc-children {
-            list-style: none;
-            padding-left: 20px;
-            margin: 4px 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+
+        .nav-item-icon {
+            font-size: 16px;
         }
-        .toc-children.collapsed {
-            max-height: 0 !important;
-        }
-        .toc-h1 a {
-            font-weight: 600;
-            font-size: 14px;
-            color: #37352f;
-        }
-        .toc-h2 a {
+
+        .nav-item-label {
             font-size: 14px;
         }
-        .toc-h3 a {
-            font-size: 13px;
-        }
-        .toc-h4 a {
-            font-size: 12px;
-            color: #9b9a97;
-        }
-        .content-wrapper {
+
+        /* ==================== 主内容区 ==================== */
+        .main-content {
             flex: 1;
+            background: var(--bg-content);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: 48px 96px;
-            background-color: #ffffff;
+            padding: 40px 80px;
         }
-        .markdown-body {
-            max-width: 800px;
+
+        .content-wrapper {
             width: 100%;
-            box-sizing: border-box;
-            padding: 0;
-            background-color: transparent;
-            border-radius: 0;
-            box-shadow: none;
-            line-height: 1.7;
+            max-width: 760px;
         }
-        .markdown-body h1 {
+
+        /* 面包屑 */
+        .breadcrumb {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        /* 标题 */
+        .page-title {
             font-size: 36px;
             font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 24px;
-            color: #37352f;
-        }
-        .markdown-body h2 {
-            font-size: 28px;
-            font-weight: 600;
-            margin-top: 32px;
-            margin-bottom: 16px;
-            color: #37352f;
-        }
-        .markdown-body h3 {
-            font-size: 22px;
-            font-weight: 600;
-            margin-top: 24px;
+            color: var(--text-primary);
             margin-bottom: 12px;
-            color: #37352f;
+            line-height: 1.25;
         }
-        .markdown-body p {
+
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border-color);
+            margin: 24px 0;
+        }
+
+        /* 内容卡片 */
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .content-card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 16px;
-            color: #37352f;
         }
-        .markdown-body code {
-            background-color: #f7f6f3;
-            padding: 3px 6px;
+
+        .content-card p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* 能力一览表格 */
+        .capability-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .capability-table th {
+            text-align: left;
+            padding: 12px;
+            background: var(--bg-main);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .capability-table td {
+            padding: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .capability-table tr:hover {
+            background: var(--bg-main);
+        }
+
+        .capability-table .tool-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .capability-table .tool-desc {
+            color: var(--text-secondary);
+        }
+
+        .capability-table .tool-cmd {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            background: var(--bg-main);
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.9em;
+            color: var(--accent);
         }
-        .markdown-body pre {
-            background-color: #f7f6f3;
+
+        /* 代码块 */
+        .code-block {
+            background: #1a1a1a;
             border-radius: 8px;
             padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
         }
+
+        .code-block code {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            color: #e0e0e0;
+            white-space: pre;
+        }
+
+        .code-block .comment {
+            color: #666;
+        }
+
+        .code-block .keyword {
+            color: #ff79c6;
+        }
+
+        .code-block .string {
+            color: #50fa7b;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-success { background: #e6f7ed; color: #00a86b; }
+        .tag-warning { background: #fff7e6; color: #e6a23c; }
+        .tag-info { background: #e6f4ff; color: #0066CC; }
+
+        /* 快速命令 */
+        .quick-commands {
+            background: var(--bg-main);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .quick-commands h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .command-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .command-item:last-child {
+            border-bottom: none;
+        }
+
+        .command-item code {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            background: var(--bg-card);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--accent);
+            min-width: 180px;
+        }
+
+        .command-item span {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 分类标题 */
+        .section-category {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 32px 0 16px;
+        }
+
+        .section-category-icon {
+            font-size: 20px;
+        }
+
+        .section-category-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 响应式 */
         @media (max-width: 1024px) {
-            .content-wrapper {
-                padding: 32px 48px;
+            .sidebar {
+                width: 240px;
+                min-width: 240px;
             }
         }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 锚点偏移（避免被固定元素遮挡） */
+        .section-category[id],
+        h1[id],
+        h2[id] {
+            scroll-margin-top: 24px;
+        }
+
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
+            .sidebar {
+                display: none;
             }
-            .toc-sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 400px;
-                position: static;
-                border-right: none;
-                border-bottom: 1px solid #e9e9e7;
+            .main-content {
+                padding: 24px 16px;
             }
-            .content-wrapper {
-                padding: 24px 20px;
-            }
-            .markdown-body h1 {
+            .page-title {
                 font-size: 28px;
             }
-            .markdown-body h2 {
-                font-size: 22px;
-            }
-        }
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #9b9a97;
-        }
-        /* 滚动条样式 - Notion 风格 */
-        .toc-sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .toc-sidebar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .toc-sidebar::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
-        .toc-sidebar::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <aside class="toc-sidebar">
-            <h3>📑 目录</h3>
-            <div class="search-box">
-                <input type="text" class="search-input" id="searchInput" placeholder="搜索文档内容...">
-                <div class="search-result-count" id="searchResultCount"></div>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>📚 SIGINFO-Claude</h1>
+            <p>开发环境文档中心</p>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="search-box" onclick="document.getElementById('search-input').focus()">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="搜索规范 (Cmd+K)">
+            <span class="search-shortcut">⌘K</span>
+        </div>
+
+        <!-- 导航 -->
+        <nav class="nav-section">
+            <div class="nav-group">
+                <div class="nav-group-title">📚 文档</div>
+                <a href="#overview" class="nav-item active">
+                    <span class="nav-item-icon">📋</span>
+                    <span class="nav-item-label">1. 系统总则</span>
+                </a>
+                <a href="#guidelines" class="nav-item">
+                    <span class="nav-item-icon">⚡</span>
+                    <span class="nav-item-label">2. 行动准则</span>
+                </a>
+                <a href="#tdd" class="nav-item">
+                    <span class="nav-item-icon">🧪</span>
+                    <span class="nav-item-label">3. TDD 流程</span>
+                </a>
+                <a href="#memory" class="nav-item">
+                    <span class="nav-item-icon">🧠</span>
+                    <span class="nav-item-label">4. 记忆系统</span>
+                </a>
             </div>
-            <ul class="toc-list" id="toc"></ul>
-        </aside>
+
+            <div class="nav-group">
+                <div class="nav-group-title">🛠️ 能力</div>
+                <a href="#planning" class="nav-item">
+                    <span class="nav-item-icon">📦</span>
+                    <span class="nav-item-label">规划类工具</span>
+                </a>
+                <a href="#communication" class="nav-item">
+                    <span class="nav-item-icon">💬</span>
+                    <span class="nav-item-label">沟通类工具</span>
+                </a>
+                <a href="#design" class="nav-item">
+                    <span class="nav-item-icon">🎨</span>
+                    <span class="nav-item-label">设计类工具</span>
+                </a>
+                <a href="#testing" class="nav-item">
+                    <span class="nav-item-icon">🔬</span>
+                    <span class="nav-item-label">测试类工具</span>
+                </a>
+                <a href="#skills" class="nav-item">
+                    <span class="nav-item-icon">📚</span>
+                    <span class="nav-item-label">已安装 Skills</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">🔗 快捷</div>
+                <a href="#commands" class="nav-item">
+                    <span class="nav-item-icon">⌨️</span>
+                    <span class="nav-item-label">命令速查</span>
+                </a>
+                <a href="https://github.com/your-org/siginfo-claude-code-guidelines" class="nav-item">
+                    <span class="nav-item-icon">📂</span>
+                    <span class="nav-item-label">GitHub 仓库</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
         <div class="content-wrapper">
-            <div class="markdown-body" id="content">
-                <div class="loading">加载中...</div>
+            <!-- 面包屑 -->
+            <div class="breadcrumb">
+                <a href="#">首页</a> / <a href="#">Guidelines</a> / 系统总则
+            </div>
+
+            <!-- 标题 -->
+            <h1 class="page-title" id="overview">系统总则</h1>
+            <p class="page-subtitle">本文档定义了整个开发系统的核心原则、插件管理规范和自动化边界。用最简单的话告诉你：我们装了什么，能干什么，怎么用。</p>
+
+            <div class="divider"></div>
+
+            <!-- 行动准则 -->
+            <h2 id="guidelines" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">⚡ 行动准则</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">开发时怎么干才不会出问题？照着这个流程走就对了。</p>
+
+            <!-- 核心原则 -->
+            <div class="content-card">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🎯 核心原则（7 条铁律）</h3>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">1️⃣</span>
+                        <div>
+                            <strong>先想再做</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">写代码前必须规划，想清楚要做什么再动手</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">2️⃣</span>
+                        <div>
+                            <strong>质量优先</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">代码质量过关才能测试，测试过关才能提交</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">3️⃣</span>
+                        <div>
+                            <strong>测试驱动</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">先写测试用例（让它失败），再写代码（让它通过）</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">4️⃣</span>
+                        <div>
+                            <strong>API 完整</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有 API 都开发完了才能联调测试</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">5️⃣</span>
+                        <div>
+                            <strong>安全第一</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">安全检查通过才能发布，不能有漏洞上线</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">6️⃣</span>
+                        <div>
+                            <strong>文档同步</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">改了代码就要更新文档，别让人看不懂</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">7️⃣</span>
+                        <div>
+                            <strong>能追溯</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有决策和变更都要记下来，出了问题能找到原因</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 开发流程 -->
+            <div class="content-card" style="margin-top: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🔄 开发流程（8 步走完）</h3>
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">1</span>
+                        <div style="flex: 1;">
+                            <strong>会话启动</strong> - 检查环境、读文档、确认任务
+                        </div>
+                        <code class="tool-cmd">/plugin list</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">2</span>
+                        <div style="flex: 1;">
+                            <strong>任务规划</strong> - 先想清楚要做什么，别上来就写代码
+                        </div>
+                        <code class="tool-cmd">/plan</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #fff7e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--warning);">
+                        <span style="font-weight: 700; color: var(--warning); min-width: 24px;">3</span>
+                        <div style="flex: 1;">
+                            <strong>代码审查</strong> 🚧 - 代码质量过关才能进入测试
+                        </div>
+                        <code class="tool-cmd">/code-review</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">4</span>
+                        <div style="flex: 1;">
+                            <strong>TDD 开发</strong> - 先写测试（红）→ 写代码（绿）→ 优化（重构）
+                        </div>
+                        <code class="tool-cmd">/tdd</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #fff7e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--warning);">
+                        <span style="font-weight: 700; color: var(--warning); min-width: 24px;">5</span>
+                        <div style="flex: 1;">
+                            <strong>API 完整检查</strong> 🚧 - 所有 API 都开发完了才能联调
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-muted);">手动检查</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">6</span>
+                        <div style="flex: 1;">
+                            <strong>E2E 测试</strong> - 完整流程测试，模拟真实用户操作
+                        </div>
+                        <code class="tool-cmd">/e2e</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #ffe6e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--danger);">
+                        <span style="font-weight: 700; color: var(--danger); min-width: 24px;">7</span>
+                        <div style="flex: 1;">
+                            <strong>安全检查</strong> 🚧 - 查漏洞、查注入、查敏感信息
+                        </div>
+                        <code class="tool-cmd">/security-review</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f7ed 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--success);">
+                        <span style="font-weight: 700; color: var(--success); min-width: 24px;">8</span>
+                        <div style="flex: 1;">
+                            <strong>质量门禁</strong> 🎉 - 全部通过才能提交代码
+                        </div>
+                        <code class="tool-cmd">/verify</code>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">🚧 = 门禁关卡，必须通过才能继续</p>
+            </div>
+
+            <!-- 综合性测试工作流 v2.0 -->
+            <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent-blue);">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--accent-blue);">🔄 综合性测试工作流 v2.0</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">软件工程"一头一尾"原则：需求阶段是"头"，测试阶段是"尾"，两头抓牢才能开发顺畅</p>
+
+                <!-- 四阶段流程图 -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;">
+                    <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">0️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 0</div>
+                        <div style="font-size: 12px; opacity: 0.9;">需求文档验证</div>
+                    </div>
+                    <div style="padding: 16px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">1️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 1</div>
+                        <div style="font-size: 12px; opacity: 0.9;">前端 UI 测试</div>
+                    </div>
+                    <div style="padding: 16px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">2️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 2</div>
+                        <div style="font-size: 12px; opacity: 0.9;">后端 API 测试</div>
+                    </div>
+                    <div style="padding: 16px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">3️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 3</div>
+                        <div style="font-size: 12px; opacity: 0.9;">前后端联调</div>
+                    </div>
+                </div>
+
+                <!-- Phase 0 重点 -->
+                <div style="padding: 16px; background: #f0f4ff; border-radius: 8px; margin-bottom: 12px;">
+                    <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #667eea;">📌 Phase 0: 需求文档验证（测试前置）</h4>
+                    <div style="display: grid; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--success);">✓</span>
+                            <span><strong>项目类型确认</strong>：新项目还是旧项目二次开发？</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--success);">✓</span>
+                            <span><strong>需求收集迭代</strong>：用户描述 → AI 整合 → 确认 → 补充 → 闭环</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--success);">✓</span>
+                            <span><strong>界面原型确认</strong>：ASCII/命令行初步展示，让用户确认布局</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--success);">✓</span>
+                            <span><strong>验收清单生成</strong>：作为最终验收的唯一依据</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; padding: 8px; background: white; border-radius: 6px; font-size: 13px; color: var(--text-secondary);">
+                        💡 <strong>核心原则</strong>：需求不清晰，测试就没有依据。必须先验证需求文档，再进入开发测试。
+                    </div>
+                </div>
+
+                <!-- Phase 3 子阶段 -->
+                <div style="padding: 16px; background: #e6fff5; border-radius: 8px;">
+                    <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #10B981;">📌 Phase 3: 联调测试 6 个子阶段</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                        <div style="padding: 8px; background: white; border-radius: 6px; font-size: 13px;">
+                            <strong>3.1 环境准备</strong>：服务启动、网络检查、Mock 清理
+                        </div>
+                        <div style="padding: 8px; background: white; border-radius: 6px; font-size: 13px;">
+                            <strong>3.2 数据准备</strong>：清理脏数据、填充基础数据、验证依赖
+                        </div>
+                        <div style="padding: 8px; background: white; border-radius: 6px; font-size: 13px;">
+                            <strong>3.3 初步联调</strong>：功能正确性、控制台无 Bug
+                        </div>
+                        <div style="padding: 8px; background: white; border-radius: 6px; font-size: 13px;">
+                            <strong>3.4 业务流程</strong>：跨功能流程、状态流转、权限边界
+                        </div>
+                        <div style="padding: 8px; background: white; border-radius: 6px; font-size: 13px;">
+                            <strong>3.5 多角色协作</strong>：角色权限、数据隔离、审批流程
+                        </div>
+                        <div style="padding: 8px; background: white; border-radius: 6px; font-size: 13px;">
+                            <strong>3.6 Bug 记录</strong>：人性化描述、解决方案、验证结果
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mock 使用规则 -->
+            <div class="content-card" style="margin-top: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🎭 Mock 使用规则（什么时候能用假数据）</h3>
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>测试阶段</th>
+                            <th>能用 Mock？</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">Phase 0: 需求验证</td>
+                            <td><span style="color: var(--text-muted); font-weight: 600;">— 不适用</span></td>
+                            <td class="tool-desc">需求阶段不需要数据，只需要文档验证</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Phase 1: 前端 UI 测试</td>
+                            <td><span style="color: var(--success); font-weight: 600;">✅ 允许</span></td>
+                            <td class="tool-desc">前端 Mock 模式，验证 UI 和交互</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Phase 2: 后端 API 测试</td>
+                            <td><span style="color: var(--danger); font-weight: 600;">❌ 禁止</span></td>
+                            <td class="tool-desc">必须用真实数据库和真实数据</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Phase 3: 前后端联调</td>
+                            <td><span style="color: var(--danger); font-weight: 600;">❌ 严禁</span></td>
+                            <td class="tool-desc">必须用完整真实环境</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">💡 简单记：只有 Phase 1 前端测试可以用 Mock，其他阶段必须用真实数据</p>
+            </div>
+
+            <!-- 联调测试要求 -->
+            <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--danger);">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--danger);">⚠️ 前后端联调测试的铁律</h3>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #ffe6e6; border-radius: 8px;">
+                        <span style="font-size: 20px;">1️⃣</span>
+                        <div>
+                            <strong style="color: var(--danger);">必须用真实 API，禁止 Mock</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">联调就是测真实对接，用 Mock 等于没测</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #fff7e6; border-radius: 8px;">
+                        <span style="font-size: 20px;">2️⃣</span>
+                        <div>
+                            <strong style="color: var(--warning);">数据准备阶段不能跳过</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">清理脏数据 → 填充基础数据 → 验证依赖关系</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #e6f7ed; border-radius: 8px;">
+                        <span style="font-size: 20px;">3️⃣</span>
+                        <div>
+                            <strong style="color: var(--success);">业务流程测试 ≠ 单体功能测试</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">测的是完整流程：浏览 → 加购 → 结算 → 支付 → 完成</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">4️⃣</span>
+                        <div>
+                            <strong>多角色协作测试必须做</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">模拟买家、卖家、管理员不同角色的操作流程</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #f0f4ff; border-radius: 8px;">
+                        <span style="font-size: 20px;">5️⃣</span>
+                        <div>
+                            <strong style="color: var(--accent);">Bug 描述用人话</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">什么情况下 + 做了什么 + 期望什么 + 实际发生了什么</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 16px; padding: 12px; background: #1a1a1a; border-radius: 8px; color: #e0e0e0; font-family: 'SF Mono', monospace; font-size: 13px;">
+                    <div style="color: #666; margin-bottom: 8px;"># 联调测试检查清单</div>
+                    <div>□ 数据准备：清理脏数据、填充基础数据</div>
+                    <div>□ 环境验证：前端连接真实后端 API</div>
+                    <div>□ 功能联调：所有功能正常使用</div>
+                    <div>□ 业务流程：完整购买流程通过</div>
+                    <div>□ 多角色：买家/卖家/管理员协作正常</div>
+                    <div>□ 控制台：无红色 Error</div>
+                    <div>□ 网络：无 4xx/5xx 错误</div>
+                </div>
+            </div>
+
+            <!-- 多 Agent 测试模式 -->
+            <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent);">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🤖 多 Agent 测试执行模式</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">使用多个 Agent 并行执行测试，提高效率和覆盖率</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <div style="padding: 16px; background: #f0f4ff; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">⚡</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">并行测试模式</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">多个 Agent 同时测试不同模块</div>
+                        <div style="margin-top: 8px; font-size: 11px; color: var(--success);">✅ 速度快</div>
+                    </div>
+                    <div style="padding: 16px; background: #fff7e6; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">🔗</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">流水线测试模式</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">按依赖顺序执行测试阶段</div>
+                        <div style="margin-top: 8px; font-size: 11px; color: var(--warning);">✅ 依赖清晰</div>
+                    </div>
+                    <div style="padding: 16px; background: #e6fff5; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">🐝</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">Swarm 测试模式</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">多角色视角交叉验证</div>
+                        <div style="margin-top: 8px; font-size: 11px; color: var(--accent);">✅ 覆盖全面</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; padding: 12px; background: var(--bg-main); border-radius: 8px; font-size: 13px;">
+                    <strong>使用建议：</strong>
+                    <ul style="margin: 8px 0 0 20px; color: var(--text-secondary);">
+                        <li>Phase 2 API 测试 → <strong>并行模式</strong>（每个 Agent 负责一个模块）</li>
+                        <li>Phase 3 业务流程 → <strong>流水线模式</strong>（按阶段顺序执行）</li>
+                        <li>Phase 3.5 多角色 → <strong>Swarm 模式</strong>（买家/卖家/管理员交叉验证）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 人类介入点 -->
+            <div class="content-card" style="margin-top: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">👤 什么时候需要人来确认</h3>
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color); background: #f0f4ff; margin: 0 -12px; padding-left: 12px; padding-right: 12px;">
+                        <span style="font-size: 16px;">📋</span>
+                        <span style="flex: 1;"><strong>Phase 0 需求验证确认</strong>（功能点/页面/交互确认）</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #e6f0ff; color: var(--accent); border-radius: 4px;">P1 必须确认</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="font-size: 16px;">📋</span>
+                        <span style="flex: 1;">规划做完后</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #fff7e6; color: var(--warning); border-radius: 4px;">P2 2小时内</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="font-size: 16px;">❌</span>
+                        <span style="flex: 1;">测试失败需要决策</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #fff7e6; color: var(--warning); border-radius: 4px;">P2 2小时内</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="font-size: 16px;">🚧</span>
+                        <span style="flex: 1;">遇到阻塞需要帮助</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #ffe6e6; color: var(--danger); border-radius: 4px;">P1 30分钟内</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="font-size: 16px;">🏗️</span>
+                        <span style="flex: 1;">架构决策（选技术方案）</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #ffe6e6; color: var(--danger); border-radius: 4px;">P1 30分钟内</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="font-size: 16px;">⚠️</span>
+                        <span style="flex: 1;">风险接受（确认已知风险）</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #ffe6e6; color: var(--danger); border-radius: 4px;">P1 30分钟内</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0;">
+                        <span style="font-size: 16px;">✅</span>
+                        <span style="flex: 1;">任务完成通知</span>
+                        <span style="font-size: 12px; padding: 2px 8px; background: #e6f7ed; color: var(--success); border-radius: 4px;">P3 24小时内</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 上下文管理 -->
+            <div class="content-card" style="margin-top: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🧠 记忆管理（防止 AI 忘事）</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px; padding: 16px; background: #e6f4ff; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--accent);">70%</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">预警</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">提醒你注意</div>
+                    </div>
+                    <div style="flex: 1; min-width: 200px; padding: 16px; background: #fff7e6; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--warning);">80%</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">保存</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">自动存到 MEMORY.md</div>
+                    </div>
+                    <div style="flex: 1; min-width: 200px; padding: 16px; background: #ffe6e6; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--danger);">90%</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">压缩</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">强制 compact 清内存</div>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">💡 AI 的内存有限，满了就会忘事。所以达到 80% 就自动保存，达到 90% 就压缩清理。</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 已安装能力一览 -->
+            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">🛠️ 已安装能力一览</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">用最简单的话告诉你：我们装了什么，能干什么，怎么用。</p>
+
+            <!-- 规划类 -->
+            <div class="section-category" id="planning">
+                <span class="section-category-icon">📦</span>
+                <span class="section-category-title">规划类工具</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>一句话说明</th>
+                            <th>怎么用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">BMAD Method</td>
+                            <td class="tool-desc">帮你把大任务拆成小任务，像项目经理一样思考</td>
+                            <td><code class="tool-cmd">/bmad-help</code></td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Planning-with-Files</td>
+                            <td class="tool-desc">把任务计划写成文件，不怕忘记</td>
+                            <td><code class="tool-cmd">/plan</code></td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Everything Claude Code</td>
+                            <td class="tool-desc">Anthropic 黑客松冠军的实战配置包，含命令、规则、Agent</td>
+                            <td>已自动加载</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 插件类 -->
+            <div class="section-category" id="plugins">
+                <span class="section-category-icon">🔌</span>
+                <span class="section-category-title">已安装插件（5 个）</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>插件名称</th>
+                            <th>版本</th>
+                            <th>一句话说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">Everything Claude Code</td>
+                            <td>v1.4.1</td>
+                            <td class="tool-desc">黑客松冠军的实战配置包，提供 /tdd、/e2e、/verify 等命令和多个 Agent</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Superpowers</td>
+                            <td>v4.3.1</td>
+                            <td class="tool-desc">官方增强包，提供更多自动化能力和命令</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Oh My ClaudeCode</td>
+                            <td>v4.2.11</td>
+                            <td class="tool-desc">增强体验包，优化 Claude Code 的使用体验</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">UI UX Pro Max</td>
+                            <td>v2.0.1</td>
+                            <td class="tool-desc">UI/UX 设计专家，给设计建议和配色方案</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Document Skills</td>
+                            <td>latest</td>
+                            <td class="tool-desc">Anthropic 官方文档处理技能包</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 沟通类 -->
+            <div class="section-category" id="communication">
+                <span class="section-category-icon">💬</span>
+                <span class="section-category-title">沟通类工具</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>一句话说明</th>
+                            <th>怎么用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">Claude-to-IM</td>
+                            <td class="tool-desc">让你在手机上用微信/Telegram/飞书跟 Claude 聊天</td>
+                            <td><code class="tool-cmd">/claude-to-im setup</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 设计类 -->
+            <div class="section-category" id="design">
+                <span class="section-category-icon">🎨</span>
+                <span class="section-category-title">设计类工具</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>一句话说明</th>
+                            <th>怎么用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">Pencil</td>
+                            <td class="tool-desc">画界面原型，AI 帮你设计</td>
+                            <td>在 <code class="tool-cmd">.pen</code> 文件里设计</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">UI UX Pro Max</td>
+                            <td class="tool-desc">给你设计建议，配色、字体、布局都有</td>
+                            <td>设计时自动提示</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Agentation</td>
+                            <td class="tool-desc">在网页上标注设计问题，AI 能看到</td>
+                            <td><code class="tool-cmd">&lt;Agentation /&gt;</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 测试类 -->
+            <div class="section-category" id="testing">
+                <span class="section-category-icon">🧪</span>
+                <span class="section-category-title">测试类工具</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>一句话说明</th>
+                            <th>怎么用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">Playwright</td>
+                            <td class="tool-desc">自动打开浏览器测试网页功能</td>
+                            <td><code class="tool-cmd">npx playwright test</code></td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">Chrome DevTools MCP</td>
+                            <td class="tool-desc">让 AI 能操作浏览器调试</td>
+                            <td>自动化测试网页</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 文档类 -->
+            <div class="section-category">
+                <span class="section-category-icon">📄</span>
+                <span class="section-category-title">文档类工具</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>一句话说明</th>
+                            <th>怎么用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">Docling</td>
+                            <td class="tool-desc">把 PDF、Word 变成 AI 能读的格式</td>
+                            <td>自动处理文档</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 记忆类 -->
+            <div class="section-category" id="memory">
+                <span class="section-category-icon">🧠</span>
+                <span class="section-category-title">记忆类工具</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>工具</th>
+                            <th>一句话说明</th>
+                            <th>怎么用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">长期记忆系统</td>
+                            <td class="tool-desc">把重要的事情写下来，下次还能记住</td>
+                            <td>自动保存到 MEMORY.md</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">三文件模式</td>
+                            <td class="tool-desc">任务计划、发现、进度分开记</td>
+                            <td><code class="tool-cmd">/plan</code> 自动创建</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 已安装 Skills -->
+            <h2 id="skills" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">📚 已安装 Skills（19 个技能包）</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">Skills 是让 AI 自动执行特定任务的技能包，遇到对应场景会自动激活。</p>
+
+            <!-- 开发类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">💻</span>
+                <span class="section-category-title">开发类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">coding-standards</td>
+                            <td class="tool-desc">写代码、审查代码、重构时</td>
+                            <td>帮你写出规范的代码，命名、格式、结构都到位</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">tdd-workflow</td>
+                            <td class="tool-desc">写新功能、修 Bug、重构时</td>
+                            <td>强制先写测试再写代码，保证 80% 测试覆盖率</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">e2e-testing</td>
+                            <td class="tool-desc">写 E2E 测试、Playwright 相关时</td>
+                            <td>自动生成端到端测试，模拟真实用户操作</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">api-design</td>
+                            <td class="tool-desc">设计 API、写接口文档时</td>
+                            <td>帮你设计规范的 REST API，URL、参数、错误码都有规范</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">backend-patterns</td>
+                            <td class="tool-desc">写后端代码、Node.js/Express 时</td>
+                            <td>后端最佳实践：架构、API、数据库优化</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">frontend-patterns</td>
+                            <td class="tool-desc">写前端代码、React/Next.js 时</td>
+                            <td>前端最佳实践：组件、状态管理、性能优化</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">postgres-patterns</td>
+                            <td class="tool-desc">写 SQL、设计数据库时</td>
+                            <td>PostgreSQL 最佳实践：索引、查询优化、安全配置</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 安全类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">🔒</span>
+                <span class="section-category-title">安全类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">security-review</td>
+                            <td class="tool-desc">写认证、处理用户输入、用密钥时</td>
+                            <td>全面安全检查：认证、注入、XSS、CSRF、密钥管理</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">security-scan</td>
+                            <td class="tool-desc">修改配置文件、提交前检查时</td>
+                            <td>扫描 .claude/ 目录的安全漏洞，防注入、防泄密</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 验证类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">✅</span>
+                <span class="section-category-title">验证类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">verification-loop</td>
+                            <td class="tool-desc">完成功能、创建 PR、重构后</td>
+                            <td>全面验证：构建、类型检查、测试、代码审查</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">eval-harness</td>
+                            <td class="tool-desc">需要评估 AI 工作质量时</td>
+                            <td>评估框架，量化 AI 输出质量</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">simplify</td>
+                            <td class="tool-desc">代码有改动时</td>
+                            <td>检查代码是否可以复用、是否有冗余、是否高效</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 成本优化类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">💰</span>
+                <span class="section-category-title">成本优化类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">cost-aware-llm-pipeline</td>
+                            <td class="tool-desc">调用 LLM API、处理批量任务时</td>
+                            <td>自动选便宜的模型、追踪花费、缓存 Prompt，帮你省钱</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AI 辅助类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">🤖</span>
+                <span class="section-category-title">AI 辅助类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">iterative-retrieval</td>
+                            <td class="tool-desc">启动子 Agent、需要代码上下文时</td>
+                            <td>渐进式搜索信息，解决"AI 不知道要什么"的问题</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">continuous-learning-v2</td>
+                            <td class="tool-desc">AI 完成任务、发现新模式时</td>
+                            <td>自动学习新技能，把经验变成可复用的技能包</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 文档处理类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">📄</span>
+                <span class="section-category-title">文档处理类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">nutrient-document-processing</td>
+                            <td class="tool-desc">处理 PDF、Word、Excel 时</td>
+                            <td>文档转换、OCR 识别、提取内容、添加水印</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 桥接类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">🌉</span>
+                <span class="section-category-title">桥接类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">claude-to-im</td>
+                            <td class="tool-desc">说"桥接"、"消息推送"、"连飞书"时</td>
+                            <td>把 Claude 连到微信/Telegram/飞书，手机上也能用</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">claude-api</td>
+                            <td class="tool-desc">代码里有 anthropic、@anthropic-ai/sdk 时</td>
+                            <td>帮你用 Claude API 开发应用</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 快速命令 -->
+            <h2 id="commands" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">🚀 快速命令速查</h2>
+
+            <div class="quick-commands">
+                <h3>常用命令</h3>
+                <div class="command-item">
+                    <code>/plan</code>
+                    <span>开始规划任务</span>
+                </div>
+                <div class="command-item">
+                    <code>/plan:status</code>
+                    <span>看任务进度</span>
+                </div>
+                <div class="command-item">
+                    <code>/bmad-help</code>
+                    <span>问 AI：下一步做什么？</span>
+                </div>
+                <div class="command-item">
+                    <code>/claude-to-im setup</code>
+                    <span>配置手机聊天</span>
+                </div>
+                <div class="command-item">
+                    <code>/save-state</code>
+                    <span>保存当前状态</span>
+                </div>
+                <div class="command-item">
+                    <code>/restore-state</code>
+                    <span>恢复之前的状态</span>
+                </div>
+                <div class="command-item">
+                    <code>/memory-search "关键词"</code>
+                    <span>搜索记忆</span>
+                </div>
+                <div class="command-item">
+                    <code>/code-review</code>
+                    <span>代码审查</span>
+                </div>
+                <div class="command-item">
+                    <code>/tdd</code>
+                    <span>测试驱动开发</span>
+                </div>
+                <div class="command-item">
+                    <code>/e2e</code>
+                    <span>自动化测试</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 48px;">
+                原则：说人话，不说术语 → 看一眼就懂，用一下就会！
+            </p>
+
+            <div class="divider"></div>
+
+            <!-- 启动检查更新 -->
+            <h2 id="startup-check" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">🔄 启动时检查更新</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">每次启动 Claude Code 时，会询问你是否检查已安装工具的更新。</p>
+
+            <div class="content-card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">启动时询问流程</h3>
+                <div style="background: var(--bg-main); padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                    <p style="font-size: 14px; color: var(--text-primary); margin-bottom: 8px;">🔄 是否检查已安装工具的更新？</p>
+                    <div style="display: flex; gap: 8px;">
+                        <span style="background: var(--accent); color: white; padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">检查更新</span>
+                        <span style="background: var(--bg-nav-active); color: var(--text-secondary); padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">跳过</span>
+                        <span style="background: var(--bg-nav-active); color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">以后不再询问</span>
+                    </div>
+                </div>
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>选项</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>检查更新</strong></td>
+                            <td>立即检查所有已安装插件和 Skills 是否有更新</td>
+                        </tr>
+                        <tr>
+                            <td><strong>跳过</strong></td>
+                            <td>本次启动不检查，下次启动仍会询问</td>
+                        </tr>
+                        <tr>
+                            <td><strong>以后不再询问</strong></td>
+                            <td>记录配置，以后启动不再询问（可手动恢复）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="quick-commands" style="margin-top: 16px;">
+                <h3>手动检查命令</h3>
+                <div class="command-item">
+                    <code>/check-updates</code>
+                    <span>手动检查更新</span>
+                </div>
+                <div class="command-item">
+                    <code>/check-updates --enable-ask</code>
+                    <span>恢复启动时询问</span>
+                </div>
+                <div class="command-item">
+                    <code>/check-updates --disable-ask</code>
+                    <span>禁用启动时询问</span>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // 配置 marked 选项
-        marked.setOptions({
-            breaks: true,
-            gfm: true,
-            headerIds: true,
-            mangle: false
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            }
         });
 
-        // 生成树形目录
-        function generateTOC() {
-            const content = document.getElementById('content');
-            const headings = content.querySelectorAll('h1, h2, h3, h4');
-            const tocList = document.getElementById('toc');
-            tocList.innerHTML = '';
-
-            // 构建树形结构
-            const tree = [];
-            const stack = [{ level: 0, children: tree }];
-
-            headings.forEach((heading, index) => {
-                const level = parseInt(heading.tagName.substring(1));
-                const text = heading.textContent;
-                const id = `heading-${index}`;
-                heading.id = id;
-
-                const node = {
-                    level,
-                    text,
-                    id,
-                    heading,
-                    children: []
-                };
-
-                // 找到合适的父节点
-                while (stack.length > 1 && stack[stack.length - 1].level >= level) {
-                    stack.pop();
-                }
-
-                stack[stack.length - 1].children.push(node);
-                stack.push(node);
+        // 导航项点击
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
             });
-
-            // 渲染树形结构
-            function renderTree(nodes, parentUl, parentNumber = '') {
-                nodes.forEach((node, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'toc-item';
-
-                    const header = document.createElement('div');
-                    header.className = 'toc-item-header';
-
-                    // 展开/折叠按钮
-                    const toggle = document.createElement('span');
-                    toggle.className = 'toc-toggle collapsed';
-                    toggle.innerHTML = '▶';
-
-                    if (node.children.length === 0) {
-                        toggle.classList.add('empty');
-                    }
-
-                    // 序号
-                    const number = parentNumber ? `${parentNumber}.${index + 1}` : `${index + 1}`;
-                    const numberSpan = document.createElement('span');
-                    numberSpan.className = 'toc-number';
-                    numberSpan.textContent = number;
-
-                    // 链接
-                    const a = document.createElement('a');
-                    a.href = `#${node.id}`;
-                    a.textContent = node.text;
-                    a.className = `toc-h${node.level}`;
-                    a.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        node.heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        document.querySelectorAll('.toc-list a').forEach(link => {
-                            link.classList.remove('active');
-                        });
-                        a.classList.add('active');
-                    });
-
-                    header.appendChild(toggle);
-                    header.appendChild(numberSpan);
-                    header.appendChild(a);
-                    li.appendChild(header);
-
-                    // 子节点
-                    if (node.children.length > 0) {
-                        const childUl = document.createElement('ul');
-                        childUl.className = 'toc-children collapsed';
-                        childUl.style.maxHeight = '0';
-                        renderTree(node.children, childUl, number);
-                        li.appendChild(childUl);
-
-                        // 展开/折叠功能
-                        toggle.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const isCollapsed = childUl.classList.contains('collapsed');
-
-                            if (isCollapsed) {
-                                childUl.style.maxHeight = childUl.scrollHeight + 'px';
-                                childUl.classList.remove('collapsed');
-                                toggle.classList.remove('collapsed');
-                                toggle.innerHTML = '▼';
-                            } else {
-                                childUl.style.maxHeight = '0';
-                                childUl.classList.add('collapsed');
-                                toggle.classList.add('collapsed');
-                                toggle.innerHTML = '▶';
-                            }
-                        });
-                    }
-
-                    parentUl.appendChild(li);
-                });
-            }
-
-            renderTree(tree, tocList);
-
-            // 监听滚动，高亮当前章节
-            setupScrollSpy(headings);
-        }
-
-        // 滚动监听
-        function setupScrollSpy(headings) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.id;
-                        document.querySelectorAll('.toc-list a').forEach(link => {
-                            link.classList.remove('active');
-                            if (link.getAttribute('href') === `#${id}`) {
-                                link.classList.add('active');
-                            }
-                        });
-                    }
-                });
-            }, {
-                rootMargin: '-100px 0px -80% 0px'
-            });
-
-            headings.forEach(heading => observer.observe(heading));
-        }
-
-        // 搜索功能
-        function setupSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const searchResultCount = document.getElementById('searchResultCount');
-            const content = document.getElementById('content');
-
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim().toLowerCase();
-
-                // 清除之前的高亮
-                document.querySelectorAll('.toc-list a').forEach(link => {
-                    link.classList.remove('search-highlight');
-                });
-
-                if (!query) {
-                    searchResultCount.textContent = '';
-                    // 清除内容区域的高亮
-                    content.innerHTML = content.innerHTML.replace(/<mark class="search-highlight-content">(.*?)<\/mark>/g, '$1');
-                    return;
-                }
-
-                // 搜索目录
-                const tocLinks = document.querySelectorAll('.toc-list a');
-                let tocMatches = 0;
-                tocLinks.forEach(link => {
-                    if (link.textContent.toLowerCase().includes(query)) {
-                        link.classList.add('search-highlight');
-                        tocMatches++;
-
-                        // 展开父节点
-                        let parent = link.closest('.toc-children');
-                        while (parent) {
-                            if (parent.classList.contains('collapsed')) {
-                                parent.style.maxHeight = parent.scrollHeight + 'px';
-                                parent.classList.remove('collapsed');
-                                const toggle = parent.previousElementSibling?.querySelector('.toc-toggle');
-                                if (toggle) {
-                                    toggle.classList.remove('collapsed');
-                                }
-                            }
-                            parent = parent.parentElement.closest('.toc-children');
-                        }
-                    }
-                });
-
-                // 搜索内容区域
-                const textContent = content.textContent.toLowerCase();
-                const contentMatches = (textContent.match(new RegExp(query, 'g')) || []).length;
-
-                // 高亮内容区域的匹配文本
-                highlightContentMatches(query);
-
-                // 显示结果统计
-                const total = tocMatches + contentMatches;
-                if (total > 0) {
-                    searchResultCount.textContent = `找到 ${total} 个结果 (目录: ${tocMatches}, 内容: ${contentMatches})`;
-                } else {
-                    searchResultCount.textContent = '未找到匹配结果';
-                }
-            });
-        }
-
-        // 高亮内容区域的匹配文本
-        function highlightContentMatches(query) {
-            const content = document.getElementById('content');
-            const walker = document.createTreeWalker(
-                content,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-            );
-
-            const nodesToReplace = [];
-            let node;
-            while (node = walker.nextNode()) {
-                if (node.nodeValue.toLowerCase().includes(query)) {
-                    nodesToReplace.push(node);
-                }
-            }
-
-            nodesToReplace.forEach(node => {
-                const parent = node.parentNode;
-                if (parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE') {
-                    const regex = new RegExp(`(${query})`, 'gi');
-                    const highlighted = node.nodeValue.replace(regex, '<mark class="search-highlight-content">$1</mark>');
-                    const span = document.createElement('span');
-                    span.innerHTML = highlighted;
-                    parent.replaceChild(span, node);
-                }
-            });
-        }
-
-        // 加载并渲染 Markdown
-        fetch('README.md')
-            .then(response => response.text())
-            .then(markdown => {
-                document.getElementById('content').innerHTML = marked.parse(markdown);
-
-                // 生成目录
-                generateTOC();
-
-                // 设置搜索功能
-                setupSearch();
-
-                // 为所有链接添加处理
-                document.querySelectorAll('.markdown-body a').forEach(link => {
-                    const href = link.getAttribute('href');
-                    // 如果是相对路径的 .md 文件，转换为可预览的链接
-                    if (href && href.endsWith('.md') && !href.startsWith('http')) {
-                        link.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            loadMarkdownFile(href);
-                        });
-                    }
-                });
-            })
-            .catch(error => {
-                document.getElementById('content').innerHTML =
-                    '<div class="loading">加载失败: ' + error.message + '</div>';
-            });
-
-        // 加载其他 Markdown 文件
-        function loadMarkdownFile(path) {
-            document.getElementById('content').innerHTML = '<div class="loading">加载中...</div>';
-
-            fetch(path)
-                .then(response => response.text())
-                .then(markdown => {
-                    document.getElementById('content').innerHTML = marked.parse(markdown);
-                    window.scrollTo(0, 0);
-
-                    // 添加返回按钮
-                    const backButton = document.createElement('div');
-                    backButton.innerHTML = '<a href="/" style="display: inline-block; margin-bottom: 20px; padding: 8px 16px; background: #0969da; color: white; text-decoration: none; border-radius: 6px;">← 返回首页</a>';
-                    document.getElementById('content').insertBefore(backButton, document.getElementById('content').firstChild);
-
-                    // 重新生成目录
-                    generateTOC();
-
-                    // 为新加载的内容中的链接添加处理
-                    document.querySelectorAll('.markdown-body a').forEach(link => {
-                        const href = link.getAttribute('href');
-                        if (href && href.endsWith('.md') && !href.startsWith('http')) {
-                            link.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                loadMarkdownFile(href);
-                            });
-                        }
-                    });
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML =
-                        '<div class="loading">加载失败: ' + error.message + '</div>';
-                });
-        }
+        });
     </script>
+
+    <!-- Agent UI Annotation Toolbar - 用于 AI 标注 UI 元素 -->
+    <agent-ui-annotation
+        theme="auto"
+        output-level="standard"
+        position="bottom-right"
+    ></agent-ui-annotation>
 </body>
 </html>
