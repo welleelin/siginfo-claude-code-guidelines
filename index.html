@@ -18,6 +18,8 @@
             --bg-sidebar: #f7f6f3;
             --bg-content: #ffffff;
             --bg-card: #ffffff;
+            --bg-white: #ffffff;
+            --bg-warm: #f7f6f3;
             --bg-nav-active: #ebebea;
             --bg-hover: #e8e7e3;
             --bg-highlight: #FFF9E6;
@@ -25,6 +27,7 @@
             --text-secondary: #6b7280;
             --text-muted: #9ca3af;
             --border-color: #e5e5e5;
+            --border-light: #d0d0d0;
             --accent-blue: #0066CC;
             --accent-gold: #F59E0B;
             --accent-green: #10B981;
@@ -48,54 +51,76 @@
         .sidebar {
             width: 280px;
             min-width: 280px;
-            background: var(--bg-sidebar);
+            background: var(--bg-warm);
             height: 100vh;
             position: sticky;
             top: 0;
             display: flex;
             flex-direction: column;
             padding: 20px 16px;
-            gap: 16px;
-            border-right: 1px solid var(--border-color);
+            gap: 0;
+            border-right: 1px solid var(--border-light);
         }
 
-        .sidebar-header {
-            padding-bottom: 16px;
+        /* Logo 区域 - 参考 Pencil HiFi 设计 */
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 44px;
+            padding: 0 8px;
+            margin-bottom: 0;
         }
 
-        .sidebar-header h1 {
-            font-size: 16px;
-            font-weight: 700;
+        .sidebar-logo-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-blue);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
             color: var(--text-primary);
         }
 
-        .sidebar-header p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
+        /* 分割线 */
+        .sidebar-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 0;
         }
 
-        /* 搜索框 */
+        /* 搜索框 - 参考 Pencil HiFi 设计 */
         .search-box {
             width: 100%;
             height: 36px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
             border-radius: 8px;
             display: flex;
             align-items: center;
-            padding: 0 12px;
+            padding: 0 10px;
             gap: 8px;
             cursor: pointer;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
+            margin: 12px 0;
         }
 
         .search-box:hover {
-            border-color: #c0c0c0;
+            border-color: var(--border-color);
         }
 
         .search-box:focus-within {
-            border-color: var(--accent);
+            border-color: var(--accent-blue);
             border-width: 2px;
             box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
         }
@@ -104,7 +129,8 @@
             flex: 1;
             border: none;
             outline: none;
-            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
             background: transparent;
             color: var(--text-primary);
         }
@@ -115,74 +141,101 @@
 
         .search-icon {
             font-size: 16px;
+            color: var(--accent-blue);
+            flex-shrink: 0;
         }
 
         .search-shortcut {
-            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
             color: var(--text-muted);
-            background: var(--bg-nav-active);
+            background: var(--bg-warm);
             padding: 2px 6px;
             border-radius: 4px;
+            border: 1px solid var(--border-light);
+            flex-shrink: 0;
         }
 
         /* 导航区域 */
         .nav-section {
             flex: 1;
             overflow-y: auto;
+            margin-top: 16px;
         }
 
         .nav-group {
-            margin-bottom: 16px;
+            margin-bottom: 0;
         }
 
         .nav-group-title {
-            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             padding: 8px 12px;
             display: flex;
             align-items: center;
             gap: 6px;
+            border-radius: 6px;
+            margin: 4px 0;
         }
 
+        /* 导航项 - 参考 Pencil HiFi 设计 */
         .nav-item {
             display: flex;
             align-items: center;
             height: 32px;
-            padding: 0 12px;
+            padding: 0 8px;
+            margin: 2px 0;
             border-radius: 6px;
             cursor: pointer;
             gap: 8px;
             transition: background 0.15s;
             text-decoration: none;
-            color: var(--text-secondary);
         }
 
         .nav-item:hover {
-            background: var(--bg-nav-active);
+            background: var(--bg-hover);
         }
 
         .nav-item.active {
-            background: var(--bg-nav-active);
-            color: var(--text-primary);
+            background: var(--bg-hover);
         }
 
         .nav-item-icon {
-            font-size: 16px;
+            width: 28px;
+            height: 28px;
+            background: var(--accent-blue);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
         }
 
         .nav-item-label {
+            font-family: 'Inter', sans-serif;
             font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .nav-item.active .nav-item-label {
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
         /* ==================== 主内容区 ==================== */
         .main-content {
             flex: 1;
-            background: var(--bg-content);
+            background: var(--bg-white);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             padding: 40px 80px;
+            border-left: 1px solid var(--border-light);
         }
 
         .content-wrapper {
@@ -190,33 +243,44 @@
             max-width: 760px;
         }
 
-        /* 面包屑 */
+        /* 面包屑 - 参考 Pencil HiFi 设计 */
         .breadcrumb {
-            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .breadcrumb a {
             color: var(--text-secondary);
             text-decoration: none;
+            transition: color 0.15s;
         }
 
         .breadcrumb a:hover {
-            color: var(--accent);
+            color: var(--accent-blue);
         }
 
-        /* 标题 */
+        .breadcrumb .separator {
+            color: var(--border-color);
+        }
+
+        /* 标题 - 参考 Pencil HiFi 设计 */
         .page-title {
-            font-size: 36px;
+            font-family: 'Inter', sans-serif;
+            font-size: 32px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             line-height: 1.25;
         }
 
         .page-subtitle {
-            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
             color: var(--text-secondary);
             margin-bottom: 24px;
             line-height: 1.7;
@@ -225,58 +289,70 @@
         .divider {
             width: 100%;
             height: 1px;
-            background: var(--border-color);
+            background: var(--border-light);
             margin: 24px 0;
         }
 
-        /* 内容卡片 */
+        /* 内容卡片 - 参考 Pencil HiFi 设计 */
         .content-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
             border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
         }
 
         .content-card h2 {
-            font-size: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 16px;
         }
 
+        .content-card h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
         .content-card p {
+            font-family: 'Inter', sans-serif;
             font-size: 15px;
             color: var(--text-secondary);
             line-height: 1.7;
         }
 
-        /* 能力一览表格 */
+        /* 能力一览表格 - 参考 Pencil HiFi 设计 */
         .capability-table {
             width: 100%;
             border-collapse: collapse;
             margin: 16px 0;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
         }
 
         .capability-table th {
             text-align: left;
             padding: 12px;
-            background: var(--bg-main);
+            background: var(--bg-warm);
             font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-light);
         }
 
         .capability-table td {
             padding: 12px;
             font-size: 14px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-light);
             vertical-align: top;
         }
 
         .capability-table tr:hover {
-            background: var(--bg-main);
+            background: var(--bg-warm);
         }
 
         .capability-table .tool-name {
@@ -291,10 +367,10 @@
         .capability-table .tool-cmd {
             font-family: 'SF Mono', Monaco, monospace;
             font-size: 13px;
-            background: var(--bg-main);
+            background: var(--bg-warm);
             padding: 2px 6px;
             border-radius: 4px;
-            color: var(--accent);
+            color: var(--accent-blue);
         }
 
         /* 代码块 */
@@ -380,20 +456,33 @@
             color: var(--text-secondary);
         }
 
-        /* 分类标题 */
+        /* 分类标题 - 参考 Pencil HiFi 设计 */
         .section-category {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin: 32px 0 16px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: var(--bg-warm);
         }
 
         .section-category-icon {
-            font-size: 20px;
+            width: 28px;
+            height: 28px;
+            background: var(--accent-blue);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
         }
 
         .section-category-title {
-            font-size: 18px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-primary);
         }
@@ -434,37 +523,41 @@
 <body>
     <!-- 侧边栏 -->
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1>📚 SIGINFO-Claude</h1>
-            <p>开发环境文档中心</p>
+        <!-- Logo 区域 - 参考 Pencil HiFi 设计 -->
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">📖</div>
+            <span class="sidebar-logo-title">sig-guidelines</span>
         </div>
+
+        <!-- 分割线 -->
+        <div class="sidebar-divider"></div>
 
         <!-- 搜索框 -->
         <div class="search-box" onclick="document.getElementById('search-input').focus()">
             <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="搜索规范 (Cmd+K)">
+            <input type="text" id="search-input" placeholder="搜索规范...">
             <span class="search-shortcut">⌘K</span>
         </div>
 
         <!-- 导航 -->
         <nav class="nav-section">
             <div class="nav-group">
-                <div class="nav-group-title">📚 文档</div>
+                <div class="nav-group-title">📚 核心规范</div>
                 <a href="#overview" class="nav-item active">
                     <span class="nav-item-icon">📋</span>
-                    <span class="nav-item-label">1. 系统总则</span>
+                    <span class="nav-item-label">系统总则</span>
                 </a>
                 <a href="#guidelines" class="nav-item">
                     <span class="nav-item-icon">⚡</span>
-                    <span class="nav-item-label">2. 行动准则</span>
+                    <span class="nav-item-label">行动准则</span>
                 </a>
                 <a href="#tdd" class="nav-item">
                     <span class="nav-item-icon">🧪</span>
-                    <span class="nav-item-label">3. TDD 流程</span>
+                    <span class="nav-item-label">TDD 流程</span>
                 </a>
                 <a href="#memory" class="nav-item">
                     <span class="nav-item-icon">🧠</span>
-                    <span class="nav-item-label">4. 记忆系统</span>
+                    <span class="nav-item-label">记忆系统</span>
                 </a>
             </div>
 
@@ -498,7 +591,7 @@
                     <span class="nav-item-icon">⌨️</span>
                     <span class="nav-item-label">命令速查</span>
                 </a>
-                <a href="https://github.com/your-org/siginfo-claude-code-guidelines" class="nav-item">
+                <a href="https://github.com/your-org/siginfo-claude-code-guidelines" class="nav-item" target="_blank">
                     <span class="nav-item-icon">📂</span>
                     <span class="nav-item-label">GitHub 仓库</span>
                 </a>
@@ -582,7 +675,7 @@
 
             <!-- 开发流程 -->
             <div class="content-card" style="margin-top: 24px;">
-                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🔄 开发流程（8 步走完）</h3>
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🔄 开发流程（9 步走完）</h3>
                 <div style="display: grid; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
                         <span style="font-weight: 700; color: var(--accent); min-width: 24px;">1</span>
@@ -626,15 +719,22 @@
                         </div>
                         <code class="tool-cmd">/e2e</code>
                     </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #f0e6ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid #9333ea;">
+                        <span style="font-weight: 700; color: #9333ea; min-width: 24px;">7</span>
+                        <div style="flex: 1;">
+                            <strong>Shannon 安全测试</strong> 🚧 - AI 渗透测试，发现并验证漏洞
+                        </div>
+                        <code class="tool-cmd">/shannon-start</code>
+                    </div>
                     <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #ffe6e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--danger);">
-                        <span style="font-weight: 700; color: var(--danger); min-width: 24px;">7</span>
+                        <span style="font-weight: 700; color: var(--danger); min-width: 24px;">8</span>
                         <div style="flex: 1;">
                             <strong>安全检查</strong> 🚧 - 查漏洞、查注入、查敏感信息
                         </div>
                         <code class="tool-cmd">/security-review</code>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f7ed 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--success);">
-                        <span style="font-weight: 700; color: var(--success); min-width: 24px;">8</span>
+                        <span style="font-weight: 700; color: var(--success); min-width: 24px;">9</span>
                         <div style="flex: 1;">
                             <strong>质量门禁</strong> 🎉 - 全部通过才能提交代码
                         </div>
@@ -1082,6 +1182,11 @@
                             <td class="tool-desc">让 AI 能操作浏览器调试</td>
                             <td>自动化测试网页</td>
                         </tr>
+                        <tr>
+                            <td class="tool-name">Shannon</td>
+                            <td class="tool-desc">AI 渗透测试工具，自动发现安全漏洞</td>
+                            <td><code class="tool-cmd">/shannon-start &lt;URL&gt;</code></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1214,6 +1319,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr>
+                            <td class="tool-name">shannon</td>
+                            <td class="tool-desc">说"安全测试"、"渗透测试"、"Shannon"时</td>
+                            <td>运行 Shannon AI 渗透测试，自动发现并验证安全漏洞</td>
+                        </tr>
                         <tr>
                             <td class="tool-name">security-review</td>
                             <td class="tool-desc">写认证、处理用户输入、用密钥时</td>
@@ -1390,6 +1500,14 @@
                 <div class="command-item">
                     <code>/claude-to-im setup</code>
                     <span>配置手机聊天</span>
+                </div>
+                <div class="command-item">
+                    <code>/shannon-start &lt;URL&gt;</code>
+                    <span>启动 Shannon 安全测试</span>
+                </div>
+                <div class="command-item">
+                    <code>/shannon-logs</code>
+                    <span>查看 Shannon 测试日志</span>
                 </div>
                 <div class="command-item">
                     <code>/save-state</code>
