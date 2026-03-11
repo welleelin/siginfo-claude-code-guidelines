@@ -713,7 +713,7 @@ export async function logout(req: Request, res: Response) {
 
 **目标**：验证系统真正可用，人类可以直接使用
 
-**详细文档**：[真实业务全流程闭环测试规范](12-REAL_BUSINESS_TESTING.md)
+**详细文档**：[真实业务全流程闭环测试规范](18-REAL_BUSINESS_TESTING.md)
 
 **REAL 测试原则**：
 ```

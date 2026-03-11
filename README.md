@@ -913,13 +913,19 @@ Agent 是 Claude Code 中的"专家角色"，每个 Agent 擅长不同领域：
 ## 📁 项目结构
 
 ```
-siginfo-claude-code-guidelines/
+sig-claude-code-guidelines/
 │
 ├── README.md                 # 📖 你正在阅读的文件
 ├── CLAUDE.md                 # 项目自身使用说明
-├── LICENSE                   # MIT 许可证
+├── MEMORY.md                 # 项目长期记忆（Weekly 层）
+├── AGENTS.md                 # Agent 行为规范
+├── HEARTBEAT.md              # 心跳检查任务
+├── index.html                # 📄 Notion 风格文档门户
+├── project-context.md        # 项目上下文
+├── PROJECT_OVERVIEW.md       # 项目总览
 │
-├── guidelines/               # 📋 核心准则文档
+├── guidelines/               # 📋 核心准则文档（20 篇）
+│   ├── 00-INDEX.md              # 目录索引（按问题分类）
 │   ├── 00-SYSTEM_OVERVIEW.md    # 系统总则
 │   ├── 01-ACTION_GUIDELINES.md  # 行动准则（最重要）
 │   ├── 02-TDD_WORKFLOW.md       # TDD 开发流程
@@ -931,66 +937,78 @@ siginfo-claude-code-guidelines/
 │   ├── 08-LONG_RUNNING_AGENTS.md       # 长期运行 Agent 最佳实践
 │   ├── 09-AUTOMATION_MODES.md          # 自动化模式配置
 │   ├── 10-ANTHROPIC_LONG_RUNNING_AGENTS.md # Anthropic 官方指南
-│   ├── 11-LONG_TERM_MEMORY.md          # 长期记忆管理规范 ⭐ NEW
-│   └── 16-DOCLING_INTEGRATION.md       # Docling 文档处理集成 ⭐ NEW
+│   ├── 11-LONG_TERM_MEMORY.md          # 长期记忆管理规范
+│   ├── 12-AGENT_REACH_INTEGRATION.md   # Agent-Reach 集成
+│   ├── 13-COLLABORATION_EFFICIENCY.md  # 协作效率提升
+│   ├── 14-DETERMINISTIC_DEVELOPMENT.md # 确定性开发
+│   ├── 15-STABLE_ZONE_PROTECTION.md    # 稳定区域保护
+│   ├── 16-DOCLING_INTEGRATION.md       # Docling 文档处理集成
+│   ├── 17-COMPREHENSIVE_TESTING_WORKFLOW.md # 综合性测试工作流
+│   └── 18-REAL_BUSINESS_TESTING.md     # 真实业务全流程闭环测试 🔴 核心
+│
+├── docs/                     # 📚 详细文档
+│   ├── API_INTEGRATION.md           # Claude Monitor UI API 接口
+│   ├── AGENTATION_INTEGRATION.md    # Agentation 标注集成
+│   ├── BMAD_METHOD_INTEGRATION.md   # BMAD Method 集成
+│   ├── FOUR_PROJECTS_INTEGRATION.md # 四项目集成总结
+│   ├── SHANNON_INTEGRATION.md       # Shannon 安全测试集成
+│   ├── PENCIL_INTEGRATION.md        # Pencil UI 设计集成
+│   ├── GITHUB_CLI_GUIDE.md          # GitHub CLI 使用指南
+│   ├── QUICK_START_GUIDE.md         # 快速开始指南
+│   ├── INTEGRATION_HANDBOOK.md      # 集成手册
+│   └── ...                          # 更多文档
+│
+├── commands/                 # 🔧 通用命令
+│   ├── agent-reach.md        # Agent-Reach 命令
+│   ├── memory-search.md      # 记忆搜索
+│   ├── model-configure.md    # 模型配置
+│   ├── save-state.md         # 保存状态
+│   ├── restore-state.md      # 恢复状态
+│   └── switch-model.md       # 切换模型
+│
+├── agents/                   # 🤖 Agent 定义
+│   ├── memory-keeper.md      # 记忆管理 Agent
+│   ├── memory-keeper-v2.md   # 记忆管理 Agent v2
+│   └── document-processor.md # 文档处理 Agent
+│
+├── designs/                  # 🎨 设计文件
+│   ├── design-system.pen     # 设计系统
+│   ├── hifi-wireframes.pen   # 高保真线框图
+│   └── notationUI.pen        # 标注 UI 设计
+│
+├── .unified/                 # 🔗 统一集成层
+│   ├── agents/               # 统一 Agent 定义
+│   ├── config/               # 统一配置
+│   ├── engines/              # 引擎层
+│   ├── hooks/                # 钩子层
+│   ├── memory/               # 统一记忆
+│   ├── orchestration/        # 编排层
+│   ├── routing/              # 路由层
+│   └── state/                # 状态管理
+│
+├── _bmad/                    # 📐 BMAD Method 配置
+│   ├── _config/              # BMAD 配置
+│   ├── _memory/              # BMAD 记忆
+│   ├── bmm/                  # BMM 核心
+│   └── core/                 # 核心组件
+│
+├── _bmad-output/             # 📄 BMAD Method 产出
+│   ├── planning-artifacts/   # 规划产出
+│   └── implementation-artifacts/ # 实现产出
+│
+├── memory/                   # 🧠 每日日志（短期记忆）
+│   ├── 2026-03-06.md
+│   ├── 2026-03-07.md
+│   └── template.md
 │
 ├── templates/                # 📝 项目模板
-│   ├── CLAUDE.md.template    # 项目配置模板
-│   ├── MEMORY.md.template    # 项目记忆模板（长期记忆）
-│   ├── memory-template.md   # 每日日志模板（短期记忆）
-│   ├── AGENTS.md.template   # Agent 行为规范模板
-│   ├── HEARTBEAT.md.template # 心跳检查模板
-│   └── task.json.template    # 任务列表模板
-│
 ├── scripts/                  # 🛠️ 工具脚本
-│   ├── init-plugins.sh       # 插件初始化
-│   ├── init-memory.sh        # 记忆系统初始化 ⭐ NEW
-│   ├── install.sh            # 规则安装
-│   ├── sync-rules.sh         # 规则同步
-│   │
-│   ├── checkpoint.sh         # 检查点管理（保存/恢复/列出）
-│   ├── save-state.sh         # 状态保存 ⭐ NEW
-│   ├── restore-state.sh      # 状态恢复 ⭐ NEW
-│   ├── sync-hourly.sh        # 小时同步 ⭐ NEW
-│   ├── archive-daily.sh      # 日终归档 ⭐ NEW
-│   └── summarize-weekly.sh   # 周度总结 ⭐ NEW
-│
 ├── rules/                    # Claude Code 规则
-│   ├── common/               # 通用规则
-│   ├── typescript/           # TypeScript 专用
-│   └── python/               # Python 专用
-│
-├── commands/                 # 通用命令
-│   ├── plan.md
-│   ├── tdd.md
-│   ├── code-review.md
-│   ├── memory-search.md     # 记忆搜索 ⭐ NEW
-│   ├── save-state.md        # 保存状态 ⭐ NEW
-│   └── restore-state.md     # 恢复状态 ⭐ NEW
-│
-├── agents/                   # Agent 定义
-│   ├── planner.md
-│   ├── architect.md
-│   ├── tdd-guide.md
-│   ├── memory-keeper.md     # 记忆管理 Agent ⭐ NEW
-│   ├── document-processor.md # 文档处理 Agent ⭐ NEW
-│   └── ...
-│
 ├── skills/                   # 技能库
-│   ├── coding-standards/
-│   ├── backend-patterns/
-│   ├── frontend-patterns/
-│   └── ...
-│
-├── examples/                 # 📚 示例项目
-│   ├── requisition-system/   # 需求单系统（完整案例）
-│   └── saas-starter/         # SaaS 模板项目
-│
-└── docs/                     # 📚 详细文档
-    ├── getting-started.md    # 快速开始
-    ├── plugin-guide.md       # 插件使用指南
-    ├── notification-guide.md # 通知系统指南
-    └── best-practices.md     # 最佳实践集
+├── config/                   # 配置文件
+├── checkpoints/              # 状态检查点
+├── examples/                 # 示例项目
+└── diagrams/                 # 架构图
 ```
 
 ---
@@ -1605,5 +1623,5 @@ MIT License - 可以自由使用和修改
 
 ---
 
-*最后更新：2026-03-03*
+*最后更新：2026-03-11*
 *维护者：行动准则项目组*

@@ -1,7 +1,7 @@
 # Guidelines 目录索引
 
-> **版本**：1.0.0
-> **最后更新**：2026-03-08
+> **版本**：1.1.0
+> **最后更新**：2026-03-11
 > **用途**：帮助 Claude Code 快速定位和按需加载相关规范文档
 
 ---
@@ -19,6 +19,7 @@
 
 ```
 guidelines/
+├── 00-INDEX.md                    # 本文件 - 目录索引
 ├── 00-SYSTEM_OVERVIEW.md          # 系统总则（必读）
 ├── 01-ACTION_GUIDELINES.md        # 行动准则（必读）
 ├── 02-TDD_WORKFLOW.md             # TDD 开发流程
@@ -32,12 +33,12 @@ guidelines/
 ├── 10-ANTHROPIC_LONG_RUNNING_AGENTS.md  # Anthropic 官方指南
 ├── 11-LONG_TERM_MEMORY.md         # 长期记忆管理
 ├── 12-AGENT_REACH_INTEGRATION.md  # Agent-Reach 集成
-├── 12-REAL_BUSINESS_TESTING.md    # 真实业务全流程闭环测试 🔴 核心 ⭐ NEW
 ├── 13-COLLABORATION_EFFICIENCY.md # 协作效率提升
 ├── 14-DETERMINISTIC_DEVELOPMENT.md # 确定性开发
 ├── 15-STABLE_ZONE_PROTECTION.md   # 稳定区域保护
 ├── 16-DOCLING_INTEGRATION.md      # Docling 文档处理
-└── 17-COMPREHENSIVE_TESTING_WORKFLOW.md # 综合性测试工作流
+├── 17-COMPREHENSIVE_TESTING_WORKFLOW.md # 综合性测试工作流
+└── 18-REAL_BUSINESS_TESTING.md    # 真实业务全流程闭环测试 🔴 核心
 ```
 
 ---
@@ -147,7 +148,7 @@ cat guidelines/05-QUALITY_GATE.md
 - 📖 [01-ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) - Phase 5: API 完整性检查
 - 📖 [01-ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) - Phase 6: 真实业务全流程闭环测试 🔴 核心
 - 📖 [04-E2E_TESTING_FLOW.md](04-E2E_TESTING_FLOW.md) - E2E 测试详细流程
-- 📖 [12-REAL_BUSINESS_TESTING.md](12-REAL_BUSINESS_TESTING.md) - 真实业务测试规范 ⭐ NEW
+- 📖 [18-REAL_BUSINESS_TESTING.md](18-REAL_BUSINESS_TESTING.md) - 真实业务测试规范 ⭐ NEW
 
 **快速命令**：
 ```bash
@@ -161,7 +162,7 @@ cat guidelines/01-ACTION_GUIDELINES.md | grep -A 150 "Phase 6"
 cat guidelines/04-E2E_TESTING_FLOW.md
 
 # 读取真实业务测试规范
-cat guidelines/12-REAL_BUSINESS_TESTING.md
+cat guidelines/18-REAL_BUSINESS_TESTING.md
 ```
 
 ---
@@ -511,6 +512,7 @@ gh search repos "state management" --language=typescript --stars=">10000"
 
 | 日期 | 版本 | 更新内容 | 更新人 |
 |------|------|---------|--------|
+| 2026-03-11 | 1.1.0 | 修复编号冲突(12→18)，更新目录结构，同步全部文件 | Claude |
 | 2026-03-08 | 1.0.0 | 初始版本 | Claude |
 
 ---
