@@ -428,6 +428,572 @@
         .tag-warning { background: #fff7e6; color: #e6a23c; }
         .tag-info { background: #e6f4ff; color: #0066CC; }
 
+        /* ==================== 工作流程图 ==================== */
+        .workflow-section {
+            margin: 40px 0;
+        }
+
+        /* 总览流程图容器 */
+        .workflow-overview-diagram {
+            background: linear-gradient(135deg, #0f1117 0%, #1a1f2e 100%);
+            border-radius: 16px;
+            padding: 40px 32px;
+            margin: 24px 0;
+            position: relative;
+            overflow: hidden;
+            cursor: zoom-in;
+            transition: box-shadow 0.2s;
+        }
+
+        .workflow-overview-diagram:hover {
+            box-shadow: 0 8px 40px rgba(0,102,204,0.25);
+        }
+
+        /* 放大提示角标 */
+        .workflow-overview-diagram .expand-hint {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .workflow-overview-diagram:hover .expand-hint {
+            opacity: 0.8;
+        }
+
+        /* 全屏遮罩层 */
+        .workflow-fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            backdrop-filter: blur(4px);
+            cursor: zoom-out;
+        }
+
+        .workflow-fullscreen-overlay.active {
+            display: flex;
+        }
+
+        /* 全屏内部容器 */
+        .workflow-fullscreen-inner {
+            background: linear-gradient(135deg, #0f1117 0%, #1a1f2e 100%);
+            border-radius: 20px;
+            padding: 48px 40px;
+            position: relative;
+            max-width: 1400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            cursor: default;
+            animation: wf-fadein 0.2s ease;
+        }
+
+        @keyframes wf-fadein {
+            from { opacity: 0; transform: scale(0.96); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* 全屏关闭按钮 */
+        .workflow-fullscreen-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            margin-bottom: -32px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+            transition: background 0.15s, color 0.15s;
+            z-index: 10;
+        }
+
+        .workflow-fullscreen-close:hover {
+            background: rgba(239,68,68,0.4);
+            color: #fff;
+        }
+
+        /* 全屏模式下流程图放大 */
+        .workflow-fullscreen-inner .workflow-flow {
+            gap: 0;
+        }
+
+        .workflow-fullscreen-inner .wf-phase-box {
+            padding: 20px 14px;
+        }
+
+        .workflow-fullscreen-inner .wf-phase-icon {
+            font-size: 30px;
+        }
+
+        .workflow-fullscreen-inner .wf-phase-title {
+            font-size: 14px;
+        }
+
+        .workflow-fullscreen-inner .wf-phase-sub {
+            font-size: 12px;
+        }
+
+        .workflow-fullscreen-inner .wf-arrow {
+            font-size: 22px;
+        }
+
+        .workflow-overview-diagram::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(0,102,204,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 20%, rgba(16,185,129,0.06) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* 阶段连接箭头 */
+        .workflow-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .wf-phase {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .wf-phase-box {
+            width: 100%;
+            padding: 16px 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.12);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .wf-phase-box:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.25);
+        }
+
+        .wf-phase-num {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
+
+        .wf-phase-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .wf-phase-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .wf-phase-sub {
+            font-size: 11px;
+            opacity: 0.6;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        .wf-phase-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-gate {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .badge-auto {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .badge-ai {
+            background: #7c3aed;
+            color: #fff;
+        }
+
+        /* 箭头连接器 */
+        .wf-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+            color: rgba(255,255,255,0.3);
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 35px;
+        }
+
+        /* 阶段颜色变体 */
+        .phase-prepare { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4) !important; }
+        .phase-prepare .wf-phase-num { color: #60a5fa; }
+        .phase-plan { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.4) !important; }
+        .phase-plan .wf-phase-num { color: #a78bfa; }
+        .phase-stable { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4) !important; }
+        .phase-stable .wf-phase-num { color: #fbbf24; }
+        .phase-quality { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4) !important; }
+        .phase-quality .wf-phase-num { color: #34d399; }
+        .phase-tdd { background: rgba(236,72,153,0.15); border-color: rgba(236,72,153,0.4) !important; }
+        .phase-tdd .wf-phase-num { color: #f472b6; }
+        .phase-api { background: rgba(249,115,22,0.15); border-color: rgba(249,115,22,0.4) !important; }
+        .phase-api .wf-phase-num { color: #fb923c; }
+        .phase-e2e { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.4) !important; }
+        .phase-e2e .wf-phase-num { color: #22d3ee; }
+        .phase-security { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4) !important; }
+        .phase-security .wf-phase-num { color: #f87171; }
+        .phase-final { background: rgba(16,185,129,0.20); border-color: rgba(16,185,129,0.5) !important; }
+        .phase-final .wf-phase-num { color: #6ee7b7; }
+        .phase-commit { background: rgba(107,114,128,0.2); border-color: rgba(107,114,128,0.4) !important; }
+        .phase-commit .wf-phase-num { color: #9ca3af; }
+
+        /* 阶段详情卡片 */
+        .phase-detail-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .phase-detail-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-top: 3px solid transparent;
+            transition: box-shadow 0.2s;
+        }
+
+        .phase-detail-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .phase-detail-card .phase-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .phase-detail-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .phase-detail-card .step-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .phase-detail-card .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .phase-detail-card .step-list li::before {
+            content: '→';
+            flex-shrink: 0;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        .phase-detail-card .phase-output {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .phase-detail-card .phase-output strong {
+            color: var(--text-secondary);
+        }
+
+        /* 工作流测试阶段 */
+        .testing-phases-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .testing-phase-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testing-phase-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .testing-phase-card.tp-0::after { background: #7c3aed; }
+        .testing-phase-card.tp-1::after { background: #0066CC; }
+        .testing-phase-card.tp-2::after { background: #f59e0b; }
+        .testing-phase-card.tp-3::after { background: #10b981; }
+
+        .tp-phase-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .tp-0 .tp-phase-label { color: #7c3aed; }
+        .tp-1 .tp-phase-label { color: #0066CC; }
+        .tp-2 .tp-phase-label { color: #f59e0b; }
+        .tp-3 .tp-phase-label { color: #10b981; }
+
+        .tp-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .tp-mode-badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .mock-badge { background: #fef3c7; color: #92400e; }
+        .real-badge { background: #d1fae5; color: #065f46; }
+        .doc-badge { background: #ede9fe; color: #5b21b6; }
+
+        .tp-items {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tp-items li {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .tp-items li::before {
+            content: '·';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        /* 三轨道规划 */
+        .planning-tracks {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .track-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
+        }
+
+        .track-card.track-quick { border-left-color: #10b981; }
+        .track-card.track-standard { border-left-color: #0066CC; }
+        .track-card.track-enterprise { border-left-color: #7c3aed; }
+
+        .track-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .track-quick .track-label { color: #10b981; }
+        .track-standard .track-label { color: #0066CC; }
+        .track-enterprise .track-label { color: #7c3aed; }
+
+        .track-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .track-time {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .track-steps {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .track-steps li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .track-steps li .step-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .track-quick .step-dot { background: #10b981; }
+        .track-standard .step-dot { background: #0066CC; }
+        .track-enterprise .step-dot { background: #7c3aed; }
+
+        /* 工作流 TDD 循环图 */
+        .tdd-cycle-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 24px 0;
+            padding: 32px;
+            background: var(--bg-main);
+            border-radius: 12px;
+        }
+
+        .tdd-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 24px;
+            border-radius: 50%;
+            width: 130px;
+            height: 130px;
+            justify-content: center;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .tdd-red { background: #fef2f2; border: 2px solid #fca5a5; color: #991b1b; }
+        .tdd-green { background: #f0fdf4; border: 2px solid #86efac; color: #166534; }
+        .tdd-blue { background: #eff6ff; border: 2px solid #93c5fd; color: #1e40af; }
+
+        .tdd-step-icon { font-size: 24px; }
+        .tdd-step-title { font-size: 14px; font-weight: 800; }
+        .tdd-step-sub { font-size: 11px; font-weight: 400; opacity: 0.8; }
+
+        .tdd-arrow-cycle {
+            font-size: 24px;
+            color: var(--text-muted);
+            padding: 0 8px;
+            margin-bottom: 16px;
+        }
+
+        /* 多 Agent 协作图 */
+        .agent-network {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+            margin: 24px 0;
+            align-items: start;
+        }
+
+        .agent-center {
+            background: linear-gradient(135deg, #0066CC, #004fa3);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            text-align: center;
+        }
+
+        .agent-center-icon { font-size: 36px; margin-bottom: 12px; }
+        .agent-center-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+        .agent-center-sub { font-size: 13px; opacity: 0.8; }
+
+        .agent-nodes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .agent-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .agent-node-icon { font-size: 20px; margin-bottom: 6px; }
+        .agent-node-name { font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+        .agent-node-desc { font-size: 11px; color: var(--text-muted); }
+
         /* 快速命令 */
         .quick-commands {
             background: var(--bg-main);
@@ -552,6 +1118,10 @@
                     <span class="nav-item-icon">📋</span>
                     <span class="nav-item-label">系统总则</span>
                 </a>
+                <a href="#workflow-overview" class="nav-item">
+                    <span class="nav-item-icon">🗺️</span>
+                    <span class="nav-item-label">工作流总览</span>
+                </a>
                 <a href="#guidelines" class="nav-item">
                     <span class="nav-item-icon">⚡</span>
                     <span class="nav-item-label">行动准则</span>
@@ -648,6 +1218,338 @@
             <h1 class="page-title" id="overview">系统总则</h1>
             <p class="page-subtitle">本文档定义了整个开发系统的核心原则、插件管理规范和自动化边界。用最简单的话告诉你：我们装了什么，能干什么，怎么用。</p>
             <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">📅 最后更新：2026-03-11 &nbsp;|&nbsp; 📁 guidelines/ 目录共 17+ 份规范文档</p>
+
+            <div class="divider"></div>
+
+            <!-- ========== 工作流总览 ========== -->
+            <h2 id="workflow-overview" style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">🗺️ 工作流总览</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">完整的 AI 辅助软件开发工作流，从会话启动到代码发布的全链路规范。共 9 个阶段，按实际开发顺序拆分，每个阶段有专属规范文档。</p>
+
+            <!-- 总览流程图 - 暗色主题 -->
+            <div class="workflow-overview-diagram" id="wf-diagram-trigger" onclick="openWorkflowFullscreen()">
+                <span class="expand-hint">🔍 点击全屏查看</span>
+                <div style="text-align: center; margin-bottom: 28px;">
+                    <span style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 700;">完整开发生命周期</span>
+                </div>
+                <div class="workflow-flow">
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-stable">
+                            <div class="wf-phase-num">Phase 0</div>
+                            <span class="wf-phase-icon">🔍</span>
+                            <div class="wf-phase-title">变更影响分析</div>
+                            <div class="wf-phase-sub">稳定区域<br>前置检查</div>
+                            <span class="wf-phase-badge badge-gate">前置</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-prepare">
+                            <div class="wf-phase-num">Phase 1</div>
+                            <span class="wf-phase-icon">🚀</span>
+                            <div class="wf-phase-title">会话启动准备</div>
+                            <div class="wf-phase-sub">环境检查<br>上下文加载</div>
+                            <span class="wf-phase-badge badge-auto">自动</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-plan">
+                            <div class="wf-phase-num">Phase 2</div>
+                            <span class="wf-phase-icon">📋</span>
+                            <div class="wf-phase-title">任务规划</div>
+                            <div class="wf-phase-sub">Quick/Standard<br>/Enterprise</div>
+                            <span class="wf-phase-badge badge-ai">AI</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-quality">
+                            <div class="wf-phase-num">Phase 3</div>
+                            <span class="wf-phase-icon">✅</span>
+                            <div class="wf-phase-title">代码质量检查</div>
+                            <div class="wf-phase-sub">Lint / Build<br>格式化验证</div>
+                            <span class="wf-phase-badge badge-gate">门禁</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-tdd">
+                            <div class="wf-phase-num">Phase 4</div>
+                            <span class="wf-phase-icon">🔴</span>
+                            <div class="wf-phase-title">TDD 开发</div>
+                            <div class="wf-phase-sub">RED → GREEN<br>→ REFACTOR</div>
+                            <span class="wf-phase-badge badge-ai">TDD</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-api">
+                            <div class="wf-phase-num">Phase 5</div>
+                            <span class="wf-phase-icon">🔌</span>
+                            <div class="wf-phase-title">API 完整性</div>
+                            <div class="wf-phase-sub">接口验证<br>联调准备</div>
+                            <span class="wf-phase-badge badge-gate">门禁</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-e2e">
+                            <div class="wf-phase-num">Phase 6</div>
+                            <span class="wf-phase-icon">🧪</span>
+                            <div class="wf-phase-title">E2E 测试</div>
+                            <div class="wf-phase-sub">前后端联调<br>端到端验证</div>
+                            <span class="wf-phase-badge badge-auto">Playwright</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-security">
+                            <div class="wf-phase-num">Phase 7</div>
+                            <span class="wf-phase-icon">🛡️</span>
+                            <div class="wf-phase-title">安全性检查</div>
+                            <div class="wf-phase-sub">Shannon<br>渗透测试</div>
+                            <span class="wf-phase-badge badge-gate">门禁</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-final">
+                            <div class="wf-phase-num">Phase 8</div>
+                            <span class="wf-phase-icon">🏆</span>
+                            <div class="wf-phase-title">质量门禁</div>
+                            <div class="wf-phase-sub">最终验证<br>发布准备</div>
+                            <span class="wf-phase-badge badge-gate">最终</span>
+                        </div>
+                    </div>
+                    <div class="wf-arrow">→</div>
+                    <div class="wf-phase">
+                        <div class="wf-phase-box phase-commit">
+                            <div class="wf-phase-num">完成</div>
+                            <span class="wf-phase-icon">🚢</span>
+                            <div class="wf-phase-title">Git 提交</div>
+                            <div class="wf-phase-sub">Commit<br>发布</div>
+                            <span class="wf-phase-badge badge-auto">CI/CD</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 24px; margin-top: 24px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 6px;">
+                        <span style="background:#ef4444; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff;">门禁</span> 必须通过才能继续
+                    </span>
+                    <span style="font-size: 12px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 6px;">
+                        <span style="background:#10b981; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff;">自动</span> 无需人工干预
+                    </span>
+                    <span style="font-size: 12px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 6px;">
+                        <span style="background:#7c3aed; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff;">AI</span> AI Agent 辅助执行
+                    </span>
+                </div>
+            </div>
+
+            <!-- 阶段一：任务规划轨道 -->
+            <div class="content-card" style="margin: 32px 0;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">📋 Phase 2 详解：三轨道任务规划</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">根据任务复杂度自动匹配规划轨道，避免小任务过度设计、大任务欠缺规划。</p>
+                <div class="planning-tracks">
+                    <div class="track-card track-quick">
+                        <div class="track-label">Quick Flow</div>
+                        <div class="track-title">快速开发</div>
+                        <div class="track-time">⏱ 适合 &lt; 2 小时的任务</div>
+                        <ul class="track-steps">
+                            <li><span class="step-dot"></span>Bug 修复 / 小功能</li>
+                            <li><span class="step-dot"></span><code style="font-size:12px;">/plan "任务描述"</code></li>
+                            <li><span class="step-dot"></span>可选 Quick Spec</li>
+                            <li><span class="step-dot"></span>用户确认后直接开发</li>
+                            <li><span class="step-dot"></span>bmm-quick-flow-solo-dev</li>
+                        </ul>
+                    </div>
+                    <div class="track-card track-standard">
+                        <div class="track-label">Standard</div>
+                        <div class="track-title">标准开发</div>
+                        <div class="track-time">⏱ 适合 2–8 小时的任务</div>
+                        <ul class="track-steps">
+                            <li><span class="step-dot"></span>新功能 / 模块重构</li>
+                            <li><span class="step-dot"></span><code style="font-size:12px;">/bmad-help</code> 智能诊断</li>
+                            <li><span class="step-dot"></span>需求分析 + PRD</li>
+                            <li><span class="step-dot"></span>Epic & Story 分解</li>
+                            <li><span class="step-dot"></span>Sprint 规划执行</li>
+                        </ul>
+                    </div>
+                    <div class="track-card track-enterprise">
+                        <div class="track-label">Enterprise</div>
+                        <div class="track-title">大型系统</div>
+                        <div class="track-time">⏱ 适合 &gt; 8 小时的任务</div>
+                        <ul class="track-steps">
+                            <li><span class="step-dot"></span>系统级架构设计</li>
+                            <li><span class="step-dot"></span>BMAD 完整流程</li>
+                            <li><span class="step-dot"></span>多 Agent 并行协作</li>
+                            <li><span class="step-dot"></span>ADR 架构决策记录</li>
+                            <li><span class="step-dot"></span>多轮 Code Review</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段二：TDD 开发循环 -->
+            <div class="content-card" style="margin: 32px 0;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">🔴 Phase 4 详解：TDD 三步循环</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">测试先行，每次只写一个小功能，在测试保护下安全重构。目标覆盖率 ≥ 80%。</p>
+                <div class="tdd-cycle-diagram">
+                    <div class="tdd-step tdd-red">
+                        <span class="tdd-step-icon">🔴</span>
+                        <div class="tdd-step-title">RED</div>
+                        <div class="tdd-step-sub">先写失败<br>的测试</div>
+                    </div>
+                    <div class="tdd-arrow-cycle">→</div>
+                    <div class="tdd-step tdd-green">
+                        <span class="tdd-step-icon">🟢</span>
+                        <div class="tdd-step-title">GREEN</div>
+                        <div class="tdd-step-sub">最小实现<br>让测试通过</div>
+                    </div>
+                    <div class="tdd-arrow-cycle">→</div>
+                    <div class="tdd-step tdd-blue">
+                        <span class="tdd-step-icon">🔵</span>
+                        <div class="tdd-step-title">REFACTOR</div>
+                        <div class="tdd-step-sub">重构优化<br>保持绿灯</div>
+                    </div>
+                    <div class="tdd-arrow-cycle" style="color: var(--accent-blue); font-size: 20px;">↺</div>
+                    <div style="text-align: center; color: var(--text-muted);">
+                        <div style="font-size: 28px; margin-bottom: 8px;">🔁</div>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">持续迭代</div>
+                        <div style="font-size: 12px; margin-top: 4px;">直到功能完整</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px;">
+                    <div style="background: #fef2f2; border-radius: 8px; padding: 12px; border-left: 3px solid #ef4444;">
+                        <div style="font-size: 12px; font-weight: 700; color: #991b1b; margin-bottom: 6px;">RED 阶段要点</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">明确输入/输出、识别边界条件、测试命名清晰描述场景</div>
+                    </div>
+                    <div style="background: #f0fdf4; border-radius: 8px; padding: 12px; border-left: 3px solid #10b981;">
+                        <div style="font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 6px;">GREEN 阶段要点</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">只写让测试通过的最少代码，不过度设计，先求通过再优化</div>
+                    </div>
+                    <div style="background: #eff6ff; border-radius: 8px; padding: 12px; border-left: 3px solid #3b82f6;">
+                        <div style="font-size: 12px; font-weight: 700; color: #1e40af; margin-bottom: 6px;">REFACTOR 阶段要点</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">消除重复、提升可读性、保持所有测试仍然通过</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段三：综合测试工作流 -->
+            <div class="content-card" style="margin: 32px 0;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">🧪 Phase 6 详解：综合测试工作流</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">四阶段测试体系，"一头一尾"原则——需求文档是头，E2E 闭环是尾，中间才能顺畅。</p>
+                <div class="testing-phases-grid">
+                    <div class="testing-phase-card tp-0">
+                        <div class="tp-phase-label">Phase 0</div>
+                        <div class="tp-title">需求文档验证</div>
+                        <span class="tp-mode-badge doc-badge">📄 文档驱动</span>
+                        <ul class="tp-items">
+                            <li>流程/模块清晰度检查</li>
+                            <li>验收标准确认</li>
+                            <li>边界条件识别</li>
+                            <li>输出：需求验证报告</li>
+                        </ul>
+                    </div>
+                    <div class="testing-phase-card tp-1">
+                        <div class="tp-phase-label">Phase 1</div>
+                        <div class="tp-title">前端 UI 测试</div>
+                        <span class="tp-mode-badge mock-badge">🎭 Mock 模式</span>
+                        <ul class="tp-items">
+                            <li>UI 组件功能验证</li>
+                            <li>交互逻辑测试</li>
+                            <li>控制台无报错</li>
+                            <li>输出：前端测试报告</li>
+                        </ul>
+                    </div>
+                    <div class="testing-phase-card tp-2">
+                        <div class="tp-phase-label">Phase 2</div>
+                        <div class="tp-title">后端 API 测试</div>
+                        <span class="tp-mode-badge real-badge">✅ 真实数据</span>
+                        <ul class="tp-items">
+                            <li>API 接口完整性</li>
+                            <li>数据库操作验证</li>
+                            <li>边界/异常覆盖</li>
+                            <li>输出：API 测试报告</li>
+                        </ul>
+                    </div>
+                    <div class="testing-phase-card tp-3">
+                        <div class="tp-phase-label">Phase 3</div>
+                        <div class="tp-title">前后端联调</div>
+                        <span class="tp-mode-badge real-badge">✅ 真实环境</span>
+                        <ul class="tp-items">
+                            <li>全流程业务闭环</li>
+                            <li>多角色场景测试</li>
+                            <li>Playwright E2E</li>
+                            <li>输出：联调测试报告</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段四：多 Agent 协作网络 -->
+            <div class="content-card" style="margin: 32px 0;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">🤖 贯穿全程：多 Agent 协作网络</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Claude Code 在整个工作流中调度专业 Agent 协同工作，每个 Agent 负责特定领域的专业任务。</p>
+                <div class="agent-network">
+                    <div class="agent-center">
+                        <div class="agent-center-icon">🧠</div>
+                        <div class="agent-center-title">Claude Code</div>
+                        <div class="agent-center-sub">主控 AI<br>统筹调度</div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2);">
+                            <div style="font-size: 11px; opacity: 0.7; margin-bottom: 8px;">核心协调工具</div>
+                            <div style="font-size: 12px;">BMAD Method</div>
+                            <div style="font-size: 12px; opacity: 0.8;">+ 22 技能包</div>
+                        </div>
+                    </div>
+                    <div class="agent-nodes">
+                        <div class="agent-node">
+                            <div class="agent-node-icon">📐</div>
+                            <div class="agent-node-name">planner</div>
+                            <div class="agent-node-desc">任务规划<br>Phase 2</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">🏛️</div>
+                            <div class="agent-node-name">architect</div>
+                            <div class="agent-node-desc">架构设计<br>Enterprise 轨道</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">🧪</div>
+                            <div class="agent-node-name">tdd-guide</div>
+                            <div class="agent-node-desc">测试驱动<br>Phase 4</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">🔍</div>
+                            <div class="agent-node-name">code-reviewer</div>
+                            <div class="agent-node-desc">代码审查<br>Phase 3/8</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">🛡️</div>
+                            <div class="agent-node-name">security-reviewer</div>
+                            <div class="agent-node-desc">安全审查<br>Phase 7</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">🌐</div>
+                            <div class="agent-node-name">e2e-runner</div>
+                            <div class="agent-node-desc">E2E 测试<br>Phase 6</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">🔧</div>
+                            <div class="agent-node-name">build-error-resolver</div>
+                            <div class="agent-node-desc">构建修复<br>按需调用</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">♻️</div>
+                            <div class="agent-node-name">refactor-cleaner</div>
+                            <div class="agent-node-desc">代码清理<br>REFACTOR 阶段</div>
+                        </div>
+                        <div class="agent-node">
+                            <div class="agent-node-icon">📝</div>
+                            <div class="agent-node-name">doc-updater</div>
+                            <div class="agent-node-desc">文档同步<br>完成后执行</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="divider"></div>
 
@@ -1944,5 +2846,157 @@
         output-level="standard"
         position="bottom-right"
     ></agent-ui-annotation>
+    <!-- 工作流全屏遮罩层 -->
+    <div class="workflow-fullscreen-overlay" id="wf-fullscreen-overlay" onclick="handleOverlayClick(event)">
+        <div class="workflow-fullscreen-inner" id="wf-fullscreen-inner">
+            <div class="workflow-fullscreen-close" onclick="closeWorkflowFullscreen()" title="关闭 (ESC)">✕</div>
+            <div style="text-align: center; margin-bottom: 28px; padding-top: 8px;">
+                <span style="font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700;">🗺️ 完整开发生命周期 · 全链路工作流</span>
+            </div>
+            <!-- 全屏流程图节点（与缩略图相同内容） -->
+            <div class="workflow-flow" style="gap: 0;">
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-stable" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 0</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🔍</span>
+                        <div class="wf-phase-title">变更影响分析</div>
+                        <div class="wf-phase-sub">稳定区域<br>前置检查</div>
+                        <span class="wf-phase-badge badge-gate">前置</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-prepare" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 1</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🚀</span>
+                        <div class="wf-phase-title">会话启动准备</div>
+                        <div class="wf-phase-sub">环境检查<br>上下文加载</div>
+                        <span class="wf-phase-badge badge-auto">自动</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-plan" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 2</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">📋</span>
+                        <div class="wf-phase-title">任务规划</div>
+                        <div class="wf-phase-sub">Quick/Standard<br>/Enterprise</div>
+                        <span class="wf-phase-badge badge-ai">AI</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-quality" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 3</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">✅</span>
+                        <div class="wf-phase-title">代码质量检查</div>
+                        <div class="wf-phase-sub">Lint / Build<br>格式化验证</div>
+                        <span class="wf-phase-badge badge-gate">门禁</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-tdd" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 4</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🔴</span>
+                        <div class="wf-phase-title">TDD 开发</div>
+                        <div class="wf-phase-sub">RED → GREEN<br>→ REFACTOR</div>
+                        <span class="wf-phase-badge badge-ai">TDD</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-api" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 5</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🔌</span>
+                        <div class="wf-phase-title">API 完整性</div>
+                        <div class="wf-phase-sub">接口验证<br>联调准备</div>
+                        <span class="wf-phase-badge badge-gate">门禁</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-e2e" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 6</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🧪</span>
+                        <div class="wf-phase-title">E2E 测试</div>
+                        <div class="wf-phase-sub">前后端联调<br>端到端验证</div>
+                        <span class="wf-phase-badge badge-auto">Playwright</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-security" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 7</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🛡️</span>
+                        <div class="wf-phase-title">安全性检查</div>
+                        <div class="wf-phase-sub">Shannon<br>渗透测试</div>
+                        <span class="wf-phase-badge badge-gate">门禁</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-final" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">Phase 8</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🏆</span>
+                        <div class="wf-phase-title">质量门禁</div>
+                        <div class="wf-phase-sub">最终验证<br>发布准备</div>
+                        <span class="wf-phase-badge badge-gate">最终</span>
+                    </div>
+                </div>
+                <div class="wf-arrow" style="font-size:22px; margin-top:40px;">→</div>
+                <div class="wf-phase">
+                    <div class="wf-phase-box phase-commit" style="padding: 22px 14px;">
+                        <div class="wf-phase-num">完成</div>
+                        <span class="wf-phase-icon" style="font-size:30px;">🚢</span>
+                        <div class="wf-phase-title">Git 提交</div>
+                        <div class="wf-phase-sub">Commit<br>发布</div>
+                        <span class="wf-phase-badge badge-auto">CI/CD</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 图例 -->
+            <div style="display: flex; justify-content: center; gap: 32px; margin-top: 32px; flex-wrap: wrap; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <span style="font-size: 13px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 8px;">
+                    <span style="background:#ef4444; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #fff;">门禁</span> 必须通过才能继续
+                </span>
+                <span style="font-size: 13px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 8px;">
+                    <span style="background:#10b981; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #fff;">自动</span> 无需人工干预
+                </span>
+                <span style="font-size: 13px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 8px;">
+                    <span style="background:#7c3aed; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #fff;">AI</span> AI Agent 辅助执行
+                </span>
+                <span style="font-size: 13px; color: rgba(255,255,255,0.3);">按 ESC 或点击遮罩关闭</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openWorkflowFullscreen() {
+            const overlay = document.getElementById('wf-fullscreen-overlay');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeWorkflowFullscreen() {
+            const overlay = document.getElementById('wf-fullscreen-overlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleOverlayClick(e) {
+            // 点击遮罩本身（不是内容区）关闭
+            if (e.target === document.getElementById('wf-fullscreen-overlay')) {
+                closeWorkflowFullscreen();
+            }
+        }
+
+        // ESC 键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeWorkflowFullscreen();
+            }
+        });
+    </script>
 </body>
 </html>
