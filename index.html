@@ -476,12 +476,11 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.88);
             z-index: 9999;
             align-items: center;
             justify-content: center;
-            padding: 32px;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
             cursor: zoom-out;
         }
 
@@ -489,74 +488,49 @@
             display: flex;
         }
 
-        /* 全屏内部容器 */
+        /* 全屏内部容器 - 固定原始尺寸，由 JS scale 等比放大 */
         .workflow-fullscreen-inner {
             background: linear-gradient(135deg, #0f1117 0%, #1a1f2e 100%);
             border-radius: 20px;
-            padding: 48px 40px;
+            padding: 40px 36px 32px;
             position: relative;
-            max-width: 1400px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
+            /* 固定原始宽度，JS 动态 scale 等比撑满视口 */
+            width: 1100px;
             cursor: default;
-            animation: wf-fadein 0.2s ease;
+            transform-origin: center center;
+            animation: wf-fadein 0.22s cubic-bezier(0.22,1,0.36,1);
+            flex-shrink: 0;
         }
 
         @keyframes wf-fadein {
-            from { opacity: 0; transform: scale(0.96); }
-            to   { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.88); }
+            to   { opacity: 1; } /* scale 由 JS 设置，不覆盖 */
         }
 
-        /* 全屏关闭按钮 */
+        /* 全屏关闭按钮 - 固定在遮罩右上角，不随 scale 缩放 */
         .workflow-fullscreen-close {
-            position: sticky;
-            top: 0;
-            float: right;
-            margin-bottom: -32px;
+            position: fixed;
+            top: 20px;
+            right: 24px;
             background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.25);
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: rgba(255,255,255,0.7);
-            font-size: 18px;
-            transition: background 0.15s, color 0.15s;
-            z-index: 10;
+            color: rgba(255,255,255,0.8);
+            font-size: 20px;
+            transition: background 0.15s, color 0.15s, transform 0.15s;
+            z-index: 10000;
         }
 
         .workflow-fullscreen-close:hover {
-            background: rgba(239,68,68,0.4);
+            background: rgba(239,68,68,0.5);
             color: #fff;
-        }
-
-        /* 全屏模式下流程图放大 */
-        .workflow-fullscreen-inner .workflow-flow {
-            gap: 0;
-        }
-
-        .workflow-fullscreen-inner .wf-phase-box {
-            padding: 20px 14px;
-        }
-
-        .workflow-fullscreen-inner .wf-phase-icon {
-            font-size: 30px;
-        }
-
-        .workflow-fullscreen-inner .wf-phase-title {
-            font-size: 14px;
-        }
-
-        .workflow-fullscreen-inner .wf-phase-sub {
-            font-size: 12px;
-        }
-
-        .workflow-fullscreen-inner .wf-arrow {
-            font-size: 22px;
+            transform: scale(1.1);
         }
 
         .workflow-overview-diagram::before {
@@ -1118,13 +1092,13 @@
                     <span class="nav-item-icon">📋</span>
                     <span class="nav-item-label">系统总则</span>
                 </a>
-                <a href="#workflow-overview" class="nav-item">
-                    <span class="nav-item-icon">🗺️</span>
-                    <span class="nav-item-label">工作流总览</span>
-                </a>
                 <a href="#guidelines" class="nav-item">
                     <span class="nav-item-icon">⚡</span>
                     <span class="nav-item-label">行动准则</span>
+                </a>
+                <a href="#workflow-overview" class="nav-item">
+                    <span class="nav-item-icon">🗺️</span>
+                    <span class="nav-item-label">工作流总览</span>
                 </a>
                 <a href="#tdd" class="nav-item">
                     <span class="nav-item-icon">🧪</span>
@@ -1221,6 +1195,137 @@
 
             <div class="divider"></div>
 
+            <div class="divider"></div>
+
+            <!-- 行动准则 -->
+            <h2 id="guidelines" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">⚡ 行动准则</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">开发时怎么干才不会出问题？照着这个流程走就对了。</p>
+
+            <!-- 核心原则 -->
+            <div class="content-card">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🎯 核心原则（7 条铁律）</h3>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">1️⃣</span>
+                        <div>
+                            <strong>先想再做</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">写代码前必须规划，想清楚要做什么再动手</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">2️⃣</span>
+                        <div>
+                            <strong>质量优先</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">代码质量过关才能测试，测试过关才能提交</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">3️⃣</span>
+                        <div>
+                            <strong>测试驱动</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">先写测试用例（让它失败），再写代码（让它通过）</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">4️⃣</span>
+                        <div>
+                            <strong>API 完整</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有 API 都开发完了才能联调测试</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">5️⃣</span>
+                        <div>
+                            <strong>安全第一</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">安全检查通过才能发布，不能有漏洞上线</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">6️⃣</span>
+                        <div>
+                            <strong>文档同步</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">改了代码就要更新文档，别让人看不懂</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px;">7️⃣</span>
+                        <div>
+                            <strong>能追溯</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有决策和变更都要记下来，出了问题能找到原因</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 开发流程 -->
+            <div class="content-card" style="margin-top: 24px;" id="tdd">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🔄 开发流程（9 步走完）</h3>
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">1</span>
+                        <div style="flex: 1;">
+                            <strong>会话启动</strong> - 检查环境、读文档、确认任务
+                        </div>
+                        <code class="tool-cmd">/plugin list</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">2</span>
+                        <div style="flex: 1;">
+                            <strong>任务规划</strong> - 先想清楚要做什么，别上来就写代码
+                        </div>
+                        <code class="tool-cmd">/plan</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #fff7e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--warning);">
+                        <span style="font-weight: 700; color: var(--warning); min-width: 24px;">3</span>
+                        <div style="flex: 1;">
+                            <strong>代码审查</strong> 🚧 - 代码质量过关才能进入测试
+                        </div>
+                        <code class="tool-cmd">/code-review</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">4</span>
+                        <div style="flex: 1;">
+                            <strong>TDD 开发</strong> - 先写测试（红）→ 写代码（绿）→ 优化（重构）
+                        </div>
+                        <code class="tool-cmd">/tdd</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #fff7e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--warning);">
+                        <span style="font-weight: 700; color: var(--warning); min-width: 24px;">5</span>
+                        <div style="flex: 1;">
+                            <strong>API 完整检查</strong> 🚧 - 所有 API 都开发完了才能联调
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-muted);">手动检查</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">6</span>
+                        <div style="flex: 1;">
+                            <strong>E2E 测试</strong> - 完整流程测试，模拟真实用户操作
+                        </div>
+                        <code class="tool-cmd">/e2e</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #f0e6ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid #9333ea;">
+                        <span style="font-weight: 700; color: #9333ea; min-width: 24px;">7</span>
+                        <div style="flex: 1;">
+                            <strong>Shannon 安全测试</strong> 🚧 - AI 渗透测试，发现并验证漏洞
+                        </div>
+                        <code class="tool-cmd">/shannon-start</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #ffe6e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--danger);">
+                        <span style="font-weight: 700; color: var(--danger); min-width: 24px;">8</span>
+                        <div style="flex: 1;">
+                            <strong>安全检查</strong> 🚧 - 查漏洞、查注入、查敏感信息
+                        </div>
+                        <code class="tool-cmd">/security-review</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f7ed 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--success);">
+                        <span style="font-weight: 700; color: var(--success); min-width: 24px;">9</span>
+                        <div style="flex: 1;">
+                            <strong>质量门禁</strong> 🎉 - 全部通过才能提交代码
+                        </div>
+                        <code class="tool-cmd">/verify</code>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">🚧 = 门禁关卡，必须通过才能继续</p>
             <!-- ========== 工作流总览 ========== -->
             <h2 id="workflow-overview" style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">🗺️ 工作流总览</h2>
             <p style="color: var(--text-secondary); margin-bottom: 24px;">完整的 AI 辅助软件开发工作流，从会话启动到代码发布的全链路规范。共 9 个阶段，按实际开发顺序拆分，每个阶段有专属规范文档。</p>
@@ -1553,135 +1658,6 @@
 
             <div class="divider"></div>
 
-            <!-- 行动准则 -->
-            <h2 id="guidelines" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">⚡ 行动准则</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 24px;">开发时怎么干才不会出问题？照着这个流程走就对了。</p>
-
-            <!-- 核心原则 -->
-            <div class="content-card">
-                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🎯 核心原则（7 条铁律）</h3>
-                <div style="display: grid; gap: 12px;">
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">1️⃣</span>
-                        <div>
-                            <strong>先想再做</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">写代码前必须规划，想清楚要做什么再动手</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">2️⃣</span>
-                        <div>
-                            <strong>质量优先</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">代码质量过关才能测试，测试过关才能提交</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">3️⃣</span>
-                        <div>
-                            <strong>测试驱动</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">先写测试用例（让它失败），再写代码（让它通过）</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">4️⃣</span>
-                        <div>
-                            <strong>API 完整</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有 API 都开发完了才能联调测试</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">5️⃣</span>
-                        <div>
-                            <strong>安全第一</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">安全检查通过才能发布，不能有漏洞上线</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">6️⃣</span>
-                        <div>
-                            <strong>文档同步</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">改了代码就要更新文档，别让人看不懂</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
-                        <span style="font-size: 20px;">7️⃣</span>
-                        <div>
-                            <strong>能追溯</strong>
-                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有决策和变更都要记下来，出了问题能找到原因</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 开发流程 -->
-            <div class="content-card" style="margin-top: 24px;" id="tdd">
-                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🔄 开发流程（9 步走完）</h3>
-                <div style="display: grid; gap: 8px;">
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
-                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">1</span>
-                        <div style="flex: 1;">
-                            <strong>会话启动</strong> - 检查环境、读文档、确认任务
-                        </div>
-                        <code class="tool-cmd">/plugin list</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
-                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">2</span>
-                        <div style="flex: 1;">
-                            <strong>任务规划</strong> - 先想清楚要做什么，别上来就写代码
-                        </div>
-                        <code class="tool-cmd">/plan</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #fff7e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--warning);">
-                        <span style="font-weight: 700; color: var(--warning); min-width: 24px;">3</span>
-                        <div style="flex: 1;">
-                            <strong>代码审查</strong> 🚧 - 代码质量过关才能进入测试
-                        </div>
-                        <code class="tool-cmd">/code-review</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
-                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">4</span>
-                        <div style="flex: 1;">
-                            <strong>TDD 开发</strong> - 先写测试（红）→ 写代码（绿）→ 优化（重构）
-                        </div>
-                        <code class="tool-cmd">/tdd</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #fff7e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--warning);">
-                        <span style="font-weight: 700; color: var(--warning); min-width: 24px;">5</span>
-                        <div style="flex: 1;">
-                            <strong>API 完整检查</strong> 🚧 - 所有 API 都开发完了才能联调
-                        </div>
-                        <span style="font-size: 12px; color: var(--text-muted);">手动检查</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
-                        <span style="font-weight: 700; color: var(--accent); min-width: 24px;">6</span>
-                        <div style="flex: 1;">
-                            <strong>E2E 测试</strong> - 完整流程测试，模拟真实用户操作
-                        </div>
-                        <code class="tool-cmd">/e2e</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #f0e6ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid #9333ea;">
-                        <span style="font-weight: 700; color: #9333ea; min-width: 24px;">7</span>
-                        <div style="flex: 1;">
-                            <strong>Shannon 安全测试</strong> 🚧 - AI 渗透测试，发现并验证漏洞
-                        </div>
-                        <code class="tool-cmd">/shannon-start</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #ffe6e6 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--danger);">
-                        <span style="font-weight: 700; color: var(--danger); min-width: 24px;">8</span>
-                        <div style="flex: 1;">
-                            <strong>安全检查</strong> 🚧 - 查漏洞、查注入、查敏感信息
-                        </div>
-                        <code class="tool-cmd">/security-review</code>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f7ed 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--success);">
-                        <span style="font-weight: 700; color: var(--success); min-width: 24px;">9</span>
-                        <div style="flex: 1;">
-                            <strong>质量门禁</strong> 🎉 - 全部通过才能提交代码
-                        </div>
-                        <code class="tool-cmd">/verify</code>
-                    </div>
-                </div>
-                <p style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">🚧 = 门禁关卡，必须通过才能继续</p>
             </div>
 
             <!-- 综合性测试工作流 v2.0 -->
@@ -2848,8 +2824,9 @@
     ></agent-ui-annotation>
     <!-- 工作流全屏遮罩层 -->
     <div class="workflow-fullscreen-overlay" id="wf-fullscreen-overlay" onclick="handleOverlayClick(event)">
+        <!-- 关闭按钮固定在遮罩层，不随内容 scale -->
+        <div class="workflow-fullscreen-close" onclick="closeWorkflowFullscreen()" title="关闭 (ESC)">✕</div>
         <div class="workflow-fullscreen-inner" id="wf-fullscreen-inner">
-            <div class="workflow-fullscreen-close" onclick="closeWorkflowFullscreen()" title="关闭 (ESC)">✕</div>
             <div style="text-align: center; margin-bottom: 28px; padding-top: 8px;">
                 <span style="font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700;">🗺️ 完整开发生命周期 · 全链路工作流</span>
             </div>
@@ -2976,6 +2953,8 @@
             const overlay = document.getElementById('wf-fullscreen-overlay');
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
+            // 等遮罩渲染完后再测量高度计算 scale
+            requestAnimationFrame(() => requestAnimationFrame(() => applyWorkflowScale()));
         }
 
         function closeWorkflowFullscreen() {
@@ -2984,17 +2963,36 @@
             document.body.style.overflow = '';
         }
 
+        function applyWorkflowScale() {
+            const inner = document.getElementById('wf-fullscreen-inner');
+            if (!inner) return;
+            const originalW = 1100;                   // 内容原始宽度（与 CSS 一致）
+            const originalH = inner.offsetHeight;     // 渲染后的真实高度
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const padding = 60;                       // 四周留白
+
+            const scaleX = (vw - padding * 2) / originalW;
+            const scaleY = (vh - padding * 2) / originalH;
+            const scale = Math.min(scaleX, scaleY);   // 取最小，保证不超出屏幕
+
+            inner.style.transform = `scale(${scale})`;
+        }
+
         function handleOverlayClick(e) {
-            // 点击遮罩本身（不是内容区）关闭
             if (e.target === document.getElementById('wf-fullscreen-overlay')) {
                 closeWorkflowFullscreen();
             }
         }
 
-        // ESC 键关闭
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeWorkflowFullscreen();
+            if (e.key === 'Escape') closeWorkflowFullscreen();
+        });
+
+        window.addEventListener('resize', function() {
+            const overlay = document.getElementById('wf-fullscreen-overlay');
+            if (overlay && overlay.classList.contains('active')) {
+                applyWorkflowScale();
             }
         });
     </script>
