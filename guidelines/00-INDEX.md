@@ -32,9 +32,12 @@ guidelines/
 ├── 10-ANTHROPIC_LONG_RUNNING_AGENTS.md  # Anthropic 官方指南
 ├── 11-LONG_TERM_MEMORY.md         # 长期记忆管理
 ├── 12-AGENT_REACH_INTEGRATION.md  # Agent-Reach 集成
+├── 12-REAL_BUSINESS_TESTING.md    # 真实业务全流程闭环测试 🔴 核心 ⭐ NEW
 ├── 13-COLLABORATION_EFFICIENCY.md # 协作效率提升
 ├── 14-DETERMINISTIC_DEVELOPMENT.md # 确定性开发
-└── 15-STABLE_ZONE_PROTECTION.md   # 稳定区域保护
+├── 15-STABLE_ZONE_PROTECTION.md   # 稳定区域保护
+├── 16-DOCLING_INTEGRATION.md      # Docling 文档处理
+└── 17-COMPREHENSIVE_TESTING_WORKFLOW.md # 综合性测试工作流
 ```
 
 ---
@@ -138,41 +141,55 @@ cat guidelines/05-QUALITY_GATE.md
 - 需要进行 E2E 测试
 - 需要进行前后端联调测试
 - 需要验证 API 完整性
+- 需要进行真实业务测试 🔴 核心
 
 **相关文档**：
 - 📖 [01-ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) - Phase 5: API 完整性检查
-- 📖 [01-ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) - Phase 6: E2E 测试
+- 📖 [01-ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) - Phase 6: 真实业务全流程闭环测试 🔴 核心
 - 📖 [04-E2E_TESTING_FLOW.md](04-E2E_TESTING_FLOW.md) - E2E 测试详细流程
+- 📖 [12-REAL_BUSINESS_TESTING.md](12-REAL_BUSINESS_TESTING.md) - 真实业务测试规范 ⭐ NEW
 
 **快速命令**：
 ```bash
 # 读取 API 完整性检查章节
 cat guidelines/01-ACTION_GUIDELINES.md | grep -A 100 "Phase 5"
 
-# 读取 E2E 测试章节
-cat guidelines/01-ACTION_GUIDELINES.md | grep -A 80 "Phase 6"
+# 读取真实业务测试章节
+cat guidelines/01-ACTION_GUIDELINES.md | grep -A 150 "Phase 6"
 
 # 读取 E2E 测试详细流程
 cat guidelines/04-E2E_TESTING_FLOW.md
+
+# 读取真实业务测试规范
+cat guidelines/12-REAL_BUSINESS_TESTING.md
 ```
 
 ---
 
-### 6. 安全性检查
+### 6. 安全性检查与渗透测试
 
 **问题场景**：
 - 需要进行安全性检查
 - 需要识别安全漏洞
+- 需要进行渗透测试
 - 需要确保系统安全
 
 **相关文档**：
 - 📖 [01-ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) - Phase 7: 安全性检查
 - 📖 [05-QUALITY_GATE.md](05-QUALITY_GATE.md) - 安全检查清单
+- 📖 [../docs/SHANNON_INTEGRATION.md](../docs/SHANNON_INTEGRATION.md) - Shannon AI 渗透测试集成 ⭐ NEW
+- 📖 [04-E2E_TESTING_FLOW.md](04-E2E_TESTING_FLOW.md) - 第五层：Shannon 安全渗透测试
 
 **快速命令**：
 ```bash
 # 读取安全性检查章节
 cat guidelines/01-ACTION_GUIDELINES.md | grep -A 100 "Phase 7"
+
+# 读取 Shannon 集成指南
+cat ../docs/SHANNON_INTEGRATION.md
+
+# 启动 Shannon 渗透测试
+cd /opt/shannon && ./shannon start URL=http://localhost:3000
 ```
 
 ---

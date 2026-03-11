@@ -22,12 +22,14 @@
 
 ### 插件清单
 
-| 插件名称 | 用途 | 安装方式 | 是否必备 |
-|---------|------|---------|---------|
-| **bmad-method** | 需求分析、架构设计、多 Agent 协作 | `/plugin install bmad-method` | ✅ 必备 |
-| **everything-claude-code** | 命令库、技能库、Agent 库、规则 | 手动安装 | ✅ 必备 |
-| **workflow-studio** | 流程图、时序图、可视化工作流 | `/plugin install workflow-studio` | ✅ 必备 |
-| **pencil** | UI 设计原型、线框图 | MCP 服务 | ✅ 必备 |
+| 插件名称 | 用途 | 安装方式 | GitHub |
+|---------|------|---------|--------|
+| **bmad-method** | 需求分析、架构设计、多 Agent 协作 | `/plugin install bmad-method` | [BMAD](https://github.com/bmad-method) |
+| **everything-claude-code** | 命令库、技能库、Agent 库、规则 | 手动安装 | [everything-claude-code](https://github.com/anthropics/everything-claude-code) |
+| **workflow-studio** | 流程图、时序图、可视化工作流 | `/plugin install workflow-studio` | [workflow-studio](https://github.com/workflow-studio) |
+| **pencil** | UI 设计原型、线框图 | MCP 服务 | [OpenPencil](https://github.com/openpencil-ai) |
+| **agentation** | UI 设计标注、AI 协作评审 | Skill + npm 安装 | [neondatabase/agentation](https://github.com/neondatabase/agentation) |
+| **shannon** | AI 自主渗透测试、安全漏洞扫描 | Docker + CLI | [KeygraphHQ/shannon](https://github.com/KeygraphHQ/shannon) |
 
 ### 插件初始化检查
 
@@ -57,6 +59,8 @@
 - everything-claude-code (命令/技能/规则)
 - workflow-studio (流程图/可视化)
 - pencil (UI 原型设计 - MCP 服务)
+- agentation (UI 设计标注 - 前端项目)
+- shannon (安全渗透测试 - 发布前必备)
 
 # Step 3: 缺失插件安装
 如果缺失，立即执行：
@@ -87,10 +91,12 @@
 | **架构设计** | bmad-method + pencil | `/bmad-bmm-create-prd`, `/bmad-bmm-create-architecture` + 绘制架构图 |
 | **任务规划** | bmad-method + everything-claude-code | `/bmad-bmm-create-epics-and-stories`, `/plan` 命令 + workflow-studio 流程图 |
 | **TDD 开发** | bmad-method + everything-claude-code | `/bmad-bmm-dev-story`, `/tdd` 命令 |
-| **UI 设计** | bmad-method + pencil | `/bmad-bmm-create-ux-design`, 创建页面原型 |
+| **UI 设计** | bmad-method + pencil + agentation | `/bmad-bmm-create-ux-design`, 创建页面原型，Agentation 设计标注 |
 | **流程设计** | workflow-studio | 创建业务流程图、时序图 |
 | **代码审查** | bmad-method + everything-claude-code | `/bmad-bmm-code-review`, `/code-review` |
 | **E2E 测试** | bmad-method + everything-claude-code | `/bmad-agent-bmm-qa`, `/e2e` 命令 |
+| **安全渗透测试** | shannon | Shannon 自主漏洞扫描 + PoC 生成 |
+| **人类介入测试** | agentation + agentation-self-driving | UI 问题标注，自主设计评审 |
 | **构建修复** | everything-claude-code | `/build-fix` 命令 |
 | **重构优化** | everything-claude-code | `/refactor-clean` 命令 |
 
@@ -435,7 +441,7 @@ Compact 后自动恢复：
 - ⚠️ 更新后验证功能正常
 - ⚠️ 如更新失败，使用现有版本继续
 
-### Step 1: 插件环境检查
+# Step 1: 插件环境检查
 
 ```bash
 # 1.1 检查已安装插件
@@ -447,12 +453,20 @@ Compact 后自动恢复：
 - everything-claude-code (命令/技能/规则)
 - workflow-studio (流程图/可视化)
 - pencil (UI 原型设计 - MCP 服务)
+- agentation (UI 设计标注 - 前端项目必备)
 
-# 1.3 缺失插件安装
+# 1.3 检查必备技能
+/skill list
+# 确认以下技能存在：
+# - agentation (安装工具栏)
+# - agentation-self-driving (自主评审模式)
+
+# 1.4 缺失插件安装
 如果缺失，立即执行：
 /plugin install <插件名>
+/skill <技能名>
 
-# 1.4 验证规则加载
+# 1.5 验证规则加载
 ls ~/.claude/rules/  # 确认规则文件存在
 ```
 

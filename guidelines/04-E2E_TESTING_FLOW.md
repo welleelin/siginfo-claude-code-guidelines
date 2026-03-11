@@ -1,7 +1,7 @@
 # E2E 测试流程
 
 > 版本：1.0.0
-> 最后更新：2026-03-07
+> 最后更新：2026-03-10
 
 ---
 
@@ -10,6 +10,51 @@
 端到端（E2E）测试验证完整的用户流程，确保系统各部分正确集成。
 
 > **关键前提**：在进行 API 测试之前，务必确保所有 API 都已开发完整。未完整的 API 必须先开发完成，再进行下一步测试。
+
+---
+
+## 🎯 完整测试层次
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    完整测试验证流程                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Phase 1: 前端 Mock 测试                                         │
+│  ├── 组件单元测试                                               │
+│  ├── UI 快照测试                                                  │
+│  └── 状态：✅ 使用 Mock 数据                                        │
+│                                                                 │
+│  Phase 2: 后端 API 测试                                          │
+│  ├── API 端点测试                                                  │
+│  ├── 数据库集成测试                                             │
+│  └── 状态：✅ 使用真实 API                                         │
+│                                                                 │
+│  Phase 3: 前后端联调测试                                         │
+│  ├── 完整用户流程测试                                           │
+│  ├── 跨系统集成测试                                             │
+│  └── 状态：✅ 使用真实 API                                         │
+│                                                                 │
+│  Phase 4: E2E 端到端测试                                         │
+│  ├── Playwright 自动化测试                                        │
+│  ├── 关键用户路径验证                                           │
+│  └── 状态：✅ 使用真实 API                                         │
+│                                                                 │
+│  Phase 5: Shannon 安全渗透测试 ⭐                                │
+│  ├── 源代码漏洞扫描                                             │
+│  ├── 自主攻击验证                                               │
+│  ├── PoC 生成                                                      │
+│  └── 状态：✅ 白盒测试 + 真实攻击                                   │
+│                                                                 │
+│  Phase 6: 人类介入测试                                           │
+│  ├── 用户体验评审                                               │
+│  ├── 设计标注反馈（Agentation）                                  │
+│  └── 状态：⚠️ 需要人类参与                                         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+详见：[Shannon 集成指南](../docs/SHANNON_INTEGRATION.md)
 
 ---
 
@@ -356,6 +401,19 @@ test('登录失败流程 - 联调测试', async ({ page }) => {
 
 **目标**：验证完整用户流程，确保生产环境 95% 无 Bug
 
+**浏览器模式配置**：
+
+| 测试类型 | 浏览器模式 | 配置 | 用途 |
+|---------|----------|------|------|
+| **自动 E2E 测试** | 无头模式（headless） | `headless: true` | CI/CD、自动化验证、行为准则测试 |
+| **人类介入测试** | 有头模式（headed） | `headless: false` | 人类观看、Agentation 标注 |
+| **Self-Driving 评审** | 有头模式（headed） | `headless: false` | AI 自主标注、人类观看 |
+
+**核心原则**：
+- ✅ **自动 E2E 测试必须使用无头模式** - 行为准则测试环节中，自动 E2E 测试阶段使用 headless 模式
+- ✅ **人类介入测试使用有头模式** - 需要人类观看或参与时使用 headed
+- ✅ **资源配置优化** - 无头模式节省资源，适合 CI/CD 和自动化
+
 **强制要求**：
 1. ✅ 完整真实环境（前端 + 后端 + 数据库）
 2. ✅ 真实用户操作流程
@@ -369,6 +427,58 @@ test('登录失败流程 - 联调测试', async ({ page }) => {
 - 从登录到业务完成的完整路径
 - 验证每个步骤的数据正确性
 - 检查最终结果的准确性
+
+### 第五层：Shannon 安全渗透测试 ⭐ 新增
+
+**目标**：AI 自主渗透测试，发现并验证安全漏洞
+
+**强制要求**：
+1. ✅ E2E 测试已通过
+2. ✅ 真实环境（前端 + 后端 + 数据库）
+3. ✅ 源代码可访问（白盒测试）
+4. ✅ AI 凭证配置（Anthropic API Key）
+5. ✅ Docker 环境运行
+6. ❌ 严格禁止 Mock 模式
+
+**方法**：
+- Shannon 分析源代码识别攻击向量
+- 自主执行真实攻击验证漏洞
+- 生成可复现的 PoC（Proof-of-Concept）
+- 输出精确到源代码位置的漏洞报告
+
+**示例**：
+```bash
+# 启动 Shannon 渗透测试
+cd /opt/shannon
+./shannon start URL=http://localhost:3000 REPO=/path/to/project
+
+# 监控进度
+./shannon logs
+
+# 查看报告
+cat workspaces/pentest-*/reports/*.md
+```
+
+**漏洞覆盖**：
+| 类型 | Shannon 能力 |
+|------|------------|
+| SQL 注入 | ✅ 检测 + 真实利用 |
+| XSS | ✅ 检测 + 真实利用 |
+| SSRF | ✅ 检测 + 真实利用 |
+| 认证绕过 | ✅ 检测 + 真实利用 |
+| 权限提升 | ✅ 检测 + 真实利用 |
+| 命令注入 | ✅ 检测 + 真实利用 |
+
+**与 E2E 测试的区别**：
+| 维度 | E2E 测试 | Shannon 渗透测试 |
+|------|---------|-----------------|
+| **目的** | 功能正确性 | 安全性验证 |
+| **测试内容** | 用户流程 | 攻击向量 |
+| **数据** | 真实业务数据 | 攻击载荷（Payload） |
+| **输出** | 测试通过/失败 | 漏洞报告 + PoC |
+| **运行时机** | 每次提交 | 发布前/定期 |
+
+详见：[Shannon 集成指南](../docs/SHANNON_INTEGRATION.md)
 
 **示例**：
 ```typescript
@@ -504,29 +614,78 @@ export default defineConfig({
     baseURL: 'http://localhost:3000',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    // 默认使用无头模式（自动 E2E 测试）
+    headless: true,
   },
   webServer: {
     command: 'npm run dev',
     port: 3000,
     reuseExistingServer: true,
   },
+  // 自定义模式：人类介入测试时使用有头模式
+  projects: [
+    {
+      name: 'automated',  // 自动 E2E 测试（无头模式）
+      use: {
+        headless: true,
+      },
+    },
+    {
+      name: 'human-in-the-loop',  // 人类介入测试（有头模式）
+      use: {
+        headless: false,
+      },
+    },
+  ],
 })
 ```
 
 ### 运行测试
 
 ```bash
-# 运行所有 E2E 测试
+# 运行所有 E2E 测试（默认无头模式）
 npx playwright test
 
-# 运行特定测试
+# 运行特定测试（无头模式）
 npx playwright test login.spec.ts
 
-# UI 模式
+# 人类介入测试模式（有头模式）
+npx playwright test --project=human-in-the-loop
+
+# UI 模式（有头）
 npx playwright test --ui
 
-# 调试模式
+# 调试模式（有头）
 npx playwright test --debug
+```
+
+### 行为准则测试环节配置
+
+在行为准则测试环节中，自动 E2E 测试阶段**必须使用无头模式**：
+
+```bash
+# ✅ 正确：自动 E2E 测试（无头模式）
+npx playwright test --project=automated
+
+# ✅ 正确：使用默认配置（无头模式）
+npx playwright test
+
+# ❌ 错误：自动测试不应该使用有头模式
+# npx playwright test --project=human-in-the-loop  # 仅在人类介入时使用
+```
+
+**脚本配置示例**：
+
+```json
+// package.json
+{
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --project=human-in-the-loop",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug"
+  }
+}
 ```
 
 ---

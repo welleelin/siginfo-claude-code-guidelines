@@ -1,6 +1,6 @@
 # 项目记忆 - sig-claude-code-guidelines
 
-> 最后更新：2026-03-09T09:30:00+08:00
+> 最后更新：2026-03-09T13:00:00+08:00
 > 会话 ID: session-20260309-001
 > 项目状态：活跃开发中
 
@@ -91,6 +91,10 @@
 
 | 时间 | 决策 | 原因 | 影响范围 |
 |------|------|------|---------|
+| 2026-03-11 | 创建真实业务全流程闭环测试规范 | 传统测试只停留在 UI 元素存在层面，使用 Mock 数据，无法验证真实业务闭环；需要四阶段测试体系（前端 Mock → API → 联调 → 真实业务），多 Agent 并行执行，生成完整覆盖率报告和人类可用性评估 | 质量保证核心环节、测试方法论升级 |
+| 2026-03-09 | 安装 Agentation v2.3.0 | AI 编码代理视觉反馈工具，提供 Annotation Toolbar 和 Design Review 功能，支持 React 集成 | UI 视觉反馈、设计评审 |
+| 2026-03-09 | 学习 planning-with-files 技能 | Manus 风格持久化 Markdown 规划工作流，3 文件模式（task_plan.md, findings.md, progress.md），96.7% 基准通过率，支持 16+ IDE 平台 | 任务规划工作流 |
+| 2026-03-09 | 安装 claude-to-im 技能 | IM 桥接工具，将 Claude Code 连接到 Telegram、Discord、飞书、QQ，支持权限控制、流式预览、会话持久化 | 远程协作能力 |
 | 2026-03-08 | 集成 Docling 文档处理工具 | IBM Research 开发的生产级文档处理工具，支持 PDF/Office/音频等多种格式，55K+ Stars，原生支持 AI 生态集成 | 文档处理能力、RAG 应用、知识库构建 |
 | 2026-03-08 | Pencil 集成增强完成 | 创建自动化脚本（设计 Token 提取、视觉回归测试、文件验证）、CI/CD 工作流、设计模板，完善自动化能力 | Pencil 工作流自动化 |
 | 2026-03-08 | 集成 Pencil 设计工具 | AI-Native 设计工具，支持设计即代码、MCP 集成、自动化导出 | UI/UX 设计能力 |
@@ -135,6 +139,12 @@
 
 | 里程碑 | 状态 | 完成时间 | 备注 |
 |--------|------|---------|------|
+| 页面样式与 Pencil 设计统一 | ✅ 完成 | 2026-03-09 | Notion 风格，温暖米色背景，简洁布局 |
+| Playwright v1.58.2 记录 | ✅ 完成 | 2026-03-09 | 自动化浏览器测试工具 |
+| Agentation v2.3.0 安装 | ✅ 完成 | 2026-03-09 | AI 编码代理视觉反馈工具，Annotation Toolbar + Design Review |
+| planning-with-files 技能安装 | ✅ 完成 | 2026-03-09 | Manus 风格任务规划，三文件模式，96.7% 基准通过率 |
+| claude-to-im 技能安装 | ✅ 完成 | 2026-03-09 | IM 桥接工具，支持 Telegram/Discord/飞书/QQ |
+| planning-with-files 学习 | ✅ 完成 | 2026-03-09 | Manus 风格持久化 Markdown 规划工作流 |
 | Phase 4 实际代码实施 | ✅ 完成 | 2026-03-09 | 创建 10 个 E2E 测试脚本 + 工作流引擎 + 质量门禁引擎 |
 | Pencil 设计工具集成 | ✅ 完成 | 2026-03-08 | 创建 PENCIL_INTEGRATION.md（AI-Native 设计工具集成指南） |
 | 代码稳定区域保护机制 | ✅ 完成 | 2026-03-08 | 创建 15-STABLE_ZONE_PROTECTION.md + 2 个脚本 + Phase 0 |
@@ -162,6 +172,55 @@
 ---
 
 ## ⚠️ 经验教训
+
+### 2026-03-09 - Planning-with-Files 技能安装与融合
+
+**背景**：用户要求安装 planning-with-files 技能并学习其工作流程
+
+**实施步骤**：
+1. **技能安装**
+   - 使用 SSH git clone 安装到 `~/.claude/skills/planning-with-files/`
+   - 版本：v2.18.2
+   - 基准通过率：96.7%
+   - 支持 16+ IDE 平台
+
+2. **三文件模式创建**
+   - `task_plan.md` - 任务路线图（5 阶段工作流）
+   - `findings.md` - 知识库（2-Action 规则）
+   - `progress.md` - 会话日志（5-Question Reboot Test）
+
+3. **文档更新**
+   - 更新 guidelines/11-LONG_TERM_MEMORY.md（添加融合章节）
+   - 更新 README.md（添加规划相关命令）
+   - 版本：1.0.0 → 1.1.0
+
+**融合架构**：
+```
+长期记忆层 (MEMORY.md)─ 任务级规划层 (task_plan.md)
+          │
+          ▼
+       会话日志层 (progress.md)
+          │
+          ▼
+       知识发现层 (findings.md)
+```
+
+**关键决策**：
+| Decision | Rationale |
+|----------|-----------|
+| 保留 MEMORY.md 作为长期记忆 | 项目级决策需要持久化保存 |
+| 使用 task_plan.md 作为任务级规划 | 单任务路线图，任务完成后可归档 |
+| findings.md 记录任务级发现 | 2-Action 规则确保关键信息不丢失 |
+| progress.md 追踪会话进度 | 5-Question Reboot Test 验证上下文 |
+
+**修改文件**：
+- guidelines/11-LONG_TERM_MEMORY.md（添加 Planning-with-Files 融合章节）
+- README.md（添加规划相关命令）
+- task_plan.md（新建）
+- findings.md（新建）
+- progress.md（新建）
+
+---
 
 ### 2026-03-09 - Phase 4 实际代码实施完成
 
@@ -910,4 +969,131 @@ Body: 16px / 1.7 / 400
 2. **Notion 风格适合文档系统**：温暖配色 + 宽松间距 = 舒适阅读体验
 3. **内容居中提升可读性**：最大宽度 800px 是最佳阅读宽度
 4. **响应式是必需的**：移动端导航折叠，确保所有设备可用
+
+---
+
+## 🔧 已安装能力一览
+
+> **一句话说明**：我们装了什么，能干什么，怎么用。
+
+### 📦 规划类
+
+| 工具 | 能干什么 | 怎么用 |
+|------|---------|--------|
+| **BMAD Method** v6.0.4 | 帮你拆解大任务，像项目经理一样思考 | `/bmad-help` 问 AI 下一步做什么 |
+| **Planning-with-Files** v2.18.2 | 把任务计划写成文件，不怕 AI 忘记 | `/plan` 开始规划 |
+
+### 💬 沟通类
+
+| 工具 | 能干什么 | 怎么用 |
+|------|---------|--------|
+| **Claude-to-IM** | 让你在手机上用微信/飞书跟 Claude 聊天 | `/claude-to-im setup` 配置 |
+
+### 🎨 设计类
+
+| 工具 | 能干什么 | 怎么用 |
+|------|---------|--------|
+| **Agentation** v2.3.0 | 在网页上标注设计问题，AI 能看到 | `<Agentation />` 加到 React 项目 |
+| **Pencil** | 画界面原型，AI 帮你设计 | 设计 `.pen` 文件 |
+| **UI UX Pro Max** | 给你配色、字体、布局建议 | 设计时自动提示 |
+
+### 📄 文档类
+
+| 工具 | 能干什么 | 怎么用 |
+|------|---------|--------|
+| **Docling** | 把 PDF/Word 变成 AI 能读的格式 | 自动处理文档 |
+
+### 🧪 测试类
+
+| 工具 | 能干什么 | 怎么用 |
+|------|---------|--------|
+| **Playwright** v1.58.2 | 自动打开浏览器测试网页 | `npx playwright test` |
+| **Chrome DevTools MCP** | 让 AI 能操作浏览器调试 | 自动化测试网页 |
+
+### 🧠 记忆类
+
+| 工具 | 能干什么 | 怎么用 |
+|------|---------|--------|
+| **长期记忆系统** | 把重要的事写下来，下次还能记住 | 自动保存到 MEMORY.md |
+| **三文件模式** | 任务计划、发现、进度分开记 | `/plan` 自动创建 |
+
+---
+
+### 🚀 快速命令速查
+
+```bash
+/plan              # 开始规划任务
+/plan:status       # 看任务进度
+/bmad-help         # 问 AI：下一步做什么？
+/claude-to-im setup # 配置手机聊天
+/save-state        # 保存当前状态
+/restore-state     # 恢复之前状态
+/memory-search "关键词"  # 搜索记忆
+/code-review       # 代码审查
+/tdd               # 测试驱动开发
+```
+
+---
+
+### 📋 详细技能信息
+
+| 技能 | 版本 | 安装位置 |
+|------|------|---------|
+| agentation | v2.3.0 | npm 全局包 |
+| planning-with-files | v2.18.2 | `~/.claude/skills/planning-with-files/` |
+| claude-to-im | - | `~/.claude/skills/claude-to-im/` |
+| bmad-method | v6.0.4 | `_bmad/` |
+
+#### Agentation 详细说明
+
+**用途**：在网页上标注设计问题，AI 能实时看到并修复
+
+**使用场景**：
+- 设计师标注 UI 问题
+- 产品经理提需求
+- 开发者记录 bug
+
+**代码示例**：
+```tsx
+import { Agentation } from 'agentation';
+// 加到 React 组件里
+<Agentation />
+```
+
+#### Planning-with-Files 详细说明
+
+**用途**：把任务计划写成文件，AI 不会忘记
+
+**三文件模式**：
+- `task_plan.md` - 任务路线图
+- `findings.md` - 研究发现
+- `progress.md` - 进度记录
+
+**特点**：
+- `/clear` 后能恢复进度
+- 每 2 次搜索自动记录发现
+
+**快速启动**：
+```bash
+/plan              # 开始规划
+/plan:status       # 查看状态
+```
+
+### 与长期记忆系统的融合
+
+```
+长期记忆层 (MEMORY.md) ─── 项目级永久记忆
+        ↓
+任务规划层 (task_plan.md) ─── 单任务路线图
+        ↓
+知识发现层 (findings.md) ─── 2-Action 规则
+        ↓
+会话日志层 (progress.md) ─── 5-Question Reboot Test
+```
+
+**最佳实践**：
+1. 新任务开始时 → 使用 `/plan` 创建三文件
+2. 每 2 次搜索后 → 更新 findings.md
+3. 每完成一个阶段 → 更新 task_plan.md + progress.md
+4. 任务完成后 → 归档三文件，长期决策合并到 MEMORY.md
 

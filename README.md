@@ -63,11 +63,117 @@
 | [15-STABLE_ZONE_PROTECTION.md](guidelines/15-STABLE_ZONE_PROTECTION.md) | 稳定区域保护 | 修改代码前 |
 | [PENCIL_INTEGRATION.md](docs/PENCIL_INTEGRATION.md) | Pencil 设计工具集成 | UI/UX 设计时 |
 | [UI_UX_PRO_MAX_INTEGRATION.md](docs/UI_UX_PRO_MAX_INTEGRATION.md) | UI UX Pro Max 设计智能 | 设计决策时 |
+| [AGENTATION_INTEGRATION.md](docs/AGENTATION_INTEGRATION.md) | Agentation 设计标注集成 | 人类介入测试阶段 |
 | [16-DOCLING_INTEGRATION.md](guidelines/16-DOCLING_INTEGRATION.md) | Docling 文档处理集成 | 文档处理时 |
 
 ### 按需阅读文档
 
 根据具体问题，查看 [目录索引](guidelines/00-INDEX.md) 找到相关文档。
+
+---
+
+## 🛠️ 已安装能力一览
+
+> 用最简单的话告诉你：我们装了什么，能干什么，怎么用。
+
+### 📦 规划类工具
+
+| 工具 | 一句话说明 | 怎么用 |
+|------|-----------|--------|
+| **BMAD Method** | 帮你把大任务拆成小任务，像项目经理一样思考 | `/bmad-help` 看看下一步该做什么 |
+| **Planning-with-Files** | 把任务计划写成文件，不怕忘记 | `/plan` 开始规划，`/plan:status` 看进度 |
+
+### 💬 沟通类工具
+
+| 工具 | 一句话说明 | 怎么用 |
+|------|-----------|--------|
+| **claude-to-im (cc-connect)** | 让你在手机上用微信/Telegram/飞书/钉钉/短信跟 Claude 聊天 | `/claude-to-im setup` 配置，`/claude-to-im start` 启动 |
+
+### 🎨 设计类工具
+
+| 工具 | 一句话说明 | 怎么用 | GitHub |
+|------|-----------|--------|--------|
+| **Pencil** | 画界面原型，AI 帮你设计 | 在 `.pen` 文件里设计，自动生成代码 | [OpenPencil](https://github.com/openpencil-ai) |
+| **UI UX Pro Max** | 给你设计建议，配色、字体、布局都有 | 设计时自动提供建议 | - |
+| **Agentation (JS 版本)** | 在网页上标注设计问题，零配置 | HTML 加 `<script>` 标签，CDN 加载 | [neondatabase/agentation](https://github.com/neondatabase/agentation) |
+| **Agentation (MCP 版本)** | 在网页上标注设计问题，支持 AI 协作 | `/agentation` 安装，`/agentation-self-driving` 自主评审 | [neondatabase/agentation](https://github.com/neondatabase/agentation) |
+
+**Agentation 模式选择**：
+
+| 场景 | 推荐模式 | 说明 |
+|------|---------|------|
+| 人类介入测试 | ⭐ JS 版本（首选） | 零配置，测试人员直接标注 |
+| 自动 E2E 测试 | ⭐ JS 版本（首选） | 无头模式运行，无需 AI 协作 |
+| 设计评审会议 | ⭐ JS 版本（首选） | 快速演示，即用即走 |
+| AI 协作评审 | 🔌 MCP 版本（备用） | AI 接收标注并生成修复代码 |
+| Self-Driving 模式 | 🔌 MCP 版本（备用） | AI 自主浏览并添加标注 |
+
+### 📄 文档类工具
+
+| 工具 | 一句话说明 | 怎么用 |
+|------|-----------|--------|
+| **Docling** | 把 PDF、Word 变成 AI 能读的格式 | 自动处理文档，支持 PDF/Office/音频 |
+
+### 🧪 测试类工具
+
+| 工具 | 一句话说明 | 怎么用 |
+|------|-----------|--------|
+| **Playwright** | 自动打开浏览器测试网页功能 | `npx playwright test` 运行测试 |
+| **Chrome DevTools MCP** | 让 AI 能操作浏览器调试 | 自动化测试网页功能 |
+| **Shannon** | AI 自主渗透测试，发现安全漏洞 | `./shannon start URL=xxx` 启动测试 |
+
+### 🧠 记忆类工具
+
+| 工具 | 一句话说明 | 怎么用 |
+|------|-----------|--------|
+| **长期记忆系统** | 把重要的事情写下来，下次还能记住 | 自动保存到 MEMORY.md |
+| **三文件模式** | 任务计划、发现、进度分开记 | `/plan` 自动创建三个文件 |
+
+### 🔍 调研类工具
+
+| 工具 | 一句话说明 | 怎么用 |
+|------|-----------|--------|
+| **GitHub CLI** | 在 GitHub 上搜代码、看项目 | `gh search repos "关键词"` 搜索项目 |
+| **yt-dlp** | 下载 YouTube 字幕 | `yt-dlp --write-sub URL` |
+
+---
+
+### 🚀 快速命令速查表
+
+```bash
+# 规划任务
+/plan                    # 开始规划一个任务
+/plan:status            # 看看任务进行到哪了
+
+# 需求分析
+/bmad-help              # 问 AI：我下一步该做什么？
+
+# 手机聊天
+/claude-to-im setup     # 配置手机聊天
+/claude-to-im start     # 启动服务
+
+# 保存进度
+/save-state             # 保存当前状态
+/restore-state          # 恢复之前的状态
+
+# 搜索记忆
+/memory-search "关键词"  # 搜索之前记的东西
+
+# 代码审查
+/code-review            # 让 AI 检查代码
+/tdd                    # 测试驱动开发
+/e2e                    # 自动化测试
+/shannon-start          # 安全渗透测试
+
+# 设计标注（前端项目）
+# JS 版本（首选，推荐用于测试环节）
+# 在 HTML 或 layout.tsx 的 <head> 中添加:
+# <script type="module" src="https://cdn.jsdelivr.net/npm/agentation@latest/dist/agentation-toolbar.js"></script>
+
+# MCP 版本（备用，AI 协作）
+/agentation             # 安装 Agentation 工具栏（npm + MCP）
+/agentation-self-driving  # AI 自主设计评审模式
+```
 
 ---
 
@@ -91,6 +197,10 @@ cd siginfo-claude-code-guidelines
 
 - [快速开始指南](docs/QUICK_START_GUIDE.md) - 代码稳定区域保护和目录索引
 - [Pencil 快速开始](docs/PENCIL_QUICK_START.md) - 5 分钟上手 Pencil 设计工具
+- [Agentation 集成指南](docs/AGENTATION_INTEGRATION.md) - 设计标注工具集成（前端项目）
+  - **JS 版本（首选）** - CDN 加载，零配置，用于人类介入测试、自动 E2E 测试
+  - **MCP 版本（备用）** - npm + MCP 服务器，用于 AI 协作评审、Self-Driving 模式
+- [Shannon 集成指南](docs/SHANNON_INTEGRATION.md) - AI 自主渗透测试集成 ⭐ NEW
 - [Docling 集成指南](guidelines/16-DOCLING_INTEGRATION.md) - 文档处理工具集成
 
 ---
@@ -975,6 +1085,66 @@ siginfo-claude-code-guidelines/
 
 ---
 
+## 📋 Planning-with-Files 任务规划
+
+> **版本**：v2.18.2 | **基准通过率**：96.7% | **支持平台**：16+ IDE
+
+### 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| **Manus 风格** | Meta 收购的 AI Agent 公司的工作流模式 |
+| **三文件模式** | task_plan.md + findings.md + progress.md |
+| **会话恢复** | `/clear` 后自动恢复之前会话 |
+| **2-Action 规则** | 每 2 次搜索后强制记录发现 |
+| **5-Question Reboot** | 验证上下文完整性 |
+
+### 与长期记忆系统的融合
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│           长期记忆系统 + Planning-with-Files 融合架构            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  长期记忆层 (Weekly/Daily/Hourly)                               │
+│  ├── MEMORY.md ─── 项目级长期记忆                               │
+│  └── memory/*.md ─── 每日日志                                   │
+│                                                                 │
+│  任务规划层 (planning-with-files)                               │
+│  ├── task_plan.md ─── 任务路线图（5 阶段工作流）                │
+│  ├── findings.md ─── 知识库（2-Action 规则）                    │
+│  └── progress.md ─── 会话日志（5-Question Reboot Test）         │
+│                                                                 │
+│  上下文层 (Context)                                             │
+│  └── 70% 预警 → 80% 自动保存 → 90% 强制 compact                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 快速开始
+
+```bash
+# 启动任务规划模式
+/plan
+
+# 查看规划状态
+/plan:status
+
+# 开始新规划
+/plan:start
+```
+
+### 职责分工
+
+| 文件 | 职责 | 生命周期 |
+|------|------|---------|
+| **MEMORY.md** | 项目级长期记忆 | 永久 |
+| **task_plan.md** | 单任务路线图 | 任务期间 |
+| **findings.md** | 单任务发现 | 任务期间 |
+| **progress.md** | 单任务进度 | 任务期间 |
+
+---
+
 ## 🔧 常用命令
 
 ### 插件相关
@@ -983,9 +1153,15 @@ siginfo-claude-code-guidelines/
 /plugin install <名称>     # 安装插件
 ```
 
+### 规划相关
+```bash
+/plan "任务描述"          # 启动 Planning-with-Files 模式
+/plan:status              # 查看规划状态
+/plan:start               # 开始新规划
+```
+
 ### 开发相关
 ```bash
-/plan "任务描述"          # 任务规划
 /tdd                      # 启动 TDD 流程
 /code-review              # 代码审查
 /e2e                      # 生成 E2E 测试

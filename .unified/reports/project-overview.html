@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGINFO-Claude 开发环境 - 完整指南</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #7b2cbf;
+            --success: #00ff88;
+            --warning: #ffa502;
+            --danger: #ff4757;
+            --bg-dark: #1a1a2e;
+            --bg-card: rgba(255,255,255,0.05);
+            --text: #e0e0e0;
+            --text-muted: #888;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #16213e 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .header .tagline { font-size: 1.3rem; color: var(--text-muted); margin-bottom: 20px; }
+        .header .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .badge.primary { background: rgba(0,212,255,0.2); color: var(--primary); }
+        .badge.success { background: rgba(0,255,136,0.2); color: var(--success); }
+        .badge.secondary { background: rgba(123,44,191,0.2); color: var(--secondary); }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+        .nav a:hover { background: rgba(0,212,255,0.2); color: var(--primary); }
+
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section h3 { font-size: 1.3rem; margin: 25px 0 15px; color: var(--primary); }
+        .section p { margin-bottom: 15px; color: var(--text-muted); }
+
+        /* Cards Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card h4 { font-size: 1.2rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .card p { font-size: 0.95rem; color: var(--text-muted); }
+        .card .icon { font-size: 1.5rem; }
+        .card .stats { margin-top: 15px; display: flex; gap: 15px; }
+        .card .stat { font-size: 0.85rem; }
+        .card .stat strong { color: var(--primary); }
+
+        /* Flow Diagram */
+        .flow {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 30px;
+            overflow-x: auto;
+        }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .flow-step:last-child { border-bottom: none; }
+        .flow-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .flow-content h5 { font-size: 1.1rem; margin-bottom: 5px; }
+        .flow-content p { font-size: 0.9rem; margin: 0; }
+
+        /* Code Block */
+        .code {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .code .comment { color: #6a9955; }
+        .code .keyword { color: #569cd6; }
+        .code .string { color: #ce9178; }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th { background: rgba(255,255,255,0.05); font-weight: 600; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+
+        /* Status Badges */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status.pass { background: rgba(0,255,136,0.15); color: var(--success); }
+        .status.warn { background: rgba(255,165,2,0.15); color: var(--warning); }
+        .status.fail { background: rgba(255,71,87,0.15); color: var(--danger); }
+
+        /* Test Results */
+        .test-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .test-item {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-item .name { font-weight: 500; }
+        .test-item .result { font-weight: 600; }
+        .test-item .result.pass { color: var(--success); }
+
+        /* Progress Ring */
+        .progress-ring {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 40px;
+        }
+        .ring {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0deg 360deg, rgba(255,255,255,0.1) 360deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .ring::before {
+            content: '';
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            position: absolute;
+        }
+        .ring .value {
+            position: relative;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--success);
+        }
+        .ring-label { text-align: center; margin-top: 15px; }
+        .ring-label .number { font-size: 2rem; font-weight: bold; color: var(--primary); }
+        .ring-label .text { color: var(--text-muted); }
+
+        /* Architecture */
+        .arch-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .arch-box h5 { color: var(--primary); margin-bottom: 10px; }
+
+        /* Checklist */
+        .checklist { list-style: none; }
+        .checklist li {
+            padding: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .checklist li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: var(--bg-card);
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 40px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate { animation: fadeInUp 0.6s ease forwards; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .section { padding: 20px; }
+            .grid { grid-template-columns: 1fr; }
+            .progress-ring { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header animate">
+            <h1>🚀 SIGINFO-Claude 开发环境</h1>
+            <p class="tagline">一套经过实战验证的 AI 辅助软件开发规范，让团队开发像流水线一样高效</p>
+            <div class="badges">
+                <span class="badge primary">四项目集成</span>
+                <span class="badge success">E2E 测试通过</span>
+                <span class="badge secondary">v1.0.0</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="#overview">📋 项目概述</a>
+            <a href="#workflows">🔄 工作流</a>
+            <a href="#test-results">🧪 测试结果</a>
+            <a href="#architecture">🏗️ 架构设计</a>
+            <a href="#tools">🛠️ 工具集成</a>
+            <a href="#guidelines">📖 规范文档</a>
+            <a href="#quick-start">🚀 快速开始</a>
+        </nav>
+
+        <!-- Overview Section -->
+        <section id="overview" class="section animate">
+            <h2>📋 项目概述</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4><span class="icon">🎯</span> 核心目标</h4>
+                    <p>提供完整的行动准则，告诉你在用 Claude Code 开发项目时：开发前要做什么准备、开发中遵循什么流程、完成后如何验证质量。</p>
+                </div>
+                <div class="card">
+                    <h4><span class="icon">🤖</span> 四项目集成</h4>
+                    <p>BMAD Method + everything-claude-code + oh-my-cc + sig-guidelines 四大项目深度融合，实现从需求到交付的全流程自动化。</p>
+                    <div class="stats">
+                        <span class="stat"><strong>67+</strong> UI风格</span>
+                        <span class="stat"><strong>99+</strong> UX指南</span>
+                        <span class="stat"><strong>100</strong> 推理规则</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4><span class="icon">🧠</span> 长期记忆系统</h4>
+                    <p>三层记忆架构：Hourly（短期）+ Daily（中期）+ Weekly（长期），支持状态检查点和语义检索。</p>
+                </div>
+                <div class="card">
+                    <h4><span class="icon">🔔</span> 智能通知机制</h4>
+                    <p>自动化与人类介入边界清晰，支持多渠道通知（飞书/钉钉/短信），确认反馈机制完善。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflows Section -->
+        <section id="workflows" class="section animate">
+            <h2>🔄 三种工作流</h2>
+            <p>根据任务复杂度自动选择最适合的工作流</p>
+
+            <div class="grid">
+                <div class="card">
+                    <h4><span class="icon">⚡</span> Quick Flow</h4>
+                    <p>适合简单任务（复杂度 1-3），预计时间 30分钟-2小时</p>
+                    <div class="flow">
+                        <div class="flow-step">
+                            <div class="flow-number">1</div>
+                            <div class="flow-content">
+                                <h5>任务输入</h5>
+                                <p>快速评估任务复杂度</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">2</div>
+                            <div class="flow-content">
+                                <h5>快速规划</h5>
+                                <p>生成简洁的实现计划</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">3</div>
+                            <div class="flow-content">
+                                <h5>快速开发</h5>
+                                <p>测试→实现→审查</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">4</div>
+                            <div class="flow-content">
+                                <h5>验证测试</h5>
+                                <p>运行测试确保质量</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">5</div>
+                            <div class="flow-content">
+                                <h5>质量检查</h5>
+                                <p>代码审查和提交</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4><span class="icon">📋</span> Standard Flow</h4>
+                    <p>适合中等任务（复杂度 4-6），预计时间 2-8小时</p>
+                    <div class="flow">
+                        <div class="flow-step">
+                            <div class="flow-number">1</div>
+                            <div class="flow-content">
+                                <h5>会话启动准备</h5>
+                                <p>检查插件、读取文档</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">2</div>
+                            <div class="flow-content">
+                                <h5>任务规划 <span class="status warn">需确认</span></h5>
+                                <p>详细规划和风险评估</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">3</div>
+                            <div class="flow-content">
+                                <h5>代码质量门禁</h5>
+                                <p>ESLint、复杂度、重复率检查</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">4</div>
+                            <div class="flow-content">
+                                <h5>TDD 开发</h5>
+                                <p>RED → GREEN → REFACTOR</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">5-8</div>
+                            <div class="flow-content">
+                                <h5>质量门禁链</h5>
+                                <p>API完整性 → E2E测试 → 安全检查 → 最终质量</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4><span class="icon">🏢</span> Enterprise Flow</h4>
+                    <p>适合复杂任务（复杂度 7-10），预计时间 1-4周</p>
+                    <div class="flow">
+                        <div class="flow-step">
+                            <div class="flow-number">1</div>
+                            <div class="flow-content">
+                                <h5>Analysis（分析阶段）</h5>
+                                <p>头脑风暴 → 领域研究 → 市场研究 → 产品简报</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">2</div>
+                            <div class="flow-content">
+                                <h5>Planning（规划阶段）<span class="status warn">需确认</span></h5>
+                                <p>创建PRD → UX设计 → 方案确认</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">3</div>
+                            <div class="flow-content">
+                                <h5>Solutioning（方案设计）</h5>
+                                <p>架构设计 → Epic/Story分解 → 实施就绪检查</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">4</div>
+                            <div class="flow-content">
+                                <h5>Implementation（实现）</h5>
+                                <p>Sprint规划 → 多Story并行开发 → 代码审查</p>
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">5</div>
+                            <div class="flow-content">
+                                <h5>Quality Assurance（质量保障）</h5>
+                                <p>API完整性 → E2E测试 → 安全审查 → 质量门禁</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Results Section -->
+        <section id="test-results" class="section animate">
+            <h2>🧪 E2E 测试结果</h2>
+            <p>完整的端到端测试验证，确保系统稳定可靠</p>
+
+            <div class="progress-ring">
+                <div>
+                    <div class="ring">
+                        <span class="value">100%</span>
+                    </div>
+                    <div class="ring-label">
+                        <div class="number">11/11</div>
+                        <div class="text">测试通过</div>
+                    </div>
+                </div>
+                <div style="text-align: left;">
+                    <table>
+                        <tr><th>指标</th><th>数量</th></tr>
+                        <tr><td>总测试数</td><td><strong>11</strong></td></tr>
+                        <tr><td>通过</td><td><span style="color: var(--success);">11 ✓</span></td></tr>
+                        <tr><td>失败</td><td><span style="color: var(--danger);">0</span></td></tr>
+                        <tr><td>跳过</td><td><span style="color: var(--warning);">0</span></td></tr>
+                        <tr><td>通过率</td><td><strong style="color: var(--primary);">100%</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <h3>测试详情</h3>
+            <div class="test-results">
+                <div class="test-item">
+                    <span class="name">🚀 Quick Flow</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">📋 Standard Flow</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">🏢 Enterprise Flow</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">👥 Team 模式</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">🤖 Autopilot 模式</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">⚡ 并行执行</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">📊 性能验证</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+                <div class="test-item">
+                    <span class="name">💰 成本优化</span>
+                    <span class="result pass">✓ PASS</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="section animate">
+            <h2>🏗️ 架构设计</h2>
+
+            <h3>四项目集成架构</h3>
+            <div class="grid grid-2">
+                <div class="arch-box">
+                    <h5>BMAD Method</h5>
+                    <p>需求分析、架构设计、开发管理。提供完整的产品开发流程支持。</p>
+                    <ul class="checklist">
+                        <li>产品简报创建</li>
+                        <li>技术架构设计</li>
+                        <li>Epic/Story 分解</li>
+                        <li>代码审查流程</li>
+                    </ul>
+                </div>
+                <div class="arch-box">
+                    <h5>everything-claude-code</h5>
+                    <p>命令库、技能库、Agent库、规则。提供丰富的开发工具支持。</p>
+                    <ul class="checklist">
+                        <li>通用命令（/plan, /tdd, /verify）</li>
+                        <li>技能库（coding-standards, patterns）</li>
+                        <li>Agent 定义（planner, architect, tdd-guide）</li>
+                    </ul>
+                </div>
+                <div class="arch-box">
+                    <h5>oh-my-cc</h5>
+                    <p>大模型渠道切换、用量监控、智能推荐。</p>
+                    <ul class="checklist">
+                        <li>多模型渠道支持（Claude/Qwen/GLM等）</li>
+                        <li>用量监控和告警</li>
+                        <li>智能模型推荐</li>
+                    </ul>
+                </div>
+                <div class="arch-box">
+                    <h5>sig-guidelines</h5>
+                    <p>行动准则、质量门禁、通知机制。项目核心规范。</p>
+                    <ul class="checklist">
+                        <li>四阶段开发流程</li>
+                        <li>三层质量门禁</li>
+                        <li>自动化与人类介入边界</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>引擎架构</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4><span class="icon">⚙️</span> WorkflowEngine</h4>
+                    <p>智能工作流引擎，自动评估任务复杂度并选择最适合的工作流。</p>
+                    <div class="code">
+<span class="keyword">const</span> engine = <span class="keyword">new</span> WorkflowEngine();
+<span class="keyword">const</span> result = <span class="keyword">await</span> engine.execute({
+  task: <span class="string">"实现用户登录功能"</span>,
+  complexity: <span class="keyword">await</span> engine.assessComplexity(task)
+});
+<span class="comment">// 自动选择 Quick Flow / Standard Flow / Enterprise Flow</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4><span class="icon">🔒</span> QualityGateEngine</h4>
+                    <p>四层质量门禁引擎，确保代码质量和安全性。</p>
+                    <div class="code">
+<span class="keyword">const</span> gates = [
+  <span class="string">'code-quality'</span>,      <span class="comment">// 代码质量门禁</span>
+  <span class="string">'api-completeness'</span>,   <span class="comment">// API完整性门禁</span>
+  <span class="string">'security'</span>,          <span class="comment">// 安全性门禁</span>
+  <span class="string">'final-quality'</span>      <span class="comment">// 最终质量门禁</span>
+];
+<span class="keyword">const</span> result = <span class="keyword">await</span> engine.runAllGates(gates);
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section id="tools" class="section animate">
+            <h2>🛠️ 工具集成</h2>
+
+            <h3>设计工具链</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4><span class="icon">🎨</span> UI UX Pro Max</h4>
+                    <p>设计智能系统，提供丰富的 UI 风格、配色方案、字体配对和 UX 指南。</p>
+                    <div class="stats">
+                        <span class="stat"><strong>67</strong> UI风格</span>
+                        <span class="stat"><strong>96</strong> 配色方案</span>
+                        <span class="stat"><strong>57</strong> 字体配对</span>
+                        <span class="stat"><strong>99</strong> UX指南</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4><span class="icon">✏️</span> Pencil</h4>
+                    <p>AI-Native 设计工具，支持自然语言描述设计需求，自动生成设计稿。</p>
+                    <ul class="checklist">
+                        <li>AI 自动生成设计稿</li>
+                        <li>设计即代码，支持版本控制</li>
+                        <li>一键导出 React/Vue/HTML</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>文档处理</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4><span class="icon">📄</span> Docling</h4>
+                    <p>IBM Research 开发的生产级文档处理工具。</p>
+                    <ul class="checklist">
+                        <li>支持 PDF/DOCX/PPTX/XLSX/HTML</li>
+                        <li>高级 PDF 理解（布局、表格、公式、OCR）</li>
+                        <li>导出为 Markdown/HTML/JSON</li>
+                        <li>本地执行，数据安全</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4><span class="icon">🌐</span> Agent-Reach</h4>
+                    <p>为 AI Agent 提供互联网访问能力。</p>
+                    <ul class="checklist">
+                        <li>GitHub 搜索和代码搜索</li>
+                        <li>YouTube 字幕提取</li>
+                        <li>网页内容抓取</li>
+                        <li>13+ 平台无缝集成</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>大模型渠道</h3>
+            <table>
+                <tr>
+                    <th>类别</th>
+                    <th>模型</th>
+                    <th>命令</th>
+                    <th>适用场景</th>
+                </tr>
+                <tr>
+                    <td>国际</td>
+                    <td>Claude Opus</td>
+                    <td><code>/opus</code></td>
+                    <td>架构设计、深度推理</td>
+                </tr>
+                <tr>
+                    <td>国际</td>
+                    <td>Claude Sonnet</td>
+                    <td><code>/sonnet</code></td>
+                    <td>主力开发、平衡性能</td>
+                </tr>
+                <tr>
+                    <td>国际</td>
+                    <td>Claude Haiku</td>
+                    <td><code>/haiku</code></td>
+                    <td>快速任务、经济实惠</td>
+                </tr>
+                <tr>
+                    <td>国内</td>
+                    <td>Qwen (阿里云)</td>
+                    <td><code>/qwen</code></td>
+                    <td>多语言支持</td>
+                </tr>
+                <tr>
+                    <td>国内</td>
+                    <td>GLM (智谱)</td>
+                    <td><code>/glm</code></td>
+                    <td>中文理解</td>
+                </tr>
+                <tr>
+                    <td>国内</td>
+                    <td>DeepSeek</td>
+                    <td><code>/deepseek</code></td>
+                    <td>数学推理</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Guidelines Section -->
+        <section id="guidelines" class="section animate">
+            <h2>📖 规范文档</h2>
+
+            <h3>核心文档</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>00-SYSTEM_OVERVIEW.md</h4>
+                    <p>系统总则 - 插件管理、自动化边界、上下文管理、通知机制</p>
+                </div>
+                <div class="card">
+                    <h4>01-ACTION_GUIDELINES.md</h4>
+                    <p>行动准则 - 四阶段开发流程、详细步骤和产出物</p>
+                </div>
+                <div class="card">
+                    <h4>02-TDD_WORKFLOW.md</h4>
+                    <p>TDD 开发流程 - RED/GREEN/REFACTOR/VERIFY 循环</p>
+                </div>
+                <div class="card">
+                    <h4>05-QUALITY_GATE.md</h4>
+                    <p>质量门禁 - 四层质量检查和门禁配置</p>
+                </div>
+            </div>
+
+            <h3>高级主题</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>11-LONG_TERM_MEMORY.md</h4>
+                    <p>长期记忆管理 - 三层记忆架构、状态检查点、语义检索</p>
+                </div>
+                <div class="card">
+                    <h4>13-COLLABORATION_EFFICIENCY.md</h4>
+                    <p>协作效率提升 - 多 Agent 协作、并行执行策略</p>
+                </div>
+                <div class="card">
+                    <h4>14-DETERMINISTIC_DEVELOPMENT.md</h4>
+                    <p>确定性开发 - 稳定区域保护、回滚机制</p>
+                </div>
+                <div class="card">
+                    <h4>16-DOCLING_INTEGRATION.md</h4>
+                    <p>Docling 集成 - 文档处理工具链</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section id="quick-start" class="section animate">
+            <h2>🚀 快速开始</h2>
+
+            <h3>5 分钟体验核心流程</h3>
+            <div class="code">
+<span class="comment"># 1. 克隆本项目</span>
+git clone https://github.com/your-org/siginfo-claude-code-guidelines.git
+<span class="keyword">cd</span> siginfo-claude-code-guidelines
+
+<span class="comment"># 2. 运行安装脚本</span>
+./scripts/install.sh
+
+<span class="comment"># 3. 初始化记忆系统</span>
+./scripts/init-memory.sh
+
+<span class="comment"># 4. 开始第一个任务</span>
+/plan <span class="string">"实现用户登录功能"</span>
+            </div>
+
+            <h3>常用命令</h3>
+            <table>
+                <tr>
+                    <th>命令</th>
+                    <th>说明</th>
+                </tr>
+                <tr><td><code>/plan "任务描述"</code></td><td>任务规划</td></tr>
+                <tr><td><code>/tdd</code></td><td>启动 TDD 流程</td></tr>
+                <tr><td><code>/code-review</code></td><td>代码审查</td></tr>
+                <tr><td><code>/e2e</code></td><td>生成 E2E 测试</td></tr>
+                <tr><td><code>/verify</code></td><td>验证循环</td></tr>
+                <tr><td><code>/memory-search "关键词"</code></td><td>搜索记忆</td></tr>
+                <tr><td><code>/opus</code> / <code>/sonnet</code> / <code>/haiku</code></td><td>切换模型</td></tr>
+            </table>
+
+            <h3>E2E 测试</h3>
+            <div class="code">
+<span class="comment"># 运行所有测试</span>
+./scripts/e2e/e2e-test.sh
+
+<span class="comment"># 查看测试报告</span>
+open .unified/reports/e2e-tests/e2e-test-report.html
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>📖 <strong>SIGINFO-Claude 开发环境</strong> - 让团队开发像流水线一样高效</p>
+            <p style="margin-top: 10px;">版本 1.0.0 | 最后更新: 2026-03-09</p>
+            <p style="margin-top: 15px;">
+                <a href="README.md" style="color: var(--primary); text-decoration: none; margin: 0 15px;">📖 完整文档</a>
+                <a href="guidelines/00-INDEX.md" style="color: var(--primary); text-decoration: none; margin: 0 15px;">📋 文档索引</a>
+                <a href=".unified/reports/e2e-tests/e2e-test-report.html" style="color: var(--primary); text-decoration: none; margin: 0 15px;">🧪 测试报告</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
