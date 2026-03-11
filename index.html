@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGINFO-Claude 开发环境 - 文档中心</title>
+    <title>sig-claude-code-guidelines - 文档中心</title>
     <!-- Agent UI Annotation - AI UI 标注工具 -->
     <script type="module">
         import 'https://cdn.jsdelivr.net/npm/agent-ui-annotation@latest/+esm';
@@ -27,7 +27,7 @@
             --text-secondary: #6b7280;
             --text-muted: #9ca3af;
             --border-color: #e5e5e5;
-            --border-light: #d0d0d0;
+            --border-light: #e5e5e5;
             --accent-blue: #0066CC;
             --accent-gold: #F59E0B;
             --accent-green: #10B981;
@@ -82,6 +82,7 @@
             justify-content: center;
             color: white;
             font-size: 14px;
+            font-weight: 700;
             flex-shrink: 0;
         }
 
@@ -141,7 +142,7 @@
 
         .search-icon {
             font-size: 16px;
-            color: var(--accent-blue);
+            color: var(--text-muted);
             flex-shrink: 0;
         }
 
@@ -172,12 +173,12 @@
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
-            padding: 8px 12px;
+            padding: 16px 0 8px 0;
             display: flex;
             align-items: center;
             gap: 6px;
-            border-radius: 6px;
-            margin: 4px 0;
+            border-radius: 0;
+            margin: 0;
         }
 
         /* 导航项 - 参考 Pencil HiFi 设计 */
@@ -203,28 +204,30 @@
         }
 
         .nav-item-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--accent-blue);
-            border-radius: 6px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 14px;
+            color: var(--text-secondary);
+            font-size: 16px;
             flex-shrink: 0;
+        }
+
+        .nav-item.active .nav-item-icon {
+            color: var(--text-primary);
         }
 
         .nav-item-label {
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: normal;
             color: var(--text-secondary);
         }
 
         .nav-item.active .nav-item-label {
             color: var(--text-primary);
-            font-weight: 600;
+            font-weight: 500;
         }
 
         /* ==================== 主内容区 ==================== */
@@ -246,7 +249,7 @@
         /* 面包屑 - 参考 Pencil HiFi 设计 */
         .breadcrumb {
             font-family: 'Inter', sans-serif;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-muted);
             margin-bottom: 16px;
             display: flex;
@@ -255,13 +258,14 @@
         }
 
         .breadcrumb a {
-            color: var(--text-secondary);
+            color: var(--accent-blue);
             text-decoration: none;
             transition: color 0.15s;
         }
 
         .breadcrumb a:hover {
             color: var(--accent-blue);
+            text-decoration: underline;
         }
 
         .breadcrumb .separator {
@@ -271,16 +275,16 @@
         /* 标题 - 参考 Pencil HiFi 设计 */
         .page-title {
             font-family: 'Inter', sans-serif;
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 8px;
-            line-height: 1.25;
+            line-height: 1.2;
         }
 
         .page-subtitle {
             font-family: 'Inter', sans-serif;
-            font-size: 15px;
+            font-size: 16px;
             color: var(--text-secondary);
             margin-bottom: 24px;
             line-height: 1.7;
@@ -290,15 +294,15 @@
             width: 100%;
             height: 1px;
             background: var(--border-light);
-            margin: 24px 0;
+            margin: 32px 0;
         }
 
         /* 内容卡片 - 参考 Pencil HiFi 设计 */
         .content-card {
-            background: var(--bg-white);
+            background: var(--bg-warm);
             border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 20px 24px;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 16px;
         }
 
@@ -328,27 +332,37 @@
         /* 能力一览表格 - 参考 Pencil HiFi 设计 */
         .capability-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin: 16px 0;
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         .capability-table th {
             text-align: left;
-            padding: 12px;
+            padding: 0 16px;
+            height: 44px;
             background: var(--bg-warm);
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--text-primary);
             border-bottom: 1px solid var(--border-light);
         }
 
         .capability-table td {
-            padding: 12px;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border-light);
-            vertical-align: top;
+            padding: 0 16px;
+            height: 44px;
+            font-size: 13px;
+            border-top: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .capability-table tr:first-child td {
+            border-top: none;
         }
 
         .capability-table tr:hover {
@@ -461,28 +475,19 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 32px 0 16px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            background: var(--bg-warm);
+            margin: 32px 0 20px;
+            padding: 0;
+            border-radius: 0;
+            background: transparent;
         }
 
         .section-category-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--accent-blue);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
-            flex-shrink: 0;
+            display: none;
         }
 
         .section-category-title {
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            font-size: 22px;
             font-weight: 600;
             color: var(--text-primary);
         }
@@ -525,7 +530,7 @@
     <aside class="sidebar">
         <!-- Logo 区域 - 参考 Pencil HiFi 设计 -->
         <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">📖</div>
+            <div class="sidebar-logo-icon">S</div>
             <span class="sidebar-logo-title">sig-guidelines</span>
         </div>
 
@@ -562,6 +567,38 @@
             </div>
 
             <div class="nav-group">
+                <div class="nav-group-title">🧪 测试体系</div>
+                <a href="#comprehensive-testing" class="nav-item">
+                    <span class="nav-item-icon">🔄</span>
+                    <span class="nav-item-label">综合测试工作流</span>
+                </a>
+                <a href="#real-business-testing" class="nav-item">
+                    <span class="nav-item-icon">🏪</span>
+                    <span class="nav-item-label">真实业务测试</span>
+                </a>
+                <a href="#shannon-security" class="nav-item">
+                    <span class="nav-item-icon">🛡️</span>
+                    <span class="nav-item-label">Shannon 安全测试</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">⚙️ 高级特性</div>
+                <a href="#collaboration" class="nav-item">
+                    <span class="nav-item-icon">🤝</span>
+                    <span class="nav-item-label">协作效率</span>
+                </a>
+                <a href="#deterministic" class="nav-item">
+                    <span class="nav-item-icon">🎯</span>
+                    <span class="nav-item-label">确定性开发</span>
+                </a>
+                <a href="#stable-zone" class="nav-item">
+                    <span class="nav-item-icon">🔒</span>
+                    <span class="nav-item-label">稳定区域保护</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
                 <div class="nav-group-title">🛠️ 能力</div>
                 <a href="#planning" class="nav-item">
                     <span class="nav-item-icon">📦</span>
@@ -591,7 +628,7 @@
                     <span class="nav-item-icon">⌨️</span>
                     <span class="nav-item-label">命令速查</span>
                 </a>
-                <a href="https://github.com/your-org/siginfo-claude-code-guidelines" class="nav-item" target="_blank">
+                <a href="https://github.com/your-org/sig-claude-code-guidelines" class="nav-item" target="_blank">
                     <span class="nav-item-icon">📂</span>
                     <span class="nav-item-label">GitHub 仓库</span>
                 </a>
@@ -610,6 +647,7 @@
             <!-- 标题 -->
             <h1 class="page-title" id="overview">系统总则</h1>
             <p class="page-subtitle">本文档定义了整个开发系统的核心原则、插件管理规范和自动化边界。用最简单的话告诉你：我们装了什么，能干什么，怎么用。</p>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">📅 最后更新：2026-03-11 &nbsp;|&nbsp; 📁 guidelines/ 目录共 17+ 份规范文档</p>
 
             <div class="divider"></div>
 
@@ -674,7 +712,7 @@
             </div>
 
             <!-- 开发流程 -->
-            <div class="content-card" style="margin-top: 24px;">
+            <div class="content-card" style="margin-top: 24px;" id="tdd">
                 <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">🔄 开发流程（9 步走完）</h3>
                 <div style="display: grid; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(90deg, #e6f4ff 0%, var(--bg-card) 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
@@ -745,7 +783,7 @@
             </div>
 
             <!-- 综合性测试工作流 v2.0 -->
-            <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent-blue);">
+            <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent-blue);" id="comprehensive-testing">
                 <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--accent-blue);">🔄 综合性测试工作流 v2.0</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 16px;">软件工程"一头一尾"原则：需求阶段是"头"，测试阶段是"尾"，两头抓牢才能开发顺畅</p>
 
@@ -950,7 +988,227 @@
                 </div>
             </div>
 
-            <!-- 人类介入点 -->
+            <!-- 真实业务全流程测试 -->
+            <div class="content-card" style="margin-top: 24px; border-left: 4px solid var(--accent-green);" id="real-business-testing">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--accent-green);">🏪 真实业务全流程闭环测试（REAL Testing）</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">传统测试只停留在 UI 元素存在层面，用 Mock 数据，无法验证真实业务闭环。REAL Testing 要求四阶段逐步升级。</p>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;">
+                    <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">1️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 1</div>
+                        <div style="font-size: 12px; opacity: 0.9;">前端 Mock 测试</div>
+                        <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">✅ 允许 Mock</div>
+                    </div>
+                    <div style="padding: 16px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">2️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 2</div>
+                        <div style="font-size: 12px; opacity: 0.9;">API 阶段测试</div>
+                        <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">❌ 禁止 Mock</div>
+                    </div>
+                    <div style="padding: 16px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">3️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 3</div>
+                        <div style="font-size: 12px; opacity: 0.9;">前后端联调</div>
+                        <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">❌ 严禁 Mock</div>
+                    </div>
+                    <div style="padding: 16px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 8px; color: white; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">4️⃣</div>
+                        <div style="font-weight: 600; font-size: 14px;">Phase 4</div>
+                        <div style="font-size: 12px; opacity: 0.9;">真实业务闭环</div>
+                        <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">真实用户 + 数据</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; gap: 8px;">
+                    <div style="padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <strong style="color: #667eea;">Phase 1 - 前端 Mock 测试：</strong>
+                        <span style="font-size: 14px; color: var(--text-secondary);">验证所有按钮/样式、前端流程点击闭环、所有页面展现。产出：前端测试报告 + 未执行测试清单</span>
+                    </div>
+                    <div style="padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <strong style="color: #f5576c;">Phase 2 - API 测试：</strong>
+                        <span style="font-size: 14px; color: var(--text-secondary);">多 Agent 并行执行，覆盖所有功能点和用户故事。产出：API 测试报告（禁止 Mock）</span>
+                    </div>
+                    <div style="padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <strong style="color: #00f2fe;">Phase 3 - 联调测试：</strong>
+                        <span style="font-size: 14px; color: var(--text-secondary);">完整业务流程（下单→支付→完成），多角色协作（买家/卖家/管理员）。真实环境，严禁 Mock</span>
+                    </div>
+                    <div style="padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <strong style="color: #38f9d7;">Phase 4 - 闭环验证：</strong>
+                        <span style="font-size: 14px; color: var(--text-secondary);">真实用户操作 + 真实数据验证，生成可用性评估报告，确认生产级质量</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 12px; padding: 10px 16px; background: #e6fff5; border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                    📄 详见 <code style="background: white; padding: 2px 6px; border-radius: 4px;">guidelines/12-REAL_BUSINESS_TESTING.md</code>
+                </div>
+            </div>
+
+            <!-- Shannon 安全测试 -->
+            <div class="content-card" style="margin-top: 24px; border-left: 4px solid #9333ea;" id="shannon-security">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #9333ea;">🛡️ Shannon AI 渗透测试</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Shannon 是 Keygraph 开发的自主 AI 渗透测试工具，通过分析源代码、执行真实攻击来发现可利用的安全漏洞。</p>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                    <div style="padding: 16px; background: #f5f0ff; border-radius: 8px;">
+                        <div style="font-size: 20px; margin-bottom: 8px;">🔍</div>
+                        <div style="font-weight: 600; margin-bottom: 4px; color: #9333ea;">白盒测试</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">源代码分析识别攻击面，API 接口自动发现，代码路径追踪漏洞点</div>
+                    </div>
+                    <div style="padding: 16px; background: #f5f0ff; border-radius: 8px;">
+                        <div style="font-size: 20px; margin-bottom: 8px;">🎯</div>
+                        <div style="font-weight: 600; margin-bottom: 4px; color: #9333ea;">真实攻击验证</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">OWASP Top 10、SQL 注入、XSS、SSRF、认证/授权漏洞，只报告可利用的漏洞</div>
+                    </div>
+                    <div style="padding: 16px; background: #f5f0ff; border-radius: 8px;">
+                        <div style="font-size: 20px; margin-bottom: 8px;">📋</div>
+                        <div style="font-weight: 600; margin-bottom: 4px; color: #9333ea;">PoC 报告</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">提供可复现的漏洞证明，包含修复建议和严重程度评级</div>
+                    </div>
+                    <div style="padding: 16px; background: #f5f0ff; border-radius: 8px;">
+                        <div style="font-size: 20px; margin-bottom: 8px;">🔗</div>
+                        <div style="font-weight: 600; margin-bottom: 4px; color: #9333ea;">Claude Code 集成</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">通过 skill 自动触发，无缝集成到开发流程的 Step 7</div>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-main); padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 10px;">使用方法：</div>
+                    <div style="display: grid; gap: 8px; font-size: 14px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <code style="background: white; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">/shannon-start &lt;URL&gt;</code>
+                            <span style="color: var(--text-secondary);">启动安全测试（自动分析代码 + 攻击）</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <code style="background: white; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">/shannon-logs</code>
+                            <span style="color: var(--text-secondary);">查看测试进度和发现的漏洞</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <code style="background: white; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">/shannon-report</code>
+                            <span style="color: var(--text-secondary);">生成完整安全测试报告</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 10px 16px; background: #f0e6ff; border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                    📄 详见 <code style="background: white; padding: 2px 6px; border-radius: 4px;">docs/SHANNON_INTEGRATION.md</code> &nbsp;|&nbsp; 📚 安装指南：<code style="background: white; padding: 2px 6px; border-radius: 4px;">docs/SHANNON_INSTALLATION.md</code>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 高级特性 -->
+            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">⚙️ 高级特性</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">更精细的开发规范，帮助你和团队保持高质量、高效率、高确定性。</p>
+
+            <!-- 协作效率 -->
+            <div class="section-category" id="collaboration">
+                <span class="section-category-icon">🤝</span>
+                <span class="section-category-title">协作模式与效率提升</span>
+            </div>
+            <div class="content-card">
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">基于 4 个维度快速决策选择最优 Agent 协作策略，提供量化对比和反模式警告。</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+                    <div style="padding: 16px; background: #e6f4ff; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">⚡</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">并行模式</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">独立任务同时执行，最大化速度</div>
+                    </div>
+                    <div style="padding: 16px; background: #fff7e6; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">🔗</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">流水线模式</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">有依赖的任务按顺序传递结果</div>
+                    </div>
+                    <div style="padding: 16px; background: #e6fff5; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">🐝</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">Swarm 模式</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">多角色视角交叉验证，覆盖全面</div>
+                    </div>
+                </div>
+                <div style="padding: 10px 16px; background: var(--bg-main); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                    📄 详见 <code style="background: white; padding: 2px 6px; border-radius: 4px;">guidelines/13-COLLABORATION_EFFICIENCY.md</code>
+                </div>
+            </div>
+
+            <!-- 确定性开发 -->
+            <div class="section-category" id="deterministic">
+                <span class="section-category-icon">🎯</span>
+                <span class="section-category-title">确定性开发规范</span>
+            </div>
+            <div class="content-card">
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">消除 AI 开发中的不确定性，让每次执行结果可预期、可重复、可验证。</p>
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px; flex-shrink: 0;">🌱</span>
+                        <div>
+                            <strong>固定随机种子</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">测试数据生成使用固定种子，保证每次结果相同</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px; flex-shrink: 0;">📌</span>
+                        <div>
+                            <strong>版本锁定</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有依赖固定版本，避免隐式升级导致行为变化</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px; flex-shrink: 0;">🔄</span>
+                        <div>
+                            <strong>幂等操作</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">重复执行同一操作结果相同，支持安全重试</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--bg-main); border-radius: 8px;">
+                        <span style="font-size: 20px; flex-shrink: 0;">✅</span>
+                        <div>
+                            <strong>Mock 标记规范</strong>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">所有 Mock 必须标记 <code>// ⚠️ MOCK:</code>，防止遗漏替换</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; padding: 10px 16px; background: var(--bg-main); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                    📄 详见 <code style="background: white; padding: 2px 6px; border-radius: 4px;">guidelines/14-DETERMINISTIC_DEVELOPMENT.md</code>
+                </div>
+            </div>
+
+            <!-- 稳定区域保护 -->
+            <div class="section-category" id="stable-zone">
+                <span class="section-category-icon">🔒</span>
+                <span class="section-category-title">稳定区域保护（防误改）</span>
+            </div>
+            <div class="content-card">
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">防止已稳定的代码被无意修改，通过 Phase 0 检查和锁定机制保护核心模块。</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                    <div style="padding: 16px; background: #e6fff5; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--accent-green);">🔍 Phase 0 稳定区检查</div>
+                        <ul style="font-size: 13px; color: var(--text-secondary); margin: 0 0 0 16px; line-height: 1.8;">
+                            <li>列出所有稳定区域</li>
+                            <li>确认当前任务是否需要修改</li>
+                            <li>非必要不修改稳定模块</li>
+                        </ul>
+                    </div>
+                    <div style="padding: 16px; background: #ffe6e6; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--danger);">⛔ 修改前必须确认</div>
+                        <ul style="font-size: 13px; color: var(--text-secondary); margin: 0 0 0 16px; line-height: 1.8;">
+                            <li>有需求变更文档</li>
+                            <li>用户明确确认</li>
+                            <li>回归测试通过</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="background: #1a1a1a; padding: 12px 16px; border-radius: 8px; color: #e0e0e0; font-family: 'SF Mono', monospace; font-size: 13px; margin-bottom: 12px;">
+                    <div style="color: #666; margin-bottom: 6px;"># 稳定区域标记示例（MEMORY.md）</div>
+                    <div style="color: #98c379;">✅ AuthService - 已稳定（2026-03-08，覆盖率 95%）</div>
+                    <div style="color: #e06c75;">⛔ 禁止修改：非登录相关需求</div>
+                    <div style="color: #61afef;">✅ 允许修改：安全漏洞修复（需确认）</div>
+                </div>
+                <div style="padding: 10px 16px; background: var(--bg-main); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                    📄 详见 <code style="background: white; padding: 2px 6px; border-radius: 4px;">guidelines/15-STABLE_ZONE_PROTECTION.md</code>
+                </div>
+            </div>
+
+            <div class="divider"></div>
             <div class="content-card" style="margin-top: 24px;">
                 <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">👤 什么时候需要人来确认</h3>
                 <div style="display: grid; gap: 8px;">
@@ -1115,9 +1373,12 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="tool-name">Claude-to-IM</td>
-                            <td class="tool-desc">让你在手机上用微信/Telegram/飞书跟 Claude 聊天</td>
-                            <td><code class="tool-cmd">/claude-to-im setup</code></td>
+                            <td class="tool-name">claude-to-im (cc-connect)</td>
+                            <td class="tool-desc">让你在手机上用微信/Telegram/飞书/钉钉/短信跟 Claude 聊天</td>
+                            <td>
+                                <code class="tool-cmd">/claude-to-im setup</code> 配置<br>
+                                <code class="tool-cmd">/claude-to-im start</code> 启动
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -1247,8 +1508,37 @@
             <div class="divider"></div>
 
             <!-- 已安装 Skills -->
-            <h2 id="skills" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">📚 已安装 Skills（19 个技能包）</h2>
+            <h2 id="skills" style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">📚 已安装 Skills（22 个技能包）</h2>
             <p style="color: var(--text-secondary); margin-bottom: 24px;">Skills 是让 AI 自动执行特定任务的技能包，遇到对应场景会自动激活。</p>
+
+            <!-- 规划类 Skills -->
+            <div class="section-category">
+                <span class="section-category-icon">📦</span>
+                <span class="section-category-title">规划类 Skills</span>
+            </div>
+            <div class="content-card">
+                <table class="capability-table">
+                    <thead>
+                        <tr>
+                            <th>Skill 名称</th>
+                            <th>什么时候自动激活</th>
+                            <th>能干什么</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="tool-name">plan</td>
+                            <td class="tool-desc">需要规划任务、评估风险时</td>
+                            <td>明确需求 → 评估风险 → 生成步骤计划，等用户确认再执行</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">bmad-bmm-*</td>
+                            <td class="tool-desc">说"创建 PRD"、"创建架构"、"规划 Sprint"时</td>
+                            <td>BMAD Method 全套规划工具：PRD、架构设计、Epic、Story、Sprint 规划</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <!-- 开发类 Skills -->
             <div class="section-category">
@@ -1319,6 +1609,16 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr>
+                            <td class="tool-name">agentation</td>
+                            <td class="tool-desc">说"添加视觉反馈工具"、"安装 Agentation"时</td>
+                            <td>为 Next.js 项目添加 Agentation 视觉反馈工具栏，支持 AI 标注和设计评审</td>
+                        </tr>
+                        <tr>
+                            <td class="tool-name">agentation-self-driving</td>
+                            <td class="tool-desc">说"自动标注"、"批评这个页面"、"自驾模式"时</td>
+                            <td>自主设计批评模式：AI 自动在页面上添加设计反馈注释，无需手动操作</td>
+                        </tr>
                         <tr>
                             <td class="tool-name">shannon</td>
                             <td class="tool-desc">说"安全测试"、"渗透测试"、"Shannon"时</td>
@@ -1467,7 +1767,7 @@
                         <tr>
                             <td class="tool-name">claude-to-im</td>
                             <td class="tool-desc">说"桥接"、"消息推送"、"连飞书"时</td>
-                            <td>把 Claude 连到微信/Telegram/飞书，手机上也能用</td>
+                            <td>把 Claude 连到微信/Telegram/飞书/钉钉/短信，手机上也能用（基于 cc-connect）</td>
                         </tr>
                         <tr>
                             <td class="tool-name">claude-api</td>
@@ -1498,16 +1798,44 @@
                     <span>问 AI：下一步做什么？</span>
                 </div>
                 <div class="command-item">
-                    <code>/claude-to-im setup</code>
-                    <span>配置手机聊天</span>
+                    <code>/tdd</code>
+                    <span>测试驱动开发</span>
+                </div>
+                <div class="command-item">
+                    <code>/e2e</code>
+                    <span>自动化 E2E 测试</span>
+                </div>
+                <div class="command-item">
+                    <code>/code-review</code>
+                    <span>代码审查</span>
+                </div>
+                <div class="command-item">
+                    <code>/security-review</code>
+                    <span>安全审查</span>
+                </div>
+                <div class="command-item">
+                    <code>/verify</code>
+                    <span>综合质量验证</span>
                 </div>
                 <div class="command-item">
                     <code>/shannon-start &lt;URL&gt;</code>
-                    <span>启动 Shannon 安全测试</span>
+                    <span>启动 Shannon 渗透测试</span>
                 </div>
                 <div class="command-item">
                     <code>/shannon-logs</code>
                     <span>查看 Shannon 测试日志</span>
+                </div>
+                <div class="command-item">
+                    <code>/shannon-report</code>
+                    <span>生成安全测试报告</span>
+                </div>
+                <div class="command-item">
+                    <code>/claude-to-im setup</code>
+                    <span>配置手机聊天桥接</span>
+                </div>
+                <div class="command-item">
+                    <code>/claude-to-im start</code>
+                    <span>启动消息推送服务</span>
                 </div>
                 <div class="command-item">
                     <code>/save-state</code>
@@ -1522,23 +1850,16 @@
                     <span>搜索记忆</span>
                 </div>
                 <div class="command-item">
-                    <code>/code-review</code>
-                    <span>代码审查</span>
-                </div>
-                <div class="command-item">
-                    <code>/tdd</code>
-                    <span>测试驱动开发</span>
-                </div>
-                <div class="command-item">
-                    <code>/e2e</code>
-                    <span>自动化测试</span>
+                    <code>/check-updates</code>
+                    <span>手动检查工具更新</span>
                 </div>
             </div>
 
             <div class="divider"></div>
 
             <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 48px;">
-                原则：说人话，不说术语 → 看一眼就懂，用一下就会！
+                原则：说人话，不说术语 → 看一眼就懂，用一下就会！<br>
+                <span style="font-size: 12px; margin-top: 8px; display: block;">📅 2026-03-11 更新 &nbsp;|&nbsp; 📁 17+ 份规范文档 &nbsp;|&nbsp; 🛠️ 22 个技能包</span>
             </p>
 
             <div class="divider"></div>
