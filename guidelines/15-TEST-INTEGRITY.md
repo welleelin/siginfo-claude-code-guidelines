@@ -341,6 +341,372 @@ export const testConfig = {
 
 ---
 
+## 🤖 AI Agent 自主验证规范
+
+### 5. AI 必须自动验证预期效果
+
+#### 问题场景
+
+```
+❌ 错误做法：
+AI 完成开发后，不验证就让用户体验：
+"功能已开发完成，请查看效果"
+
+→ 问题：用户访问后发现页面空白、工具栏不显示、控制台报错
+→ 后果：用户成为测试者，体验极差
+```
+
+#### 正确做法
+
+```
+✅ 正确做法：
+AI 在开发完成后，必须自动执行验证：
+
+1. **启动验证**：确认服务已启动，端口可访问
+2. **视觉验证**：访问页面，检查预期 UI 元素是否显示
+3. **功能验证**：点击交互元素，验证功能是否正常
+4. **日志验证**：检查控制台是否有报错
+5. **截图验证**：截图并审查是否有视觉问题
+
+只有所有验证通过，AI 才能告知用户"功能已完成，可直接使用"
+```
+
+### 预期效果验证检查清单
+
+以"Agentation 工具栏集成"为例：
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    预期效果验证检查清单                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  预期效果描述：                                                 │
+│  在浏览器中访问 http://localhost:3001 应该显示：                 │
+│  1. 游戏列表页面（统计卡片、选项卡、游戏网格）                   │
+│  2. Agentation 标注工具 - 浮在页面右下角的粉色/紫色工具栏        │
+│                                                                 │
+│  验证步骤：                                                     │
+│  □ 1. 服务启动验证                                              │
+│     - 检查端口 3001 是否可访问                                   │
+│     - curl http://localhost:3001 返回 200                       │
+│                                                                 │
+│  □ 2. 页面加载验证                                              │
+│     - 访问 http://localhost:3001                                │
+│     - HTTP 状态码 = 200                                         │
+│     - 页面加载时间 < 3 秒                                        │
+│                                                                 │
+│  □ 3. 游戏列表页面验证                                          │
+│     - 统计卡片可见 (selector: .stats-card)                      │
+│     - 选项卡可见 (selector: .tabs / .tab)                       │
+│     - 游戏网格可见 (selector: .game-grid / .game-card)          │
+│     - 至少显示 N 个游戏卡片                                     │
+│                                                                 │
+│  □ 4. Agentation 工具栏验证                                     │
+│     - 工具栏容器可见 (selector: #agentation-toolbar)            │
+│     - 工具栏位置正确 (右下角，fixed 定位)                        │
+│     - 工具栏颜色正确 (粉色/紫色，检查 background-color)          │
+│     - 工具栏按钮可点击                                          │
+│                                                                 │
+│  □ 5. 控制台日志验证                                            │
+│     - 无 JavaScript 错误                                        │
+│     - 无 404 资源请求                                           │
+│     - 无 API 调用失败                                           │
+│                                                                 │
+│  □ 6. 截图审查                                                  │
+│     - 截取完整页面                                              │
+│     - 审查截图是否包含预期元素                                   │
+│     - 审查截图是否无 404/空白/错位                              │
+│                                                                 │
+│  □ 7. 功能交互验证（可选）                                      │
+│     - 点击选项卡，页面正确切换                                   │
+│     - 点击工具栏按钮，工具栏正确响应                             │
+│                                                                 │
+│  通过标准：                                                     │
+│  - 所有 □ 检查通过                                              │
+│  - 控制台无错误                                                 │
+│  - 截图审查通过                                                 │
+│                                                                 │
+│  失败处理：                                                     │
+│  - 发现任何问题，立即记录为 Bug                                 │
+│  - 分析原因并修复                                               │
+│  - 重新验证直到通过                                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### AI 自主验证流程
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    AI 自主验证流程                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Step 1: 定义预期效果                                           │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ 访问 http://localhost:3001 应该显示：                     │   │
+│  │ 1. 游戏列表页面（统计卡片、选项卡、游戏网格）             │   │
+│  │ 2. Agentation 工具栏（粉色/紫色，右下角）                │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                        │                                        │
+│                        ▼                                        │
+│  Step 2: 启动服务并等待就绪                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ $ npm run dev                                            │   │
+│  │ $ wait-for-localhost --port 3001 --timeout 60           │   │
+│  │ ✅ 服务已启动：http://localhost:3001                    │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                        │                                        │
+│                        ▼                                        │
+│  Step 3: 使用 Playwright 验证                                    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ const page = await browser.newPage();                   │   │
+│  │ await page.goto('http://localhost:3001');               │   │
+│  │                                                          │   │
+│  │ // 验证游戏列表页面                                      │   │
+│  │ await expect(page.locator('.stats-card')).toBeVisible();│   │
+│  │ await expect(page.locator('.tabs')).toBeVisible();      │   │
+│  │ await expect(page.locator('.game-grid')).toBeVisible(); │   │
+│  │                                                          │   │
+│  │ // 验证 Agentation 工具栏                                 │   │
+│  │ const toolbar = page.locator('#agentation-toolbar');    │   │
+│  │ await expect(toolbar).toBeVisible();                    │   │
+│  │ const bgColor = await toolbar.evaluate(el =>            │   │
+│  │   getComputedStyle(el).backgroundColor);                │   │
+│  │ expect(bgColor).toMatch(/rgb\(\d+, \d+, \d+\)/);        │   │
+│  │                                                          │   │
+│  │ // 检查控制台                                            │   │
+│  │ const errors = await page.evaluate(() =>                │   │
+│  │   window.__errors || []);                               │   │
+│  │ expect(errors.length).toBe(0);                          │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                        │                                        │
+│                        ▼                                        │
+│  Step 4: 截图审查                                               │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ await page.screenshot({ path: 'verification.png' });    │   │
+│  │ const result = await validator.validate({               │   │
+│  │   name: '游戏列表页面验证',                              │   │
+│  │   criticalSelectors: ['.stats-card', '#agentation-toolbar']│ │
+│  │ });                                                      │   │
+│  │ if (!result.valid) {                                     │   │
+│  │   // 创建 Bug 报告                                        │   │
+│  │   await reporter.report({ ... });                       │   │
+│  │ }                                                        │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                        │                                        │
+│                        ▼                                        │
+│  Step 5: 验证结论                                               │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ✅ 所有验证通过                                         │   │
+│  │ 功能已完成，可直接访问：http://localhost:3001            │   │
+│  │                                                          │   │
+│  │ 或 ❌ 发现问题                                           │   │
+│  │ 发现问题：Agentation 工具栏未显示                        │   │
+│  │ 已创建 Bug 报告：BUG-20260312-001                        │   │
+│  │ 正在修复...                                              │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### AI 自主验证脚本示例
+
+```typescript
+// scripts/verify-expectations.ts
+import { chromium, Page } from 'playwright';
+
+interface VerificationResult {
+  passed: boolean;
+  details: string[];
+  errors: string[];
+}
+
+async function verifyGameList(page: Page): Promise<string[]> {
+  const issues: string[] = [];
+
+  // 验证统计卡片
+  const statsCards = page.locator('.stats-card');
+  const statsCount = await statsCards.count();
+  if (statsCount === 0) {
+    issues.push('❌ 统计卡片未显示');
+  } else {
+    console.log(`✅ 统计卡片已显示 (${statsCount}个)`);
+  }
+
+  // 验证选项卡
+  const tabs = page.locator('.tabs, .tab');
+  if (await tabs.count() === 0) {
+    issues.push('❌ 选项卡未显示');
+  } else {
+    console.log('✅ 选项卡已显示');
+  }
+
+  // 验证游戏网格
+  const gameGrid = page.locator('.game-grid, .game-card');
+  if (await gameGrid.count() === 0) {
+    issues.push('❌ 游戏网格未显示');
+  } else {
+    console.log(`✅ 游戏网格已显示 (${await gameGrid.count()}个游戏)`);
+  }
+
+  return issues;
+}
+
+async function verifyAgentationToolbar(page: Page): Promise<string[]> {
+  const issues: string[] = [];
+
+  // 验证工具栏存在
+  const toolbar = page.locator('#agentation-toolbar, [class*="agentation"]');
+  if (await toolbar.count() === 0) {
+    issues.push('❌ Agentation 工具栏未显示');
+    return issues;
+  }
+  console.log('✅ Agentation 工具栏已显示');
+
+  // 验证工具栏位置（右下角）
+  const position = await toolbar.evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    return {
+      isBottom: rect.bottom >= window.innerHeight - 50,
+      isRight: rect.right >= window.innerWidth - 200
+    };
+  });
+  if (!position.isBottom || !position.isRight) {
+    issues.push('❌ 工具栏不在右下角');
+  } else {
+    console.log('✅ 工具栏位置正确（右下角）');
+  }
+
+  // 验证工具栏颜色（粉色/紫色）
+  const bgColor = await toolbar.evaluate(el =>
+    getComputedStyle(el).backgroundColor
+  );
+  const isPinkOrPurple = /rgb\(\d+, \d+, \d+\)/.test(bgColor);
+  if (!isPinkOrPurple) {
+    issues.push(`⚠️ 工具栏颜色可能不是粉色/紫色：${bgColor}`);
+  } else {
+    console.log(`✅ 工具栏颜色正常：${bgColor}`);
+  }
+
+  return issues;
+}
+
+async function verifyConsoleErrors(page: Page): Promise<string[]> {
+  const issues: string[] = [];
+
+  // 收集控制台错误
+  const errors: string[] = [];
+  page.on('console', msg => {
+    if (msg.type() === 'error') {
+      errors.push(msg.text());
+    }
+  });
+
+  // 等待页面稳定
+  await page.waitForTimeout(2000);
+
+  if (errors.length > 0) {
+    issues.push(`❌ 控制台发现 ${errors.length} 个错误：${errors.join('; ')}`);
+  } else {
+    console.log('✅ 控制台无错误');
+  }
+
+  return issues;
+}
+
+export async function verifyExpectations(
+  url: string = 'http://localhost:3001'
+): Promise<VerificationResult> {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  const details: string[] = [];
+  const errors: string[] = [];
+
+  try {
+    console.log(`\n🔍 开始验证：${url}`);
+
+    // 访问页面
+    const response = await page.goto(url, { timeout: 30000 });
+    if (response?.status() !== 200) {
+      errors.push(`HTTP 状态码异常：${response?.status()}`);
+      return { passed: false, details, errors };
+    }
+    details.push('✅ 页面加载成功');
+
+    // 验证游戏列表
+    const gameListIssues = await verifyGameList(page);
+    errors.push(...gameListIssues);
+    details.push(...gameListIssues);
+
+    // 验证 Agentation 工具栏
+    const toolbarIssues = await verifyAgentationToolbar(page);
+    errors.push(...toolbarIssues);
+    details.push(...toolbarIssues);
+
+    // 验证控制台
+    const consoleIssues = await verifyConsoleErrors(page);
+    errors.push(...consoleIssues);
+    details.push(...consoleIssues);
+
+    // 截图
+    await page.screenshot({ path: 'verification-result.png', fullPage: true });
+    details.push('✅ 截图已保存：verification-result.png');
+
+    const passed = errors.length === 0;
+    return { passed, details, errors };
+
+  } finally {
+    await browser.close();
+  }
+}
+
+// 运行验证
+(async () => {
+  const result = await verifyExpectations();
+
+  console.log('\n' + '='.repeat(60));
+  console.log('📊 验证结果');
+  console.log('='.repeat(60));
+  result.details.forEach(d => console.log(d));
+
+  if (result.passed) {
+    console.log('\n✅ 所有验证通过！功能已完成，可直接使用。');
+    process.exit(0);
+  } else {
+    console.log('\n❌ 发现以下问题：');
+    result.errors.forEach(e => console.log(`  - ${e}`));
+    console.log('\n正在记录 Bug 报告...');
+    process.exit(1);
+  }
+})();
+```
+
+### 验证脚本使用方式
+
+```bash
+# 运行预期效果验证
+npx tsx scripts/verify-expectations.ts
+
+# 输出示例：
+🔍 开始验证：http://localhost:3001
+✅ 页面加载成功
+✅ 统计卡片已显示 (3 个)
+✅ 选项卡已显示
+✅ 游戏网格已显示 (12 个游戏)
+✅ Agentation 工具栏已显示
+✅ 工具栏位置正确（右下角）
+✅ 工具栏颜色正常：rgb(186, 104, 200)
+✅ 控制台无错误
+✅ 截图已保存：verification-result.png
+
+============================================================
+📊 验证结果
+============================================================
+✅ 所有验证通过！功能已完成，可直接使用。
+```
+
+---
+
 ## 🔧 自动化工具
 
 ### 1. 截图审查工具
@@ -528,6 +894,8 @@ export class BugReporter {
 - [ ] 已定义关键元素选择器列表
 - [ ] 已准备截图审查工具
 - [ ] 已配置 Bug 报告流程
+- [ ] **已定义预期效果验证清单** ⭐
+- [ ] **已准备 AI 自主验证脚本** ⭐
 
 ### 测试执行中
 
@@ -536,6 +904,9 @@ export class BugReporter {
 - [ ] 验证页面内容非空
 - [ ] 验证关键元素存在且内容正确
 - [ ] 发现问题立即记录为 Bug
+- [ ] **AI 自动访问页面验证预期效果** ⭐
+- [ ] **AI 自动检查控制台日志** ⭐
+- [ ] **AI 自动截图并审查** ⭐
 
 ### 测试执行后
 
@@ -543,6 +914,20 @@ export class BugReporter {
 - [ ] 统计质量指标
 - [ ] 列出所有发现 Bug
 - [ ] 提出改进建议
+- [ ] **确认 AI 已完成自主验证** ⭐
+- [ ] **确认所有预期效果已验证** ⭐
+
+### AI 自主验证专项检查
+
+在 AI 告知用户"功能已完成"之前，必须完成以下验证：
+
+- [ ] **服务可访问性**：目标端口可访问，HTTP 返回 200
+- [ ] **页面加载验证**：页面在 3 秒内完成加载
+- [ ] **预期 UI 元素**：所有预期 UI 元素可见
+- [ ] **视觉完整性**：无 404/空白/错位
+- [ ] **控制台无错误**：无 JS 错误、无 404 请求
+- [ ] **功能可交互**：关键按钮/链接可点击并响应
+- [ ] **截图审查通过**：截图验证无视觉问题
 
 ---
 
