@@ -248,11 +248,30 @@ export async function verifyExpectations(
 async function main() {
   // 从命令行参数获取 URL 和验证次数
   const url = process.argv[2] || 'http://localhost:3001'
-  const runCount = parseInt(process.argv[3]) || 3  // 默认验证 3 次
+  const runCountArg = process.argv[3]
 
-  console.log(`\n🔄 开始验证：${url}`)
-  console.log(`📊 验证次数：${runCount} 次`)
-  console.log('='.repeat(60))
+  // 验证次数处理
+  let runCount: number
+
+  if (runCountArg) {
+    // 用户已通过参数指定
+    runCount = parseInt(runCountArg)
+    console.log(`\n📋 使用指定验证次数：${runCount} 次`)
+  } else {
+    // 用户未指定，使用默认值
+    runCount = 3
+    console.log(`\n⚠️  未指定验证次数，使用默认值：${runCount} 次`)
+    console.log(`💡 提示：可通过参数指定，例如：npx tsx scripts/verify-expectations.ts ${url} 5`)
+  }
+
+  // 验证次数合理性检查
+  if (runCount < 1) {
+    console.log('❌ 验证次数必须 >= 1')
+    process.exit(1)
+  }
+  if (runCount > 10) {
+    console.log(`⚠️  验证次数 ${runCount} 较多，可能耗时较长，建议 3-5 次`)
+  }
 
   const allResults: VerificationResult[] = []
 
