@@ -21,3 +21,8 @@ config.toml
 # Temporary files
 .playwright-mcp/
 current-page-state.md
+checkpoints/*.log
+_bmad-output/
+task_plan.md
+progress.md
+findings.md
