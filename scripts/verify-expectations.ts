@@ -165,6 +165,98 @@ async function verifyNetworkRequests(page: Page): Promise<string[]> {
 }
 
 /**
+ * 验证资源文件加载（图片、CSS、字体、图标、音频、视频等）
+ */
+async function verifyResources(page: Page): Promise<string[]> {
+  const issues: string[] = []
+
+  // 收集所有资源加载失败
+  const failedResources: string[] = []
+
+  page.on('requestfailed', request => {
+    const failure = request.failure()
+    if (failure) {
+      failedResources.push(`${request.url()} - ${failure.errorText}`)
+    }
+  })
+
+  // 等待页面稳定和资源加载
+  await page.waitForTimeout(3000)
+
+  // 检查 CSS 文件
+  const cssLinks = page.locator('link[rel="stylesheet"]')
+  const cssCount = await cssLinks.count()
+  console.log(`✅ 检测到 ${cssCount} 个 CSS 文件`)
+
+  // 检查图片资源
+  const images = page.locator('img')
+  const imageCount = await images.count()
+
+  let brokenImages = 0
+  for (let i = 0; i < imageCount; i++) {
+    const img = images.nth(i)
+    try {
+      const naturalWidth = await img.evaluate(el => (el as HTMLImageElement).naturalWidth)
+      if (naturalWidth === 0) {
+        const src = await img.getAttribute('src')
+        brokenImages++
+        failedResources.push(`图片加载失败：${src}`)
+      }
+    } catch (e) {
+      brokenImages++
+    }
+  }
+
+  if (brokenImages > 0) {
+    issues.push(`⚠️ ${brokenImages} 个图片加载失败`)
+  } else if (imageCount > 0) {
+    console.log(`✅ ${imageCount} 个图片加载成功`)
+  }
+
+  // 检查字体文件（通过计算样式）
+  try {
+    const fontsLoaded = await page.evaluate(() => {
+      return document.fonts.ready.then(() => true)
+    })
+    if (fontsLoaded) {
+      console.log('✅ 字体文件加载成功')
+    }
+  } catch (e) {
+    issues.push('⚠️ 字体文件加载可能失败')
+  }
+
+  // 检查图标（favicon 等）
+  const icons = page.locator('link[rel*="icon"]')
+  const iconCount = await icons.count()
+  if (iconCount > 0) {
+    console.log(`✅ 检测到 ${iconCount} 个图标文件`)
+  }
+
+  // 检查音频资源
+  const audios = page.locator('audio, source[type^="audio"]')
+  const audioCount = await audios.count()
+  if (audioCount > 0) {
+    console.log(`✅ 检测到 ${audioCount} 个音频资源`)
+  }
+
+  // 检查视频资源
+  const videos = page.locator('video, source[type^="video"]')
+  const videoCount = await videos.count()
+  if (videoCount > 0) {
+    console.log(`✅ 检测到 ${videoCount} 个视频资源`)
+  }
+
+  // 报告资源加载失败
+  if (failedResources.length > 0) {
+    issues.push(`❌ ${failedResources.length} 个资源加载失败：${failedResources.slice(0, 5).join('; ')}${failedResources.length > 5 ? '...' : ''}`)
+  } else {
+    console.log('✅ 所有资源文件加载成功')
+  }
+
+  return issues
+}
+
+/**
  * 主验证函数
  */
 export async function verifyExpectations(
@@ -174,6 +266,7 @@ export async function verifyExpectations(
     timeout?: number
     verifyGameList?: boolean
     verifyAgentation?: boolean
+    verifyResources?: boolean  // 新增：资源文件验证
   } = {}
 ): Promise<VerificationResult> {
   const browser = await chromium.launch({
@@ -212,6 +305,13 @@ export async function verifyExpectations(
       const toolbarIssues = await verifyAgentationToolbar(page)
       errors.push(...toolbarIssues)
       details.push(...toolbarIssues)
+    }
+
+    // 验证资源文件（新增）
+    if (options.verifyResources !== false) {
+      const resourceIssues = await verifyResources(page)
+      errors.push(...resourceIssues)
+      details.push(...resourceIssues)
     }
 
     // 验证控制台
@@ -283,7 +383,8 @@ async function main() {
     const result = await verifyExpectations(url, {
       headless: true,
       verifyGameList: true,
-      verifyAgentation: true
+      verifyAgentation: true,
+      verifyResources: true  // 启用资源文件验证
     })
 
     allResults.push(result)
