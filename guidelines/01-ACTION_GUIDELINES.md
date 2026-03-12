@@ -1,7 +1,8 @@
 # 行动准则
 
-> 版本：1.0.0
-> 最后更新：2026-03-07
+> 版本：2.0.0
+> 最后更新：2026-03-12
+> 变更：整合五阶段测试体系 + 全栈安全渗透测试
 
 ---
 
@@ -20,6 +21,8 @@
 5. **安全第一** - 安全检查通过才能发布
 6. **文档同步** - 代码和文档同步更新
 7. **可追溯性** - 所有决策和变更可追溯
+8. **REAL 测试** - 真实数据、端到端、实际流程、闭环验证
+9. **五阶段测试** - UI → API → 联调 → 真实性 → 安全性
 
 ---
 
@@ -38,11 +41,14 @@ Phase 4: TDD 开发（RED → GREEN → REFACTOR）
     ↓
 Phase 5: API 完整性检查 ← 完整性门禁（必须通过）
     ↓
-Phase 6: E2E 测试（前后端联调 + 端到端测试）
+Phase 6: 五阶段测试体系
+    ├── Stage 1: 前端 UI 测试（Mock 验证）
+    ├── Stage 2: API 测试（真实数据）
+    ├── Stage 3: 前后端联调（真实环境）
+    ├── Stage 4: 真实性测试 🔴（完整闭环）
+    └── Stage 5: 安全渗透测试 🔒（OWASP Top 10）
     ↓
-Phase 7: 安全性检查 ← 安全门禁（必须通过）
-    ↓
-Phase 8: 质量门禁（最终验证）
+Phase 7: 质量门禁（最终验证）
     ↓
 Git 提交 & 发布
 ```
@@ -707,7 +713,7 @@ export async function logout(req: Request, res: Response) {
 
 ---
 
-### Phase 6: 真实业务全流程闭环测试 🔴 最高优先级
+### Phase 6: 五阶段测试体系 🔴 最高优先级
 
 > **核心原则**：测试不只是验证 UI 元素存在，而是验证**真实业务流程、真实数据、完整闭环**。
 
@@ -723,8 +729,104 @@ A - Actual Flow   实际流程（真实业务场景）
 L - Loop Closed   闭环验证（从起点到终点的完整链路）
 ```
 
-**步骤**：
+#### 阶段概览
 
+```
+Phase 6: 五阶段测试体系
+├── Stage 1: 前端 UI 测试（Mock 验证）
+├── Stage 2: API 测试（真实数据）
+├── Stage 3: 前后端联调（真实环境）
+├── Stage 4: 真实性测试 🔴（完整闭环）
+└── Stage 5: 安全渗透测试 🔒（OWASP Top 10）
+```
+
+#### Stage 1: 前端 UI 测试（Mock 验证）
+
+**目标**：验证前端页面交互正确，UI 组件功能正常
+
+**是否允许 Mock**：✅ 允许（仅验证 UI 交互）
+
+**测试内容**：
+- 页面元素渲染正确
+- 表单验证逻辑
+- 用户交互响应
+- 状态管理正确
+- 路由跳转正常
+
+**执行命令**：
+```bash
+npm test -- --testPathPattern=components
+```
+
+**产出**：前端组件测试报告
+
+---
+
+#### Stage 2: API 测试（真实数据）
+
+**目标**：验证后端 API 功能正确，数据操作正常
+
+**是否允许 Mock**：❌ 禁止（必须使用真实数据）
+
+**测试内容**：
+- API 端点功能正确
+- 数据库 CRUD 操作
+- 数据验证和过滤
+- 错误处理完整
+- 响应格式规范
+
+**执行命令**：
+```bash
+npm test -- --testPathPattern=api
+```
+
+**产出**：API 测试报告
+
+---
+
+#### Stage 3: 前后端联调（真实环境）
+
+**目标**：验证前后端集成正常，数据流通信正确
+
+**是否允许 Mock**：❌ 严格禁止
+
+**测试内容**：
+- 前端正确调用 API
+- 后端正确响应请求
+- 数据在前后端之间正确传递
+- 错误正确处理
+- 状态正确同步
+
+**执行命令**：
+```bash
+npx playwright test --project=integration
+```
+
+**产出**：联调测试报告
+
+---
+
+#### Stage 4: 真实性测试 🔴（完整闭环）
+
+**目标**：验证真实业务全流程，确保系统真正可用
+
+**是否允许 Mock**：❌ 严格禁止
+
+**REAL 测试原则**：
+```
+R - Real Data     真实数据（生产环境数据结构）
+E - End-to-End    端到端（前后端完整联调）
+A - Actual Flow   实际流程（真实业务场景）
+L - Loop Closed   闭环验证（从起点到终点的完整链路）
+```
+
+**测试内容**：
+- **真实数据**：从测试数据库获取真实用户、商品等
+- **真实业务流程**：完整业务场景（登录→购买→支付→验证）
+- **完整闭环验证**：前端 UI + 后端 API + 数据库状态
+- **功能覆盖率报告**：与需求文档对比，确保 100% 覆盖
+
+**执行命令**：
 ```bash
 # 1. 准备真实测试数据
 ./scripts/prepare-test-data.sh
@@ -747,55 +849,6 @@ npx playwright test --project=real-business
 | **人类介入测试** | 有头模式（headed） | `headless: false` | 人类观看、Agentation 标注 |
 | **Self-Driving 评审** | 有头模式（headed） | `headless: false` | AI 自主标注、人类观看 |
 
-**核心原则**：
-- ✅ **行为准则测试环节中，自动 E2E 测试阶段必须使用无头模式（headless）**
-- ✅ 人类介入测试阶段使用有头模式（headed）
-- ✅ 无头模式节省资源，适合自动化和 CI/CD
-
-**测试层次**：
-
-1. **前端 Mock 测试** ✅ 允许 Mock（仅验证 UI 交互）
-   - 验证前端页面交互正确
-   - 用 Mock 数据，不依赖后端
-   - ⚠️ **仅用于 UI 验证，不能代替真实测试**
-
-2. **后端 API 测试** ❌ 禁止 Mock
-   - 验证后端 API 功能正确
-   - 必须使用真实数据
-
-3. **前后端联调测试** ❌ 禁止 Mock
-   - 验证前后端集成正常
-   - 必须使用真实 API
-
-4. **真实业务全流程闭环测试** ❌ 禁止 Mock 🔴 核心
-   - **真实数据**：从测试数据库获取真实用户、商品等
-   - **真实业务流程**：完整业务场景（登录→购买→支付→验证）
-   - **完整闭环验证**：前端 UI + 后端 API + 数据库状态
-   - **功能覆盖率报告**：与需求文档对比，确保 100% 覆盖
-
-5. **人类可用性评估** 🔴 最终验收
-   - **功能完整性**：所有核心功能都能正常使用
-   - **数据一致性**：前后端数据完全一致
-   - **流程连贯性**：业务流程无断点
-   - **用户体验**：界面友好、操作流畅
-   - **综合评分 ≥ 85 分**才能通过验收
-
-**测试报告要求**：
-
-每次测试必须生成以下报告：
-
-1. **功能覆盖率报告** (`REAL_TEST_COVERAGE_REPORT.md`)
-   - 功能模块覆盖详情
-   - 业务闭环验证
-   - 数据一致性检查
-   - 未覆盖功能清单
-
-2. **人类可用性评估报告**
-   - 功能验收状态
-   - 数据验收状态
-   - 流程验收状态
-   - 综合评分
-
 **产出**：
 - E2E 测试报告
 - 功能覆盖率报告
@@ -804,95 +857,167 @@ npx playwright test --project=real-business
 
 ---
 
-### Phase 7: 安全性检查
+#### Stage 5: 安全渗透测试 🔒（OWASP Top 10）
 
-> **关键原则**：在 API 完整性检测和前后端联调测试完成后，必须进行全面的安全性检查，确保系统安全可靠。
+**目标**：识别和修复安全漏洞，确保系统安全可靠
 
-**目标**：识别和修复安全漏洞，确保系统安全
+**测试类型**：白盒 + 黑盒渗透测试
 
-**步骤**：
+**详细文档**：[Shannon 渗透测试集成](docs/SHANNON_INTEGRATION.md)
+
+**测试覆盖**：
+
+| 安全领域 | 测试项 | 工具 |
+|---------|-------|------|
+| **前端安全** | XSS、CSRF、点击劫持 | Playwright |
+| **API 安全** | 注入、越权、速率限制 | Shannon + Playwright |
+| **数据库安全** | SQL 注入、NoSQL 注入 | Shannon |
+| **认证安全** | Token 劫持、会话固定 | Shannon + Playwright |
+| **数据安全** | 数据泄露、敏感信息暴露 | Shannon |
+
+**执行命令**：
 
 ```bash
+# 方式 1：Shannon AI 渗透测试（推荐）
+cd /opt/shannon
+./shannon start URL=http://localhost:3000 REPO=.
+
+# 方式 2：Playwright 安全测试
+npx playwright test --project=security
+
+# 方式 3：安全审查工具
 /security-review
-```
 
-**检查项**：
-
-#### 1. 认证与授权
-- ✅ 认证机制正确实现（JWT/Session/OAuth）
-- ✅ Token 有效期和刷新机制
-- ✅ 密码强度要求和加密存储
-- ✅ 权限验证完整（RBAC/ABAC）
-- ✅ 防止越权访问
-
-#### 2. 输入验证
-- ✅ 所有用户输入已验证
-- ✅ SQL 注入防护（参数化查询）
-- ✅ XSS 防护（输入过滤、输出转义）
-- ✅ CSRF 防护（Token 验证）
-- ✅ 文件上传安全（类型、大小、路径验证）
-
-#### 3. 数据安全
-- ✅ 敏感数据加密存储
-- ✅ 传输层加密（HTTPS/TLS）
-- ✅ 数据库连接加密
-- ✅ 日志脱敏（不记录密码、Token）
-- ✅ 备份数据加密
-
-#### 4. API 安全
-- ✅ API 认证和授权
-- ✅ 速率限制（防止暴力破解）
-- ✅ API 密钥管理
-- ✅ CORS 配置正确
-- ✅ 防止 API 滥用
-
-#### 5. 依赖安全
-- ✅ 第三方库无已知漏洞
-- ✅ 依赖版本及时更新
-- ✅ 供应链安全
-- ✅ License 合规性
-
-#### 6. 配置安全
-- ✅ 生产环境配置正确
-- ✅ 调试模式已关闭
-- ✅ 错误信息不泄露敏感数据
-- ✅ 默认密码已修改
-- ✅ 不必要的服务已关闭
-
-**安全扫描工具**：
-
-```bash
 # 依赖漏洞扫描
 npm audit
-# 或
 yarn audit
 
 # 代码安全扫描
 npm run security-scan
+```
 
-# OWASP 依赖检查
-dependency-check --project myapp --scan .
+**测试检查清单**：
+
+```
+□ 1. 认证与授权安全
+   - Token 劫持测试（Token 被截获后能否重用）
+   - 会话固定攻击（Session 是否会被固定）
+   - 越权访问测试（水平/垂直越权）
+   - JWT Token 安全性（签名、有效期、刷新）
+
+□ 2. 注入攻击测试
+   - SQL 注入（参数化查询是否到位）
+   - NoSQL 注入（MongoDB 等查询注入）
+   - 命令注入（系统命令执行）
+   - XSS 跨站脚本（反射型、存储型、DOM 型）
+
+□ 3. 数据泄露测试
+   - 敏感数据是否加密存储
+   - 传输层是否使用 HTTPS/TLS
+   - 日志是否脱敏（不记录密码、Token）
+   - API 响应是否泄露敏感信息
+
+□ 4. API 安全测试
+   - BOLA（Broken Object Level Authorization）
+   - 速率限制（防止暴力破解）
+   - CORS 配置是否正确
+   - API 密钥管理是否安全
+
+□ 5. CSRF 攻击测试
+   - 表单是否有 CSRF Token
+   - 请求是否验证来源
+   - Cookie 是否有 SameSite 属性
+
+□ 6. SSRF 攻击测试
+   - 服务器端请求是否被限制
+   - 内网访问是否被禁止
+   - URL 重定向是否被验证
+```
+
+**Shannon AI 渗透测试**：
+
+```bash
+# Step 1: 确认 E2E 测试通过
+npm run test:e2e
+
+# Step 2: 启动 Shannon
+./shannon start URL=http://localhost:3000 REPO=.
+
+# Step 3: 监控进度
+./shannon logs
+
+# Step 4: 查看报告
+cat workspaces/pentest-*/reports/*.md
+```
+
+**Playwright 安全测试脚本**：
+
+创建 `e2e/security/*.spec.ts` 测试文件：
+
+```typescript
+// e2e/security/xss-test.spec.ts
+test('XSS 防护 - 输入脚本标签应被转义', async ({ page }) => {
+  await page.goto('/search')
+  await page.fill('input[name="q"]', '<script>alert("XSS")</script>')
+  await page.press('input[name="q"]', 'Enter')
+
+  // 验证脚本未被执行
+  const hasAlert = await page.evaluate(() => {
+    return new Promise((resolve) => {
+      const originalAlert = window.alert
+      window.alert = () => resolve(true)
+      setTimeout(() => resolve(false), 1000)
+      window.alert = originalAlert
+    })
+  })
+  expect(hasAlert).toBe(false)
+})
+
+// e2e/security/csrf-test.spec.ts
+test('CSRF 防护 - 表单应包含 CSRF Token', async ({ page }) => {
+  await page.goto('/login')
+  const csrfToken = await page.locator('input[name="_csrf"]')
+  expect(csrfToken).toBeTruthy()
+})
+
+// e2e/security/auth-test.spec.ts
+test('认证安全 - Token 过期后应拒绝访问', async ({ page }) => {
+  // 设置过期 Token
+  await page.evaluate(() => {
+    localStorage.setItem('token', 'expired-token')
+  })
+
+  await page.goto('/profile')
+  await page.waitForURL('/login')
+  expect(page.url()).toContain('/login')
+})
 ```
 
 **问题等级**：
-- 🔴 CRITICAL - 严重安全漏洞，必须立即修复
-- 🟠 HIGH - 高危漏洞，强烈建议修复
-- 🟡 MEDIUM - 中危漏洞，建议修复
-- 🟢 LOW - 低危漏洞，可选修复
+- 🔴 CRITICAL - 严重安全漏洞，必须立即修复（如 SQL 注入、认证绕过）
+- 🟠 HIGH - 高危漏洞，强烈建议修复（如 XSS、越权访问）
+- 🟡 MEDIUM - 中危漏洞，建议修复（如信息泄露）
+- 🟢 LOW - 低危漏洞，可选修复（如安全头缺失）
 
 **安全门禁**：
 - ✅ 无 CRITICAL 级别安全漏洞
 - ✅ 无 HIGH 级别安全漏洞
+- ✅ Shannon 渗透测试通过
 - ✅ 所有敏感数据已加密
 - ✅ 认证授权机制完整
 
-**产出**：安全审查报告，漏洞修复建议
+**产出**：
+- Shannon 渗透测试报告
+- Playwright 安全测试报告
+- 安全审查报告
+- 漏洞修复建议
+- PoC（Proof of Concept）示例
 
-**⚠️ 重要**：只有通过安全性检查后，才能进入 Phase 8（质量门禁）。
+**⚠️ 重要**：只有通过安全性测试后，才能进入 Phase 7（质量门禁）。
 
 ---
 
-### Phase 8: 质量门禁
+### Phase 7: 质量门禁
 
 **目标**：确保质量达标后再提交
 
@@ -903,9 +1028,13 @@ dependency-check --project myapp --scan .
 □ 构建成功（npm run build / mvn package）
 □ 单元测试通过（覆盖率 ≥ 80%）
 □ API 完整性检查通过（Phase 5）
-□ 集成测试通过（所有相关测试用例）
-□ E2E 测试通过（Phase 6）
-□ 安全性检查通过（Phase 7，无 CRITICAL/HIGH 漏洞）
+□ 五阶段测试全部通过（Phase 6）
+  - Stage 1: 前端 UI 测试 ✅
+  - Stage 2: API 测试 ✅
+  - Stage 3: 前后端联调 ✅
+  - Stage 4: 真实性测试 ✅
+  - Stage 5: 安全渗透测试 ✅
+□ 安全性检查通过（无 CRITICAL/HIGH 漏洞）
 □ 失败修复（或记录原因）
 □ 文档更新（MEMORY.md、task.json）
 □ Git 提交（规范格式）
@@ -923,6 +1052,108 @@ feat: 实现用户登录功能 (任务 5)
 ```
 
 **产出**：高质量的代码提交
+
+---
+
+## 📋 五阶段测试体系详细说明
+
+### 测试体系演进
+
+| 阶段 | 测试类型 | 工具 | 产出 |
+|------|---------|------|------|
+| Stage 1 | 前端 UI 测试 | Jest/Vitest | 组件测试报告 |
+| Stage 2 | API 测试 | Jest/Supertest | API 测试报告 |
+| Stage 3 | 联调测试 | Playwright | 集成测试报告 |
+| Stage 4 | 真实性测试 | Playwright | E2E 测试报告 + 可用性评估 |
+| Stage 5 | 安全渗透测试 | Shannon + Playwright | 安全报告 + PoC |
+
+### 各阶段详细说明
+
+| 文档 | 内容 |
+|------|------|
+| [真实业务全流程闭环测试规范](18-REAL_BUSINESS_TESTING.md) | Stage 4 真实性测试详细流程 |
+| [Shannon 渗透测试集成](docs/SHANNON_INTEGRATION.md) | Stage 5 安全测试工具使用 |
+| [E2E 测试流程](04-E2E_TESTING_FLOW.md) | Playwright E2E 测试最佳实践 |
+| [质量门禁](05-QUALITY_GATE.md) | 各阶段质量门禁标准 |
+
+### 测试工具安装与使用
+
+#### Playwright 安装
+
+```bash
+# 初始化 Playwright
+npx playwright init
+
+# 安装浏览器
+npx playwright install
+
+# 运行测试
+npx playwright test
+
+# 运行特定项目
+npx playwright test --project=security
+
+# 生成报告
+npx playwright show-report
+```
+
+#### Shannon 安装
+
+```bash
+# 克隆 Shannon 仓库
+git clone https://github.com/KeygraphHQ/shannon.git
+cd shannon
+
+# 配置环境变量
+export ANTHROPIC_API_KEY="sk-ant-xxxxx"
+
+# 运行渗透测试
+./shannon start URL=http://localhost:3000 REPO=.
+```
+
+### 测试检查清单模板
+
+创建 `e2e/TEST_CHECKLIST.md`：
+
+```markdown
+# 测试检查清单
+
+## Stage 1: 前端 UI 测试
+- [ ] 组件渲染正确
+- [ ] 表单验证正常
+- [ ] 交互响应及时
+- [ ] 状态管理正确
+- [ ] 路由跳转正常
+
+## Stage 2: API 测试
+- [ ] API 端点功能正确
+- [ ] 数据库 CRUD 正常
+- [ ] 数据验证到位
+- [ ] 错误处理完整
+- [ ] 响应格式规范
+
+## Stage 3: 前后端联调
+- [ ] 前端正确调用 API
+- [ ] 后端正确响应
+- [ ] 数据传递正确
+- [ ] 错误正确处理
+- [ ] 状态正确同步
+
+## Stage 4: 真实性测试
+- [ ] 使用真实数据
+- [ ] 完整业务流程
+- [ ] 端到端验证
+- [ ] 功能覆盖率 100%
+- [ ] 人类可用性评分 ≥85
+
+## Stage 5: 安全渗透测试
+- [ ] 无 CRITICAL 漏洞
+- [ ] 无 HIGH 漏洞
+- [ ] Token 安全测试通过
+- [ ] 注入攻击防护到位
+- [ ] 数据加密正确
+- [ ] Shannon 报告已审查
+```
 
 ---
 
