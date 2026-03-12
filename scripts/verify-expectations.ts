@@ -246,47 +246,84 @@ export async function verifyExpectations(
  * 验证预期效果（命令行入口）
  */
 async function main() {
-  // 从命令行参数获取 URL
+  // 从命令行参数获取 URL 和验证次数
   const url = process.argv[2] || 'http://localhost:3001'
+  const runCount = parseInt(process.argv[3]) || 3  // 默认验证 3 次
 
-  const result = await verifyExpectations(url, {
-    headless: true,
-    verifyGameList: true,
-    verifyAgentation: true
-  })
-
-  console.log('\n' + '='.repeat(60))
-  console.log('📊 验证结果')
+  console.log(`\n🔄 开始验证：${url}`)
+  console.log(`📊 验证次数：${runCount} 次`)
   console.log('='.repeat(60))
-  result.details.forEach(d => console.log(d))
 
-  if (result.passed) {
-    console.log('\n✅ 所有验证通过！功能已完成，可直接使用。')
-    console.log(`\n访问地址：${url}`)
-    process.exit(0)
-  } else {
-    console.log('\n❌ 发现以下问题：')
-    result.errors.forEach(e => console.log(`  - ${e}`))
-    console.log('\n📝 正在记录 Bug 报告...')
+  const allResults: VerificationResult[] = []
 
-    // 保存 Bug 报告
-    const bugReport = {
-      id: `BUG-${Date.now()}`,
-      title: '预期效果验证失败',
-      severity: result.errors.some(e => e.includes('❌')) ? 'P1' : 'P2',
-      description: 'AI 自主验证发现预期效果未达成',
-      errors: result.errors,
-      screenshot: 'verification-result.png',
-      detectedAt: new Date().toISOString()
+  // 多次验证确保稳定性
+  for (let i = 1; i <= runCount; i++) {
+    console.log(`\n【第 ${i}/${runCount} 次验证】`)
+    console.log('-'.repeat(40))
+
+    const result = await verifyExpectations(url, {
+      headless: true,
+      verifyGameList: true,
+      verifyAgentation: true
+    })
+
+    allResults.push(result)
+
+    if (!result.passed) {
+      console.log(`\n❌ 第 ${i} 次验证失败，停止验证`)
+      break
     }
 
+    if (i < runCount) {
+      console.log(`⏳ 等待 2 秒后进行下一次验证...`)
+      await new Promise(resolve => setTimeout(resolve, 2000))
+    }
+  }
+
+  // 汇总结果
+  const passedCount = allResults.filter(r => r.passed).length
+  const failedCount = allResults.filter(r => !r.passed).length
+
+  console.log('\n' + '='.repeat(60))
+  console.log('📊 最终验证结果')
+  console.log('='.repeat(60))
+  console.log(`总验证次数：${runCount}`)
+  console.log(`✅ 通过次数：${passedCount}`)
+  console.log(`❌ 失败次数：${failedCount}`)
+
+  // 只有全部通过才算通过
+  if (failedCount === 0 && passedCount === runCount) {
+    console.log('\n✅ 所有验证通过！功能已完成，可直接使用。')
+    console.log(`\n访问地址：${url}`)
+    console.log('\n💡 交付确认：已验证 ${runCount} 次，无 Bug，可交付用户')
+    process.exit(0)
+  } else {
+    console.log('\n❌ 验证未全部通过，存在 Bug，不可交付')
+    console.log('\n📝 正在记录 Bug 报告...')
+
+    // 收集所有错误
+    const allErrors = allResults.flatMap((r, i) => r.errors.map(e => `[第${i + 1}次] ${e}`))
+
+    // 保存 Bug 报告
     const fs = require('fs')
     const path = require('path')
     const bugDir = path.join(process.cwd(), 'test-bugs')
     if (!fs.existsSync(bugDir)) {
       fs.mkdirSync(bugDir, { recursive: true })
     }
-    const bugPath = path.join(bugDir, `bug-${bugReport.id}.json`)
+    const bugPath = path.join(bugDir, `bug-${Date.now()}.json`)
+    const bugReport = {
+      id: `BUG-${Date.now()}`,
+      title: '多次验证发现 Bug',
+      severity: 'P0',
+      description: `多次验证（${runCount}次）中发现 ${failedCount} 次失败`,
+      verificationCount: runCount,
+      passedCount,
+      failedCount,
+      errors: allErrors,
+      screenshot: 'verification-result.png',
+      detectedAt: new Date().toISOString()
+    }
     fs.writeFileSync(bugPath, JSON.stringify(bugReport, null, 2))
     console.log(`📄 Bug 报告已保存：${bugPath}`)
 
