@@ -15,6 +15,7 @@
 7. **上下文管理** - 实时监控上下文使用量，自动保存和压缩
 8. **Mock 模式规范** - 前端开发可用 Mock，联调测试必须用真实 API
 9. **端口排查** - 测试前先检查端口占用，避开已占用端口，严禁强占
+10. **测试真实性** - 严禁"为了通过而测试"，截图必须审查，404/空白必须报 Bug
 
 ---
 
@@ -632,6 +633,8 @@ netstat -ano | findstr :<端口号>
 
 ## 📚 文档索引
 
+### 核心规范
+
 | 文档 | 用途 |
 |------|------|
 | [ACTION_GUIDELINES.md](01-ACTION_GUIDELINES.md) | ⭐ 核心行动准则 |
@@ -641,8 +644,33 @@ netstat -ano | findstr :<端口号>
 | [QUALITY_GATE.md](05-QUALITY_GATE.md) | 质量门禁 |
 | [TRACEABILITY.md](06-TRACEABILITY.md) | 可追溯性规范 |
 | [PLUGIN_MANAGEMENT.md](07-PLUGIN_MANAGEMENT.md) | 插件使用规范 |
+| [TEST-INTEGRITY.md](15-TEST-INTEGRITY.md) | 测试真实性验证规范 |
+
+### 企业级测试框架
+
+| 文档 | 用途 |
+|------|------|
+| [TEST_SOLUTION.md](../TEST_SOLUTION.md) | Playwright 企业级测试解决方案总览 |
+| [ENTERPRISE_TEST_FRAMEWORK.md](../ENTERPRISE_TEST_FRAMEWORK.md) | 企业级测试框架设计（15 层测试金字塔） |
+| [e2e/README.md](../e2e/README.md) | 测试框架使用指南 |
+| [COMPREHENSIVE_TESTING_WORKFLOW.md](17-COMPREHENSIVE_TESTING_WORKFLOW.md) | 综合测试工作流 |
+| [REAL_BUSINESS_TESTING.md](18-REAL_BUSINESS_TESTING.md) | 真实业务测试规范 |
+
+### 最佳实践
+
+| 文档 | 用途 |
+|------|------|
+| [LONG_RUNNING_AGENTS.md](08-LONG_RUNNING_AGENTS.md) | 长期运行 Agent 最佳实践 |
+| [ANTHROPIC_LONG_RUNNING_AGENTS.md](10-ANTHROPIC_LONG_RUNNING_AGENTS.md) | Anthropic 官方指南 |
+| [LONG_TERM_MEMORY.md](11-LONG_TERM_MEMORY.md) | 长期记忆管理 |
+| [AGENT_REACH_INTEGRATION.md](12-AGENT_REACH_INTEGRATION.md) | Agent-Reach 互联网能力集成 |
+| [AUTOMATION_MODES.md](09-AUTOMATION_MODES.md) | 项目级自动化模式配置 |
+| [DETERMINISTIC_DEVELOPMENT.md](14-DETERMINISTIC_DEVELOPMENT.md) | 确定性开发流程 |
+| [COLLABORATION_EFFICIENCY.md](13-COLLABORATION_EFFICIENCY.md) | 协作效率优化 |
+| [STABLE_ZONE_PROTECTION.md](15-STABLE_ZONE_PROTECTION.md) | 稳定区保护机制 |
+| [DOCLING_INTEGRATION.md](16-DOCLING_INTEGRATION.md) | DocLing 文档处理集成 |
 
 ---
 
 *版本：1.0.0*
-*最后更新：2026-03-03*
+*最后更新：2026-03-12*
